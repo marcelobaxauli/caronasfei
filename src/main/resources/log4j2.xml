@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="DEBUG">
+	<Appenders>
+		<Console name="Console1" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="c1: %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+		<Console name="Console2" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="c2: %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Root level="ERROR">
+			<AppenderRef ref="Console1" />
+		</Root>
+		<Logger name="org.hibernate" level="INFO" additivity="false">
+			<AppenderRef ref="Console2" />
+		</Logger>
+		<Logger name="org.springframework" level="DEBUG" additivity="false">
+			<AppenderRef ref="Console2" />
+		</Logger>
+		<Logger name="com.brazilchicks" level="DEBUG" additivity="false">
+			<AppenderRef ref="Console2" />
+		</Logger>
+	</Loggers>
+</Configuration>

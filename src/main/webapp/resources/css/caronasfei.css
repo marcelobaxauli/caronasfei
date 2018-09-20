@@ -1,0 +1,150 @@
+* {
+	box-sizing: border-box;
+	margin: 0px;
+}
+
+#header {
+	width: 100%;
+	background-color: black;
+	line-height: 55px;
+}
+
+#content {
+	padding: 20px;
+}
+
+#destaques-titulo {
+	margin-bottom: 20px;
+}
+
+#nav-logo {
+	float: left;
+	color: white;
+	display: inline-block;
+}
+
+#footer {
+	width: 100%;
+	background-color: black;
+	line-height: 60px;
+	color: white;
+	text-align: center;
+}
+
+button {
+	padding: 10px 15px 10px 15px;
+	border-radius: 2px;
+	background-color: #ff4081;
+	border: 0px;
+	color: white;
+	cursor: pointer;
+}
+
+.nav-right {
+	margin-right: 20px;
+}
+
+#nav-item, #nav-logo a, #nav-item a {
+	float: right;
+	color: white;
+	display: inline-block;
+	text-decoration: none;
+}
+
+.nav-explore {
+	margin-right: 50px;
+}
+
+#nav-explore {
+	margin-right: 10px;
+}
+
+#nav-login {
+	float: right;
+}
+
+.grid {
+	width: 900px;
+	display: block;
+}
+
+.grid-item {
+	padding: 10px;
+	height: 200px;
+	width: 220px;
+	border: 1px solid black;
+	display: inline-block;
+}
+
+.wd-xl {
+	width: 1100px;
+	margin: 0px auto;
+	border: 1px solid black;
+	overflow: hidden;
+}
+
+.wd-l {
+	width: 960px;
+	margin: 0px auto;
+}
+
+#box {
+	width: 600px;
+	margin: 25px auto;
+	border: 1px solid #b1aeae;
+	border-radius: 5px;
+}
+
+.box-input {
+	width: 100%;
+	padding: 5px;
+	border-radius: 5px;
+	border: 1px solid gray;
+}
+
+#box-header {
+	text-align: center;
+	padding: 20px;
+	font-size: 20px;
+	border-bottom: 1px solid #b1aeae;
+}
+
+#box-content {
+	padding: 25px;
+}
+
+.box-item {
+	width: 420px;
+	margin: 0px auto;
+	padding: 15px;
+}
+
+.box-item .input-label {
+	padding: 0px 0px 10px 0px;
+}
+
+.msg-sucess {
+	margin-top: 5px;
+	color: green;
+}
+
+.msg-error {
+	margin-top: 5px;
+	color: red;
+}
+
+.ok-btn {
+	background-color: blue;
+}
+
+.no-btn {
+	background-color: black;
+}
+
+input.erro {
+	border: 1px solid red;
+}
+
+input.sucesso {
+	border: 1px solid green;
+}

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
+      integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+      crossorigin=""/>
+
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"
+      integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
+      crossorigin=""></script>
+
+    <title>Caronas FEI - Escolha o Endereço</title>
+
+
+        <style>
+
+          * {
+            box-sizing: border-box;
+            margin: 0;
+            font-family: 'Ubuntu';
+          }
+
+          body {
+            max-width: 600px;
+            margin: 0px auto;
+          }
+
+    		 .header {
+    			 width: 100%;
+    			 background-color: blue;
+           padding: 1.2rem 1rem;
+           overflow: hidden;
+    		 }
+
+    		 .header_inner {
+
+    			 width: 400px;
+    			 margin: 0px auto;
+    			 color: white;
+           font-size: 1.15rem;
+           font-weight: normal;
+           float: left;
+
+    		 }
+
+    		 .content {
+    			 margin-top: 3.0rem;
+           margin-left: 1.0rem;
+           margin-right: 1.0rem;
+    		 }
+
+         h1 {
+           font-size: 1.8rem;
+           font-weight: normal;
+           margin-bottom: 0.8rem;
+         }
+
+         .form-group, .form-group-inline {
+           margin-top: 1.5rem;
+           margin-bottom: 1.5rem;
+           overflow: hidden;
+         }
+
+         .form-group label,
+         .form-group-inline label {
+           display: block;
+           margin-bottom: 0.6rem;
+         }
+
+         .form-group input[type="text"],
+         .form-group-inline input[type="text"],
+         .form-group select,
+         .form-group-inline select {
+           width: 100%;
+           padding: 0.5rem;
+           background-color: white;
+           border: 1px solid #cacaca;
+           border-radius: 0.25rem;
+           font-size: 0.9rem;
+        }
+
+        input[type="submit"],
+        button {
+
+          padding: 0.85rem 1.5rem;
+          border-radius: 0.25rem;
+          color: white;
+          border: 0px;
+          width: 100%;
+          display: block;
+          margin: 0px auto;
+          margin-bottom: 0.5rem;
+
+        }
+
+        input[type="submit"] {
+          background-color: blue;
+
+        }
+
+        button#cancelar {
+
+          background-color: red;
+
+        }
+
+        input[type="text"].disabled {
+          background-color: #e9ecef !important;
+          cursor: not-allowed;
+        }
+
+        .form-group-inline {
+          float: left;
+          margin-right: 0.5rem;
+          margin-bottom: 0rem;
+        }
+
+
+        button.light_green {
+          background-color: #009688;
+          cursor: pointer;
+        }
+
+        button.light_green:hover {
+          background-color: #4DB6AC;
+          cursor: pointer;
+        }
+
+        button.red {
+          background-color: #f44336;
+          cursor: pointer;
+        }
+
+        /* ESPECÍFICO */
+
+        .s-65 {
+          width: 65%;
+        }
+
+        .s-15 {
+          width: 15%;
+        }
+
+        .form-group-s {
+          display: block;
+          margin-top: 1.0rem;
+          margin-bottom: 0.5rem;
+          overflow: hidden;
+        }
+
+        #map {
+          height: 260px;
+          width: 100%;
+        }
+
+      </style>
+
+  </head>
+
+  <body>
+
+    <div class="header">
+
+      <div class="header_inner">
+        CARONAS FEI
+      </div>
+
+    </div>
+
+    <div class="content">
+
+      <h1 id="titulo"></h1>
+
+      <div class="form-group-s">
+        <div class="form-group-inline s-65">
+          <label>Rua:</label>
+          <input id="rua" type="text" />
+        </div>
+
+        <div class="form-group-inline s-15">
+          <label>Número:</label>
+          <input id="numero" type="text" />
+        </div>
+
+        <div class="form-group-inline s-15">
+          <label>Cidade:</label>
+          <input id="cidade" type="text" />
+        </div>
+      </div>
+
+      <div class="form-group-s">
+        <button id="pesquisar" class="light_green">Pesquisar</button>
+      </div>
+
+      <div id="map">
+      </div>
+
+    </div>
+
+    <script>
+
+      $(document).ready(function() {
+
+        var local_opcao = window.localStorage.getItem('local');
+
+        if (local_opcao == 'partida') {
+          $("#titulo").html('Informe o endereço de partida');
+        }
+
+        if (local_opcao == 'destino') {
+          $("#titulo").html('Informe o endereço de destino');
+        }
+
+        $("#pesquisar").click(function() {
+
+          var rua = $("#rua").val();
+          var numero = $("#numero").val();
+          var cidade = $("#cidade").val();
+
+          var ok = true;
+
+          if (rua == '') {
+            alert('Informe a rua');
+            ok = false;
+          }
+
+          if (numero == '') {
+            alert('Informa o numero');
+            ok = false;
+          }
+
+          if (cidade == '') {
+            alert('Informe a cidade');
+            ok = false;
+          }
+
+          if (ok) {
+
+            var endereco = numero + '+' + rua + '+' + cidade;
+
+            var apiUrl = 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?f=json&singleLine=' + endereco;
+
+            $.ajax({
+              url: apiUrl,
+              type: 'GET',
+              success: function(result) {
+
+                var json = JSON.parse(result);
+
+                console.log(json);
+
+                var location = json.candidates[0].location;
+
+                var endereco = json.candidates[0].address;
+
+                console.log(location);
+
+                var map = L.map('map').setView([location.y, location.x], 10);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+
+                var marker = L.marker([location.y, location.x]).addTo(map);
+
+                var latLngs = [ marker.getLatLng() ];
+                var markerBounds = L.latLngBounds(latLngs);
+                map.fitBounds(markerBounds);
+
+                var formGroup = $("<div class='form-group-s'>")
+                var button = $("<button id='confirmar' class='red'>Confirmar</button>")
+                button.click(function() {
+
+                  console.log('confirmar:');
+                  console.log(location);
+                  window.location.href = "../cadastrar.jsp";
+
+                });
+
+                formGroup.append(button);
+
+                formGroup.insertAfter($("#map"));
+
+                window.localStorage.setItem('local_marker', latLngs);
+                window.localStorage.setItem('endereco', endereco);
+
+              }
+            });
+
+          }
+
+        });
+
+      });
+
+    </script>
+
+  </body>
+
+</html>

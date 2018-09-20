@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+
+	<persistence-unit name="CaronasFeiPersistence"
+		transaction-type="RESOURCE_LOCAL">
+
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+		<properties>
+			<property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"></property>
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/caronasfei"></property>
+			<property name="javax.persistence.jdbc.user" value="caronasfei_app"></property>
+			<property name="javax.persistence.jdbc.password" value="v1i$sh3ma#sin9dh0va"></property>
+
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"></property>
+
+			<!-- Use the C3P0 connection pool provider -->
+			<property name="hibernate.c3p0.min_size" value="5"></property>
+			<property name="hibernate.c3p0.max_size" value="20"></property>
+			<property name="hibernate.c3p0.timeout" value="3000"></property>
+			<property name="hibernate.c3p0.max_statements" value="50"></property>
+			<property name="hibernate.c3p0.idle_test_period" value="3000"></property>
+
+			<!-- Show and print nice SQL on stdout -->
+			<property name="show_sql" value="true"></property>
+			<property name="format_sql" value="true"></property>
+
+		</properties>
+
+	</persistence-unit>
+
+</persistence>
