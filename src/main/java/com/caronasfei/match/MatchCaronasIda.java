@@ -46,7 +46,7 @@ public class MatchCaronasIda {
 
 			Endereco enderecoFei = this.enderecoServico.findEnderecoById(Endereco.ID_ENDERECO_FEI_SBC);
 
-			this.grafo.instancia(intencaoMotorista, intencaoPassageiros, enderecoFei);
+//			this.grafo.instancia(intencaoMotorista, intencaoPassageiros, enderecoFei);
 			
 			
 		}

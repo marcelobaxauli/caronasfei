@@ -7,7 +7,7 @@ import java.util.Set;
 
 import com.caronasfei.match.djikstra.model.RestricaoTempo;
 
-public class DjikstraAlgorimo implements Algoritmo {
+public class DijkstraAlgorimo implements Algoritmo {
 
 	private Grafo grafo;
 
@@ -15,7 +15,7 @@ public class DjikstraAlgorimo implements Algoritmo {
 
 	private int custoTempo[][];
 
-	public DjikstraAlgorimo(Grafo grafo, int custo[][], List<RestricaoTempo> restricaoTempoLista) {
+	public DijkstraAlgorimo(Grafo grafo, int custo[][], List<RestricaoTempo> restricaoTempoLista) {
 		this.grafo = grafo;
 		this.restricaoTempoLista = restricaoTempoLista;
 		this.custoTempo = custo;

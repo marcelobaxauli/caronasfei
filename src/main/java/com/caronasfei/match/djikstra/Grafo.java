@@ -25,7 +25,7 @@ public class Grafo {
 
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
-	// isso deveria ser configuração externa (via config .properties)
+	// TODO: isso deveria ser configuração externa (via config .properties)
 	private static final int MAXIMO_NUMERO_NOS = 3000;
 
 	private Map<Integer, No> nos;
@@ -82,58 +82,15 @@ public class Grafo {
 
 	}
 
-	public void instancia(IntencaoCarona motorista, List<IntencaoCarona> passageiros, Endereco destino) {
+	public void instancia(List<IntencaoCarona> intencoesCarona, Endereco destino) {
 
 		this.instanciaNos = new LinkedList<No>();
 
-		// primeiro nó
-		// nó motorista
-		No primeiroNo = this.nos.get(0);
-		primeiroNo.setCurrentBestScore(0);
-		primeiroNo.setCurrentTime(motorista.getHorarioPartida().getHorario().getTime());
-		if (motorista.getDirecaoCarona() == DirecaoCarona.IDA_FEI) {
-			primeiroNo.setEndereco(motorista.getEnderecoPartida());
-		} else if (motorista.getDirecaoCarona() == DirecaoCarona.VOLTA_FEI) {
-			primeiroNo.setEndereco(motorista.getEnderecoDestino());
-		}
-		primeiroNo.setTimeRestriction(RestricaoTempo.converte(motorista.getHorarioPartida().getHorario(),
-				motorista.getHorarioChegada().getHorario()));
-		
-		this.instanciaNos.add(primeiroNo);
-
-		// passageiros
-		for (int i = 0; i < passageiros.size(); i++) {
-
-			IntencaoCarona passageiro = passageiros.get(i);
-			
-			No node = this.nos.get(i);
-			node.setCurrentBestScore(Integer.MAX_VALUE);
-			node.setCurrentTime(0);
-			node.setIntencaoCarona(passageiro);
-			node.setTimeRestriction(RestricaoTempo.converte(passageiro.getHorarioPartida().getHorario(),
-					passageiro.getHorarioChegada().getHorario()));
-
-			if (passageiro.getDirecaoCarona() == DirecaoCarona.IDA_FEI) {
-				node.setEndereco(passageiro.getEnderecoPartida());
-			} else if (passageiro.getDirecaoCarona() == DirecaoCarona.VOLTA_FEI) {
-				node.setEndereco(passageiro.getEnderecoDestino());
-			}
-			
-			this.instanciaNos.add(node);
-		}
-
-		// último nó não possui vertices de saída
-		// último nó vai ser a FEI / agr no inicio
-		No ultimoNo = this.nos.get(passageiros.size() + 1);
-		ultimoNo.setCurrentBestScore(Integer.MAX_VALUE);
-		ultimoNo.setCurrentTime(0);
-		// ultimo no nao tem restricao de tempo especifico
-		ultimoNo.setTimeRestriction(RestricaoTempo.converte(null, null));
-		ultimoNo.setEndereco(destino);
-		this.instanciaNos.add(ultimoNo);
-
 		this.tamanhoAtual = this.instanciaNos.size();
 		this.capacidadeCarro = capacidadeCarro;
+
+		this.preencheNos(intencoesCarona, destino);
+		this.preencheArestas();
 
 		this.primeiroNo = this.nos.get(0);
 		this.ultimoNo = this.nos.get(this.instanciaNos.size() - 1);
@@ -198,6 +155,71 @@ public class Grafo {
 
 	public int getObjectiveValue(int numberOfPassengers, long timeCost) {
 		return this.funcaoObjetivo.getObjectiveFunctionValue(numberOfPassengers, timeCost);
+	}
+
+	private void preencheNos(List<IntencaoCarona> intencoesCarona, Endereco destino) {
+
+		// intencoes de carona - motoristas e passageiros
+		for (int i = 0; i < intencoesCarona.size(); i++) {
+
+			IntencaoCarona passageiro = intencoesCarona.get(i);
+
+			No node = this.nos.get(i);
+			node.setCurrentBestScore(Integer.MAX_VALUE);
+			node.setCurrentTime(0);
+			node.setIntencaoCarona(passageiro);
+			node.setTimeRestriction(RestricaoTempo.converte(passageiro.getHorarioPartida().getHorario(),
+					passageiro.getHorarioChegada().getHorario()));
+
+			if (passageiro.getDirecaoCarona() == DirecaoCarona.IDA_FEI) {
+				node.setEndereco(passageiro.getEnderecoPartida());
+			} else if (passageiro.getDirecaoCarona() == DirecaoCarona.VOLTA_FEI) {
+				node.setEndereco(passageiro.getEnderecoDestino());
+			}
+
+			this.instanciaNos.add(node);
+		}
+
+		// último nó não possui vertices de saída
+		// último nó vai ser a FEI / agr no inicio
+		No ultimoNo = this.nos.get(intencoesCarona.size());
+		ultimoNo.setCurrentBestScore(0);
+		ultimoNo.setCurrentTime(0);
+		// ultimo no nao tem restricao de tempo especifico
+		ultimoNo.setTimeRestriction(RestricaoTempo.converte(null, null));
+		ultimoNo.setEndereco(destino);
+		this.instanciaNos.add(ultimoNo);
+
+	}
+
+	private void preencheArestas() {
+
+		for (int i = 0; i < this.instanciaNos.size() - 1; i++) {
+
+			No noOrigem = this.instanciaNos.get(i);
+			List<Vertice> arestasSaida = noOrigem.getOutputVertexes();
+
+			for (Vertice aresta : arestasSaida) {
+
+				// TODO acho que só precisa verificar o J
+				if (aresta.getI() >= this.instanciaNos.size() || aresta.getJ() >= this.instanciaNos.size()) {
+
+					break;
+
+				}
+
+				No noDestino = aresta.getTargetNode();
+
+				Endereco enderecoOrigem = noOrigem.getEndereco();
+				Endereco enderecoDestino = noDestino.getEndereco();
+
+				// TODO pesquisa no OSRM quanto tempo demora pra ir do endereco de origem até o
+				// endereco de destino, e preenche a aresta com este tempo
+
+			}
+
+		}
+
 	}
 
 }
