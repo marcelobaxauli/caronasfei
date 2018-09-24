@@ -44,6 +44,8 @@ public class Endereco {
 		}
 
 	}
+	
+	public static final int ID_ENDERECO_FEI_SBC = 1;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

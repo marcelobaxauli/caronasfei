@@ -55,12 +55,12 @@ public class FuncaoObjetivo {
 
 	}
 
-	public int getObjectiveFunctionValue(int numberOfPassengers, int time) {
+	public int getObjectiveFunctionValue(int numberOfPassengers, long time) {
 
 		NumberPassengerTimeTuple tuple = new NumberPassengerTimeTuple(numberOfPassengers, time);
 
 		Integer objective = this.objectiveTable.get(tuple);
-		
+
 		return (objective == null) ? Integer.MAX_VALUE : objective;
 	}
 
@@ -82,14 +82,14 @@ public class FuncaoObjetivo {
 	class NumberPassengerTimeTuple {
 
 		private int numberPassagenders;
-		private int time; // in minutes
+		private long time; // in minutes
 
 		public NumberPassengerTimeTuple() {
 			this.numberPassagenders = 0;
 			this.time = 0;
 		}
 
-		public NumberPassengerTimeTuple(int numberPassagenders, int time) {
+		public NumberPassengerTimeTuple(int numberPassagenders, long time) {
 			this.numberPassagenders = numberPassagenders;
 			this.time = time;
 		}
@@ -102,11 +102,11 @@ public class FuncaoObjetivo {
 			this.numberPassagenders = numberPassagenders;
 		}
 
-		public int getTime() {
+		public long getTime() {
 			return time;
 		}
 
-		public void setTime(int time) {
+		public void setTime(long time) {
 			this.time = time;
 		}
 
@@ -116,7 +116,7 @@ public class FuncaoObjetivo {
 			int result = 1;
 			result = prime * result + getOuterType().hashCode();
 			result = prime * result + numberPassagenders;
-			result = prime * result + time;
+			result = prime * result + (int) (time ^ (time >>> 32));
 			return result;
 		}
 

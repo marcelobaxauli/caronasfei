@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.caronasfei.db.intencao.IntencaoCarona;
+import com.caronasfei.db.intencao.endereco.Endereco;
 import com.caronasfei.match.djikstra.model.RestricaoTempo;
 
 public class No {
@@ -18,9 +20,13 @@ public class No {
 	private RestricaoTempo timeRestriction;
 
 	private int currentNumberOfPassengers;
-	private int currentTime;
+	private long currentTime;
 
 	private int currentBestScore;
+
+	private IntencaoCarona intencaoCarona;
+
+	private Endereco endereco;
 
 	private Grafo graph;
 
@@ -59,6 +65,14 @@ public class No {
 		this.number = number;
 	}
 
+	public IntencaoCarona getIntencaoCarona() {
+		return intencaoCarona;
+	}
+
+	public void setIntencaoCarona(IntencaoCarona intencaoCarona) {		
+		this.intencaoCarona = intencaoCarona;
+	}
+
 	public boolean isInTimeRestriction(Date visitTime, Date maximumTime) {
 
 		if (this.number == this.graph.getCurrentSize()) {
@@ -85,11 +99,11 @@ public class No {
 	}
 
 	// span costs to forward adjacent vertices
-	public int getCurrentTime() {
+	public long getCurrentTime() {
 		return currentTime;
 	}
 
-	public void setCurrentTime(int currentTime) {
+	public void setCurrentTime(long currentTime) {
 		this.currentTime = currentTime;
 	}
 
@@ -99,6 +113,14 @@ public class No {
 
 	public void setCurrentBestScore(int currentBestScore) {
 		this.currentBestScore = currentBestScore;
+	}
+
+	public Endereco getEndereco() {
+		return endereco;
+	}
+
+	public void setEndereco(Endereco endereco) {
+		this.endereco = endereco;
 	}
 
 	public void spanCosts(Set<Integer> visitedNodes) {
@@ -114,7 +136,7 @@ public class No {
 				break;
 			}
 
-			int estimatedTimeCost = this.currentTime + outputVertex.getTimeCost();
+			long estimatedTimeCost = this.currentTime + outputVertex.getTimeCost();
 
 			int adjacentNodeScore = this.graph.getObjectiveValue(this.currentNumberOfPassengers + 1,
 					estimatedTimeCost / 1000 / 60);

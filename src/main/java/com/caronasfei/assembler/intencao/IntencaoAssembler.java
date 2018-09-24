@@ -12,6 +12,7 @@ import com.caronasfei.assembler.intencao.endereco.EnderecoAssembler;
 import com.caronasfei.assembler.intencao.horario.HorarioAssembler;
 import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
+import com.caronasfei.db.intencao.IntencaoCarona.DirecaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.IntencaoCaronaEstado;
 import com.caronasfei.db.intencao.endereco.Endereco;
 import com.caronasfei.db.intencao.horario.Horario;
@@ -59,10 +60,14 @@ public class IntencaoAssembler {
 		Endereco enderecoPartida = null;
 		Endereco enderecoDestino = null;
 
+		DirecaoCarona direcaoCarona = null;
+
 		if (Endereco.OpcaoEndereco.OUTRO.getCodigo().equals(opcaoLocalPartida)) {
 			enderecoPartida = this.enderecoAssembler.toEndereco(endereco, intencaoDTO.getOpcaoLocalPartida());
+			direcaoCarona = DirecaoCarona.IDA_FEI;
 		} else if (Endereco.OpcaoEndereco.OUTRO.getCodigo().equals(opcaoLocalDestino)) {
 			enderecoDestino = this.enderecoAssembler.toEndereco(endereco, intencaoDTO.getOpcaoLocalDestino());
+			direcaoCarona = DirecaoCarona.VOLTA_FEI;
 		}
 
 		String opcaoHorarioPartida = intencaoDTO.getOpcaoHorarioPartida();
@@ -78,6 +83,7 @@ public class IntencaoAssembler {
 		IntencaoCarona intencao = new IntencaoCarona();
 		intencao.setAcaoCarona(acaoCarona);
 		intencao.setDataCriacao(new Date());
+		intencao.setDirecaoCarona(direcaoCarona);
 		intencao.setEstado(IntencaoCaronaEstado.ATIVA);
 		intencao.setDataCancelamento(null);
 		intencao.setUsuario(usuario);

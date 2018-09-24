@@ -49,6 +49,10 @@ public class IntencaoCarona {
 	@Enumerated(EnumType.STRING)
 	private AcaoCarona acaoCarona;
 
+	@Column(name = "direcao_carona")
+	@Enumerated(EnumType.STRING)
+	private DirecaoCarona direcaoCarona;
+
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "id_local_partida")
 	private Endereco enderecoPartida;
@@ -90,6 +94,14 @@ public class IntencaoCarona {
 
 	public void setAcaoCarona(AcaoCarona acaoCarona) {
 		this.acaoCarona = acaoCarona;
+	}
+
+	public DirecaoCarona getDirecaoCarona() {
+		return direcaoCarona;
+	}
+
+	public void setDirecaoCarona(DirecaoCarona direcaoCarona) {
+		this.direcaoCarona = direcaoCarona;
 	}
 
 	public Endereco getEnderecoPartida() {
@@ -193,6 +205,41 @@ public class IntencaoCarona {
 			AcaoCarona[] values = AcaoCarona.values();
 
 			for (AcaoCarona value : values) {
+
+				if (value.getCodigo().equals(codigo)) {
+					return value;
+				}
+
+			}
+
+			return null;
+		}
+
+	}
+
+	public enum DirecaoCarona {
+
+		IDA_FEI("ida_fei"), VOLTA_FEI("volta_fei");
+
+		private String codigo;
+
+		private DirecaoCarona(String codigo) {
+			this.codigo = codigo;
+		}
+
+		public String getCodigo() {
+			return codigo;
+		}
+
+		public void setCodigo(String codigo) {
+			this.codigo = codigo;
+		}
+
+		public static DirecaoCarona getByCodigo(String codigo) {
+
+			DirecaoCarona[] values = DirecaoCarona.values();
+
+			for (DirecaoCarona value : values) {
 
 				if (value.getCodigo().equals(codigo)) {
 					return value;

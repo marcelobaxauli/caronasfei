@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
+import com.caronasfei.db.intencao.IntencaoCarona.DirecaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.IntencaoCaronaEstado;
 import com.caronasfei.db.sugestao.SugestaoTrajetoUsuario.SugestaoTrajetoUsuarioEstado;
 import com.caronasfei.db.usuario.Usuario;
@@ -81,6 +82,43 @@ public class IntencaoCaronaServico {
 
 		return resultList.get(0);
 
+	}
+	
+	@Transactional(readOnly = true)
+	public List<IntencaoCarona> findMotoristasDisponiveis(DirecaoCarona direcao) {
+		
+		// Ou seja, busca todos os motoristas que ainda não foram encaixados
+		// em nenhuma sugestão de trajeto (ou que já recusaram a ultima sugestão).
+
+		// Um usuário que cadastrou uma intenção para pegar carona
+		// pode cadastrar uma intenção pra oferecer carona? sem cancelar a
+		// primeira..? (Por tela eu consigo bloquear, agora tenho que
+		// lembrar de bloquear por API também.)
+
+		TypedQuery<IntencaoCarona> query = em.createQuery("SELECT i " 
+				+ "FROM IntencaoCarona i "
+				+ "WHERE i.acaoCarona = :intencao_acao " 
+				+ "AND i.estado = :estado " 			
+				+ "AND i.direcao_carona = :direcao "
+				+ "AND ( " 
+				+ "		i NOT IN ( "
+				+ "					SELECT stu.intencaoCarona " 
+				+ "						FROM SugestaoTrajeto s "
+				+ "						INNER JOIN SugestaoTrajetoUsuario stu "
+				+ "						ON s.motorista = stu.id "
+				+ "						WHERE stu.intencaoCarona = i.id "
+				+ "						AND stu.estado != :sugestao_estado " 
+				+ "		) " 
+				+ "	) "
+				+ ") ORDER BY i.dataCriacao ASC ", IntencaoCarona.class);
+
+		query.setParameter("intencao_acao", AcaoCarona.OFERECER_CARONA);
+		query.setParameter("estado", IntencaoCaronaEstado.ATIVA);
+		query.setParameter("sugestao_estado", SugestaoTrajetoUsuarioEstado.REJEITADO);
+		query.setParameter("direcao_carona", direcao);
+		
+		return query.getResultList();		
+		
 	}
 
 	@Transactional(readOnly = true)
@@ -166,4 +204,54 @@ public class IntencaoCaronaServico {
 
 	}
 
+	@Transactional(readOnly = true)
+	public List<IntencaoCarona> findAllPassageirosDisponiveis(DirecaoCarona direcao) {
+
+		/*
+		 * 
+		 * SELECT i.id_usuario FROM intencao_carona i WHERE i.acao_carona =
+		 * 'PEDIR_CARONA' AND (
+		 * 
+		 * i.id_usuario NOT IN (
+		 * 
+		 * SELECT i.id_usuario FROM intencao_carona i INNER JOIN
+		 * sugestao_trajeto_usuario stu ON i.id_usuario = stu.id_usuario INNER JOIN
+		 * sugestao_trajeto_passageiros stp ON stp.id_sugestao_trajeto_passageiro =
+		 * stu.id_sugestao_trajeto_usuario )
+		 * 
+		 * ) OR (
+		 * 
+		 * id.id_usuario IN (
+		 * 
+		 * SELECT i.id_usuario FROM intencao_carona i INNER JOIN
+		 * sugestao_trajeto_usuario stu ON i.id_usuario = stu.id_usuario INNER JOIN
+		 * sugestao_trajeto_passageiros stp ON stp.id_sugestao_trajeto_passageiro =
+		 * stu.id_sugestao_trajeto_usuario WHERE stu.estado = 'REJEITADO';
+		 * 
+		 * )
+		 * 
+		 * )
+		 * 
+		 */
+
+		Query query = em.createNativeQuery("SELECT * " 
+				+ "FROM intencao_carona i "
+				+ "WHERE i.acao_carona = 'PEDIR_CARONA' " 
+				+ "AND i.estado = 'ATIVA' " 	
+				+ "AND i.direcao_carona = '" + direcao.getCodigo() + "' " 	
+				+ "AND ( " 
+				+ "		i.id_intencao_carona NOT IN ( "
+				+ "					SELECT i.id_intencao_carona " 
+				+ "						FROM intencao_carona i  "
+				+ "						INNER JOIN sugestao_trajeto_passageiro stp "
+				+ "						ON i.id_intencao_carona = stp.id_intencao_carona "
+				+ "						WHERE stp.estado != 'REJEITADO' "
+				+ "		) " 
+				+ ") ORDER BY i.data_criacao ASC ", IntencaoCarona.class);
+
+		return query.getResultList();
+
+	}
+
+	
 }

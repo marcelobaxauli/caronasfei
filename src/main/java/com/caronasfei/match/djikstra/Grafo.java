@@ -1,7 +1,6 @@
 package com.caronasfei.match.djikstra;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,16 +8,29 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.caronasfei.db.intencao.IntencaoCarona;
+import com.caronasfei.db.intencao.IntencaoCarona.DirecaoCarona;
+import com.caronasfei.db.intencao.endereco.Endereco;
 import com.caronasfei.match.djikstra.model.FuncaoObjetivo;
 import com.caronasfei.match.djikstra.model.RestricaoTempo;
 
 public class Grafo {
 
+	private static final Logger LOGGER = LogManager.getLogger(Grafo.class);
+
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+
+	// isso deveria ser configuração externa (via config .properties)
+	private static final int MAXIMO_NUMERO_NOS = 3000;
 
 	private Map<Integer, No> nos;
 
-	private List<No> minimoCustoNosListaReduzida;
+	private List<No> instanciaNos;
 
 	private No primeiroNo;
 	private No ultimoNo;
@@ -32,21 +44,22 @@ public class Grafo {
 
 	private FuncaoObjetivo funcaoObjetivo;
 
-	public Grafo(int maxNos) {
+	@PostConstruct
+	public void init() {
 
-		this.nos = new HashMap<Integer, No>(maxNos, 1);
+		this.nos = new HashMap<Integer, No>(MAXIMO_NUMERO_NOS, 1);
 
 		this.funcaoObjetivo = new FuncaoObjetivo(3, 4 * 60, 30);
 
-		for (int i = 0; i < maxNos; i++) {
-			No novoNo = new No(i, this);
+		for (int i = 0; i < MAXIMO_NUMERO_NOS; i++) {
 
+			No novoNo = new No(i, this);
 			this.nos.put(i, novoNo);
 
 		}
 
-		for (int i = maxNos - 1; i >= 0; i--) {
-			for (int j = 0; j < maxNos - 1; j++) {
+		for (int i = MAXIMO_NUMERO_NOS - 1; i >= 0; i--) {
+			for (int j = 0; j < MAXIMO_NUMERO_NOS - 1; j++) {
 
 				if (i != j) {
 					No noOrigem = nos.get(i);
@@ -63,54 +76,67 @@ public class Grafo {
 			}
 
 			if (i % 1000 == 0) {
-				System.out.println(sdf.format(new Date()) + ": i = " + i + 1000);
+				LOGGER.info((MAXIMO_NUMERO_NOS - i) + " nós instanciados...");
 			}
 		}
 
 	}
 
-	public void configura(int custo[][], int n, int capacidadeCarro, List<RestricaoTempo> restricoesTempoLista) {
+	public void instancia(IntencaoCarona motorista, List<IntencaoCarona> passageiros, Endereco destino) {
 
-		this.minimoCustoNosListaReduzida = new LinkedList<No>();
+		this.instanciaNos = new LinkedList<No>();
 
-		for (int i = 0; i < n; i++) {
-			No node = this.nos.get(i);
-
-			if (i == n - 1) {
-				node.setCurrentBestScore(0);
-			} else {
-				node.setCurrentBestScore(Integer.MAX_VALUE);
-			}
-			node.setTimeRestriction(restricoesTempoLista.get(i));
-			node.setCurrentTime(0);
-			this.minimoCustoNosListaReduzida.add(node);
+		// primeiro nó
+		// nó motorista
+		No primeiroNo = this.nos.get(0);
+		primeiroNo.setCurrentBestScore(0);
+		primeiroNo.setCurrentTime(motorista.getHorarioPartida().getHorario().getTime());
+		if (motorista.getDirecaoCarona() == DirecaoCarona.IDA_FEI) {
+			primeiroNo.setEndereco(motorista.getEnderecoPartida());
+		} else if (motorista.getDirecaoCarona() == DirecaoCarona.VOLTA_FEI) {
+			primeiroNo.setEndereco(motorista.getEnderecoDestino());
 		}
+		primeiroNo.setTimeRestriction(RestricaoTempo.converte(motorista.getHorarioPartida().getHorario(),
+				motorista.getHorarioChegada().getHorario()));
+		
+		this.instanciaNos.add(primeiroNo);
 
-		this.tamanhoAtual = n;
-		this.capacidadeCarro = capacidadeCarro;
+		// passageiros
+		for (int i = 0; i < passageiros.size(); i++) {
 
-		this.primeiroNo = this.nos.get(0);
-		this.ultimoNo = this.nos.get(n - 1);
+			IntencaoCarona passageiro = passageiros.get(i);
+			
+			No node = this.nos.get(i);
+			node.setCurrentBestScore(Integer.MAX_VALUE);
+			node.setCurrentTime(0);
+			node.setIntencaoCarona(passageiro);
+			node.setTimeRestriction(RestricaoTempo.converte(passageiro.getHorarioPartida().getHorario(),
+					passageiro.getHorarioChegada().getHorario()));
 
-		for (int i = 0; i < n; i++) {
-
-			No sourceNode = this.nos.get(i);
-
-			for (Vertice vertex : sourceNode.getOutputVertexes()) {
-
-				if (vertex.getI() >= n || vertex.getJ() >= n) {
-					break;
-				}
-
-				vertex.setTimeCost(custo[vertex.getI()][vertex.getJ()]);
-
+			if (passageiro.getDirecaoCarona() == DirecaoCarona.IDA_FEI) {
+				node.setEndereco(passageiro.getEnderecoPartida());
+			} else if (passageiro.getDirecaoCarona() == DirecaoCarona.VOLTA_FEI) {
+				node.setEndereco(passageiro.getEnderecoDestino());
 			}
-
+			
+			this.instanciaNos.add(node);
 		}
 
 		// último nó não possui vertices de saída
-		No sourceNode = this.nos.get(n - 1);
-		sourceNode.setTimeRestriction(restricoesTempoLista.get(n - 1));
+		// último nó vai ser a FEI / agr no inicio
+		No ultimoNo = this.nos.get(passageiros.size() + 1);
+		ultimoNo.setCurrentBestScore(Integer.MAX_VALUE);
+		ultimoNo.setCurrentTime(0);
+		// ultimo no nao tem restricao de tempo especifico
+		ultimoNo.setTimeRestriction(RestricaoTempo.converte(null, null));
+		ultimoNo.setEndereco(destino);
+		this.instanciaNos.add(ultimoNo);
+
+		this.tamanhoAtual = this.instanciaNos.size();
+		this.capacidadeCarro = capacidadeCarro;
+
+		this.primeiroNo = this.nos.get(0);
+		this.ultimoNo = this.nos.get(this.instanciaNos.size() - 1);
 
 		this.tempoDePartida = new Date(this.nos.get(0).getTimeRestriction().getDepartTime());
 		this.tempodeChegada = new Date(this.nos.get(0).getTimeRestriction().getArriveTime());
@@ -119,7 +145,7 @@ public class Grafo {
 
 	public No getNoMinimoCusto() {
 
-		this.minimoCustoNosListaReduzida.sort(new Comparator<No>() {
+		this.instanciaNos.sort(new Comparator<No>() {
 
 			@Override
 			public int compare(No o1, No o2) {
@@ -127,7 +153,7 @@ public class Grafo {
 			}
 
 		});
-		return this.minimoCustoNosListaReduzida.remove(0);
+		return this.instanciaNos.remove(0);
 	}
 
 	public No getFirstNode() {
@@ -170,7 +196,7 @@ public class Grafo {
 		this.capacidadeCarro = carCapacity;
 	}
 
-	public int getObjectiveValue(int numberOfPassengers, int timeCost) {
+	public int getObjectiveValue(int numberOfPassengers, long timeCost) {
 		return this.funcaoObjetivo.getObjectiveFunctionValue(numberOfPassengers, timeCost);
 	}
 

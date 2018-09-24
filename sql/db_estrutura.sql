@@ -202,6 +202,8 @@ CREATE TABLE endereco (
 	
 );
 
+INSERT INTO endereco VALUES (1, 'fei', 'Av. Humberto de Alencar Castelo Branco', 3972, 'Assunção', 'São Bernardo do Campo', '09850-901', 'SP', -23.72633935, -46.580927320178915);
+
 
 CREATE TABLE horario_tipo (
 	
@@ -245,6 +247,8 @@ CREATE TABLE intencao_carona (
 	data_cancelamento DATETIME,
 	
 	acao_carona VARCHAR(60) NOT NULL,
+	
+	direcao_carona VARCHAR(60) NOT NULL,
 	
 	estado VARCHAR(30) NOT NULL,
 	
