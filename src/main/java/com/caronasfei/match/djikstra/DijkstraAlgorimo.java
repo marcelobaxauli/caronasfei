@@ -1,91 +1,80 @@
 package com.caronasfei.match.djikstra;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import com.caronasfei.match.djikstra.model.RestricaoTempo;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-public class DijkstraAlgorimo implements Algoritmo {
+import com.caronasfei.db.intencao.IntencaoCarona;
+import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
+import com.caronasfei.db.intencao.endereco.Endereco;
 
+@Component
+@Scope("singleton")
+public class DijkstraAlgorimo /* implements Algoritmo */ {
+
+	private static final Logger LOGGER = LogManager.getLogger(DijkstraAlgorimo.class);
+
+	// TODO: isso deveria ser configuração externa (via config .properties)
+	private static final int MAXIMO_NUMERO_NOS = 3000;
+
+	@Autowired
 	private Grafo grafo;
+	
+	private Map<Integer, No> nosMotoristasVisitados;
 
-	private List<RestricaoTempo> restricaoTempoLista;
+	public void rodar(List<IntencaoCarona> intencoesCarona, Endereco destino) {
 
-	private int custoTempo[][];
+		Date inicio = new Date();
 
-	public DijkstraAlgorimo(Grafo grafo, int custo[][], List<RestricaoTempo> restricaoTempoLista) {
-		this.grafo = grafo;
-		this.restricaoTempoLista = restricaoTempoLista;
-		this.custoTempo = custo;
-	}
+		Map<Integer, No> nosVisitados = new HashMap<Integer, No>();
+		this.nosMotoristasVisitados = new HashMap<Integer, No>();
 
-	@Override
-	public void rodar() {
+		this.grafo.instancia(intencoesCarona, destino);
+		Set<Integer> nosMotoristas = this.grafo.getMotoristaNodesNumbers();
 
-		Date tempoInicio = new Date();
-		System.out.println(tempoInicio + ": inicio...");
-
-		Set<Integer> nosVisitados = new HashSet<Integer>();
-
-		No ultimoNo = this.grafo.getLastNode();
-		No primeiroNo = this.grafo.getFirstNode();
-
-		No proximoNo = null;
+		No no = null;
 		do {
 
-			proximoNo = this.grafo.getNoMinimoCusto();
+			this.grafo.init(intencoesCarona.size() + 1);
+			no = this.grafo.getNoMinimoCusto();
 
-			if (proximoNo != null) {
-				proximoNo.spanCosts(nosVisitados);
+			if (no != null) {
+				no.spanCosts(nosVisitados);
+
+				nosVisitados.put(no.getNumber(), no);
+
+				if (no.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA) {
+					nosMotoristas.add(no.getNumber());
+				}
 			}
 
-			nosVisitados.add(proximoNo.getNumber());
+		} while (no != null && no.getCurrentBestScore() != Integer.MAX_VALUE
+				&& nosMotoristasVisitados.size() != nosMotoristas.size());
 
-		} while (nosVisitados.size() != this.grafo.getCurrentSize());
+		Date fim = new Date();
 
-		Date dataFim = new Date();
-		System.out.println(tempoInicio + ": termino.");
-
-		System.out.println("tempo de processamento: " + ((dataFim.getTime() - tempoInicio.getTime())) + " milisegundos");
-
-		this.printSequence(primeiroNo);
-		System.out.println("\nScore: " + primeiroNo.getCurrentBestScore());
-		System.out.println("\nTempo: " + primeiroNo.getCurrentTime());
-		System.out.println("Custo da travessia direta: " + this.custoTempo[0][this.custoTempo.length - 1] / 60 / 1000);
-
-		System.out.println("Pool de opções:");
-		this.exibePossiveisPassageiros();
-	}
-
-	public void printSequence(No node) {
-
-		if (node != null) {
-			this.printSequence(node.getProximoNo());
-			RestricaoTempo timeRestriction = this.restricaoTempoLista.get(node.getNumber());
-			Date depart = new Date(timeRestriction.getDepartTime());
-			Date arrive = new Date(timeRestriction.getArriveTime());
-			System.out.print(node.getNumber() + "(" + depart + ", " + arrive + ")" + "\t");
-		}
+		LOGGER.info("tempo de processamento: " + ((fim.getTime() - inicio.getTime())) + " milisegundos");
 
 	}
-
-	public void exibePossiveisPassageiros() {
-
-		RestricaoTempo restricaoTempoOrigem = this.restricaoTempoLista.get(0);
-
-		for (int j = 1; j < this.restricaoTempoLista.size() - 1; j++) {
-
-			RestricaoTempo restricaoTempoAtual = this.restricaoTempoLista.get(j);
-
-			if (restricaoTempoAtual.getDepartTime() <= restricaoTempoOrigem.getDepartTime()
-					&& restricaoTempoAtual.getArriveTime() >= restricaoTempoOrigem.getArriveTime()
-					&& restricaoTempoOrigem.getArriveTime() > restricaoTempoAtual.getDepartTime()) {
-				// System.out.println(j + ": " + currentTimeRestriction + " dist(" +
-				// this.cost[0][j] / 60 / 1000 + ")");
-			}
-		}
+	
+	public Set<No> getNosMotoristasVisitados() {
+		
+		Collection<No> values = this.nosMotoristasVisitados.values();
+		
+		Set<No> nos = new HashSet<No>();
+		nos.addAll(values);
+		
+		return nos;
 	}
 
 }

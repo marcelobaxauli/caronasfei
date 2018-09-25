@@ -4,7 +4,7 @@ public class Vertice {
 
 	private No targetNode;
 
-	private int timeCost;
+	private double timeCost;
 
 	private int i;
 	private int j;
@@ -17,11 +17,11 @@ public class Vertice {
 		this.targetNode = targetNode;
 	}
 
-	public int getTimeCost() {
+	public double getTimeCost() {
 		return timeCost;
 	}
 
-	public void setTimeCost(int cost) {
+	public void setTimeCost(double cost) {
 		this.timeCost = cost;
 	}
 

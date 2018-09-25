@@ -3,7 +3,7 @@ package com.caronasfei.match.djikstra;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.intencao.endereco.Endereco;
@@ -69,7 +69,7 @@ public class No {
 		return intencaoCarona;
 	}
 
-	public void setIntencaoCarona(IntencaoCarona intencaoCarona) {		
+	public void setIntencaoCarona(IntencaoCarona intencaoCarona) {
 		this.intencaoCarona = intencaoCarona;
 	}
 
@@ -123,7 +123,7 @@ public class No {
 		this.endereco = endereco;
 	}
 
-	public void spanCosts(Set<Integer> visitedNodes) {
+	public void spanCosts(Map<Integer, No> visitedNodes) {
 
 		if (this.currentNumberOfPassengers >= this.graph.getCarCapacity()) {
 			return;
@@ -136,17 +136,19 @@ public class No {
 				break;
 			}
 
-			long estimatedTimeCost = this.currentTime + outputVertex.getTimeCost();
+			long estimatedTimeCost = (long) (this.currentTime + outputVertex.getTimeCost());
 
 			int adjacentNodeScore = this.graph.getObjectiveValue(this.currentNumberOfPassengers + 1,
 					estimatedTimeCost / 1000 / 60);
 
-			if (!visitedNodes.contains(outputVertex.getTargetNode().getNumber())
+			// TODO preciso verificar o car capacity da intenção carona motorista do nó adjacente.
+			// Se for passageiro nem precisa verificar.
+			
+			if (visitedNodes.get(outputVertex.getTargetNode().getNumber()) != null
 					&& outputVertex.getTargetNode().isInTimeRestriction(
 							new Date(this.graph.getRideDepart().getTime() + estimatedTimeCost),
 							this.graph.getRideArriveTime())
-					&& (outputVertex.getTargetNode().getNumber() == this.graph.getCurrentSize() - 1
-							|| (this.currentNumberOfPassengers + 1 <= this.graph.getCarCapacity()))
+					&& (this.currentNumberOfPassengers + 1 <= this.graph.getCarCapacity())
 					&& adjacentNodeScore < outputVertex.getTargetNode().getCurrentBestScore()) {
 
 				outputVertex.getTargetNode().setCurrentBestScore(adjacentNodeScore);
