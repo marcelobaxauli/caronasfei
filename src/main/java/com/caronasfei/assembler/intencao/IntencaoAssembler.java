@@ -40,6 +40,13 @@ public class IntencaoAssembler {
 			throw new ValidacaoException("Acao carona inválida.");
 		}
 
+		Integer numeroAssentos = intencaoDTO.getNumeroAssentos();
+
+		if (acaoCarona == AcaoCarona.OFERECER_CARONA && numeroAssentos == null) {
+			throw new ValidacaoException(
+					"Intencao de pedir carona mas o numero de assentos do carro nao foi informado");
+		}
+
 		String opcaoLocalPartida = intencaoDTO.getOpcaoLocalPartida();
 		String opcaoLocalDestino = intencaoDTO.getOpcaoLocalDestino();
 
@@ -85,6 +92,9 @@ public class IntencaoAssembler {
 		intencao.setDataCriacao(new Date());
 		intencao.setDirecaoCarona(direcaoCarona);
 		intencao.setEstado(IntencaoCaronaEstado.ATIVA);
+		if (acaoCarona == AcaoCarona.PEDIR_CARONA) {
+			intencao.setNumeroAssentos(numeroAssentos);
+		}
 		intencao.setDataCancelamento(null);
 		intencao.setUsuario(usuario);
 		intencao.setHorarioPartida(horarioPartida);
@@ -100,7 +110,7 @@ public class IntencaoAssembler {
 	public IntencaoCaronaDTO toIntencaoCaronaDTO(IntencaoCarona intencaoCarona) {
 
 		String acaoCaronaCodigo = intencaoCarona.getAcaoCarona().getCodigo();
-
+		
 		Endereco enderecoPartida = intencaoCarona.getEnderecoPartida();
 		Endereco enderecoDestino = intencaoCarona.getEnderecoDestino();
 
@@ -145,6 +155,9 @@ public class IntencaoAssembler {
 		intencaoDTO.setAcao(acaoCaronaCodigo);
 		intencaoDTO.setOpcaoHorarioPartida(opcHorarioPartida);
 		intencaoDTO.setOpcaoHorarioChegada(opcHorarioChegada);
+		if (intencaoCarona.getAcaoCarona() == AcaoCarona.OFERECER_CARONA) {
+			intencaoDTO.setNumeroAssentos(intencaoCarona.getNumeroAssentos());
+		}
 		intencaoDTO.setHorarioPartida(horarioPartidaDescricao);
 		intencaoDTO.setHorarioChegada(horarioChegadaDescricao);
 		intencaoDTO.setOpcaoLocalPartida(opcEnderecoPartida);

@@ -252,6 +252,8 @@ CREATE TABLE intencao_carona (
 	
 	estado VARCHAR(30) NOT NULL,
 	
+	numero_assentos INTEGER NOT NULL, /* somente para motorista */
+	
 	id_local_partida INTEGER NOT NULL,
 	
 	id_local_destino INTEGER NOT NULL,
@@ -269,6 +271,17 @@ CREATE TABLE intencao_carona (
 	FOREIGN KEY (id_horario_partida) REFERENCES horario (id_horario),
 	
 	FOREIGN KEY (id_horario_chegada) REFERENCES horario (id_horario)
+
+);
+
+CREATE TABLE intencao_carona_motorista (
+
+	id_intencao_carona_motorista INTEGER PRIMARY KEY AUTO_INCREMENT,
+	
+	id_intencao_carona INTEGER NOT NULL,
+	
+	
+	FOREIGN KEY (id_intencao_carona) REFERENCES intencao_carona (id_intencao_carona)
 
 );
 

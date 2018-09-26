@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.caronasfei.db.intencao.IntencaoCarona;
+import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
 import com.caronasfei.db.intencao.endereco.Endereco;
 import com.caronasfei.match.djikstra.model.RestricaoTempo;
 
@@ -19,7 +20,7 @@ public class No {
 
 	private RestricaoTempo timeRestriction;
 
-	private int currentNumberOfPassengers;
+	private int numeroPassageirosAtual;
 	private long currentTime;
 
 	private int currentBestScore;
@@ -91,11 +92,11 @@ public class No {
 	}
 
 	public int getCurrentNumberOfPassengers() {
-		return currentNumberOfPassengers;
+		return numeroPassageirosAtual;
 	}
 
 	public void setCurrentNumberOfPassengers(int currentNumberOfPassengers) {
-		this.currentNumberOfPassengers = currentNumberOfPassengers;
+		this.numeroPassageirosAtual = currentNumberOfPassengers;
 	}
 
 	// span costs to forward adjacent vertices
@@ -125,7 +126,8 @@ public class No {
 
 	public void spanCosts(Map<Integer, No> visitedNodes) {
 
-		if (this.currentNumberOfPassengers >= this.graph.getCarCapacity()) {
+		if (this.intencaoCarona.getAcaoCarona() == AcaoCarona.OFERECER_CARONA
+				&& this.numeroPassageirosAtual >= this.intencaoCarona.getNumeroAssentos()) {
 			return;
 		}
 
@@ -138,23 +140,27 @@ public class No {
 
 			long estimatedTimeCost = (long) (this.currentTime + outputVertex.getTimeCost());
 
-			int adjacentNodeScore = this.graph.getObjectiveValue(this.currentNumberOfPassengers + 1,
+			int adjacentNodeScore = this.graph.getObjectiveValue(this.numeroPassageirosAtual + 1,
 					estimatedTimeCost / 1000 / 60);
 
-			// TODO preciso verificar o car capacity da intenção carona motorista do nó adjacente.
+			No noDestino = outputVertex.getTargetNode();
+
+			// TODO preciso verificar o car capacity da intenção carona motorista do nó
+			// adjacente.
 			// Se for passageiro nem precisa verificar.
-			
-			if (visitedNodes.get(outputVertex.getTargetNode().getNumber()) != null
+
+			if (visitedNodes.get(noDestino.getNumber()) != null
 					&& outputVertex.getTargetNode().isInTimeRestriction(
 							new Date(this.graph.getRideDepart().getTime() + estimatedTimeCost),
 							this.graph.getRideArriveTime())
-					&& (this.currentNumberOfPassengers + 1 <= this.graph.getCarCapacity())
-					&& adjacentNodeScore < outputVertex.getTargetNode().getCurrentBestScore()) {
+					&& (noDestino.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA
+							&& this.numeroPassageirosAtual + 1 <= noDestino.getIntencaoCarona().getNumeroAssentos())
+					&& adjacentNodeScore < noDestino.getCurrentBestScore()) {
 
-				outputVertex.getTargetNode().setCurrentBestScore(adjacentNodeScore);
-				outputVertex.getTargetNode().setNextNode(this);
-				outputVertex.getTargetNode().setCurrentTime(estimatedTimeCost);
-				outputVertex.getTargetNode().setCurrentNumberOfPassengers(this.currentNumberOfPassengers + 1);
+				noDestino.setCurrentBestScore(adjacentNodeScore);
+				noDestino.setNextNode(this);
+				noDestino.setCurrentTime(estimatedTimeCost);
+				noDestino.setCurrentNumberOfPassengers(this.numeroPassageirosAtual + 1);
 			}
 
 		}

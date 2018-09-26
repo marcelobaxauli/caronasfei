@@ -53,6 +53,9 @@ public class IntencaoCarona {
 	@Enumerated(EnumType.STRING)
 	private DirecaoCarona direcaoCarona;
 
+	@Column(name = "numero_assentos")
+	private Integer numeroAssentos;
+
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "id_local_partida")
 	private Endereco enderecoPartida;
@@ -158,6 +161,14 @@ public class IntencaoCarona {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public Integer getNumeroAssentos() {
+		return numeroAssentos;
+	}
+
+	public void setNumeroAssentos(Integer numeroAssentos) {
+		this.numeroAssentos = numeroAssentos;
 	}
 
 	@Override

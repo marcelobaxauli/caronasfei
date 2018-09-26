@@ -17,6 +17,9 @@ public class IntencaoCaronaDTO {
 	@JsonProperty("local")
 	private EnderecoDTO endereco;
 
+	@JsonProperty("numero_assentos")
+	private Integer numeroAssentos;
+
 	@JsonProperty("opc_horario_partida")
 	private String opcaoHorarioPartida;
 
@@ -91,6 +94,14 @@ public class IntencaoCaronaDTO {
 
 	public void setHorarioChegada(String horarioChegada) {
 		this.horarioChegada = horarioChegada;
+	}
+
+	public Integer getNumeroAssentos() {
+		return numeroAssentos;
+	}
+
+	public void setNumeroAssentos(Integer numeroAssentos) {
+		this.numeroAssentos = numeroAssentos;
 	}
 
 }
