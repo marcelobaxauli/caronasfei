@@ -13,7 +13,7 @@ import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.intencao.endereco.Endereco;
 import com.caronasfei.db.sugestao.SugestaoTrajeto;
 import com.caronasfei.db.sugestao.SugestaoTrajetoPassageiro;
-import com.caronasfei.db.sugestao.SugestaoTrajetoUsuario;
+import com.caronasfei.db.sugestao.SugestaoTrajetoMotorista;
 import com.caronasfei.db.usuario.Usuario;
 import com.caronasfei.dto.consultasugestao.MotoristaSaidaDTO;
 import com.caronasfei.dto.consultasugestao.PassageiroSaidaDTO;
@@ -29,7 +29,7 @@ public class SugestaoTrajetoAssembler {
 
 	public SugestaoTrajetoDTO toDTO(SugestaoTrajeto sugestaoTrajeto) {
 
-		SugestaoTrajetoUsuario sugestaoTrajetoMotorista = sugestaoTrajeto.getMotorista();
+		SugestaoTrajetoMotorista sugestaoTrajetoMotorista = sugestaoTrajeto.getMotorista();
 
 		MotoristaSaidaDTO motoristaSaidaDTO = this.toMotoristaSaidaDTO(sugestaoTrajetoMotorista);
 
@@ -45,7 +45,7 @@ public class SugestaoTrajetoAssembler {
 
 	}
 
-	public MotoristaSaidaDTO toMotoristaSaidaDTO(SugestaoTrajetoUsuario sugestaoTrajetoMotorista) {
+	public MotoristaSaidaDTO toMotoristaSaidaDTO(SugestaoTrajetoMotorista sugestaoTrajetoMotorista) {
 		IntencaoCarona intencaoCaronaMotorista = sugestaoTrajetoMotorista.getIntencaoCarona();
 		Usuario usuarioMotorista = intencaoCaronaMotorista.getUsuario();
 

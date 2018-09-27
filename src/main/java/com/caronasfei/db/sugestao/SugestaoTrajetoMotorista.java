@@ -15,13 +15,13 @@ import javax.persistence.Table;
 import com.caronasfei.db.intencao.IntencaoCarona;
 
 @Entity
-@Table(name = "sugestao_trajeto_usuario")
-public class SugestaoTrajetoUsuario {
+@Table(name = "sugestao_trajeto_motorista")
+public class SugestaoTrajetoMotorista {
 
 	// Só pode mudar o estado da sugestao_trajeto
 	// para CONFIRMADO quando o motorista
 	// confirmar pelo menos um passageiro.
-	public enum SugestaoTrajetoUsuarioEstado {
+	public enum SugestaoTrajetoMotoristaEstado {
 		CONFIRMADO, NAO_CONFIRMADO, REJEITADO
 	}
 
@@ -36,7 +36,7 @@ public class SugestaoTrajetoUsuario {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "estado")
-	private SugestaoTrajetoUsuarioEstado estado;
+	private SugestaoTrajetoMotoristaEstado estado;
 
 	public IntencaoCarona getIntencaoCarona() {
 		return intencaoCarona;
@@ -46,11 +46,11 @@ public class SugestaoTrajetoUsuario {
 		this.intencaoCarona = intencaoCarona;
 	}
 
-	public SugestaoTrajetoUsuarioEstado getEstado() {
+	public SugestaoTrajetoMotoristaEstado getEstado() {
 		return estado;
 	}
 
-	public void setEstado(SugestaoTrajetoUsuarioEstado estado) {
+	public void setEstado(SugestaoTrajetoMotoristaEstado estado) {
 		this.estado = estado;
 	}
 
@@ -58,5 +58,4 @@ public class SugestaoTrajetoUsuario {
 		return id;
 	}
 
-	
 }

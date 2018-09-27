@@ -1,6 +1,6 @@
 package com.caronasfei.db.sugestao;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -13,9 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderColumn;
 import javax.persistence.Table;
-
-import com.caronasfei.db.sugestao.SugestaoTrajetoPassageiro.SugestaoTrajetoPassageiroEstado;
 
 @Entity
 @Table(name = "sugestao_trajeto")
@@ -30,29 +29,37 @@ public class SugestaoTrajeto {
 	// SugestaoTrajetoMotorista...
 	@OneToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "id_sugestao_trajeto_motorista")
-	private SugestaoTrajetoUsuario motorista;
+	private SugestaoTrajetoMotorista motorista;
 
+	// salva a ordem, pq é a ordem que o motorista deve pegar cada passageiro.
+	// fundamental manter a ordem aqui
+	@OrderColumn
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sugestaoTrajeto", cascade = { CascadeType.PERSIST })
 	private List<SugestaoTrajetoPassageiro> passageiros;
 
+	// indica se a sugestao foi visualizada
+	@Column(name = "visualizada")
+	private Boolean visualizada;
+
+	// score desta sugestão de carona.
+	// quando a sugestão de carona for visualizada por alguém não poderá mudar..
+	@Column(name = "score")
+	private Integer score;
+
 	public SugestaoTrajeto() {
-		this.passageiros = new ArrayList<SugestaoTrajetoPassageiro>();
+		this.passageiros = new LinkedList<SugestaoTrajetoPassageiro>();
 	}
 
-	public SugestaoTrajetoUsuario getMotorista() {
+	public SugestaoTrajetoMotorista getMotorista() {
 		return motorista;
 	}
 
-	public void setMotorista(SugestaoTrajetoUsuario motorista) {
+	public void setMotorista(SugestaoTrajetoMotorista motorista) {
 		this.motorista = motorista;
 	}
 
 	public List<SugestaoTrajetoPassageiro> getPassageiros() {
 		return passageiros;
-	}
-	
-	public void setPassageiros(List<SugestaoTrajetoPassageiro> passageiros) {
-		this.passageiros = passageiros;
 	}
 
 	public void addPassageiro(SugestaoTrajetoPassageiro passageiro) {
@@ -65,6 +72,22 @@ public class SugestaoTrajeto {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public Boolean isVisualizada() {
+		return visualizada;
+	}
+
+	public void setVisualizada(Boolean visualizada) {
+		this.visualizada = visualizada;
+	}
+
+	public Integer getScore() {
+		return score;
+	}
+
+	public void setScore(Integer score) {
+		this.score = score;
 	}
 
 }

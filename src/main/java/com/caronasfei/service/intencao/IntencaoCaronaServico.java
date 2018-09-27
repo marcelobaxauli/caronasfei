@@ -15,7 +15,7 @@ import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.DirecaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.IntencaoCaronaEstado;
-import com.caronasfei.db.sugestao.SugestaoTrajetoUsuario.SugestaoTrajetoUsuarioEstado;
+import com.caronasfei.db.sugestao.SugestaoTrajetoMotorista.SugestaoTrajetoMotoristaEstado;
 import com.caronasfei.db.usuario.Usuario;
 
 @Service
@@ -114,7 +114,7 @@ public class IntencaoCaronaServico {
 
 		query.setParameter("intencao_acao", AcaoCarona.OFERECER_CARONA);
 		query.setParameter("estado", IntencaoCaronaEstado.ATIVA);
-		query.setParameter("sugestao_estado", SugestaoTrajetoUsuarioEstado.REJEITADO);
+		query.setParameter("sugestao_estado", SugestaoTrajetoMotoristaEstado.REJEITADO);
 		query.setParameter("direcao_carona", direcao);
 		
 		return query.getResultList();		
@@ -150,7 +150,7 @@ public class IntencaoCaronaServico {
 
 		query.setParameter("intencao_acao", AcaoCarona.OFERECER_CARONA);
 		query.setParameter("estado", IntencaoCaronaEstado.ATIVA);
-		query.setParameter("sugestao_estado", SugestaoTrajetoUsuarioEstado.REJEITADO);
+		query.setParameter("sugestao_estado", SugestaoTrajetoMotoristaEstado.REJEITADO);
 
 		return query.getResultList();
 

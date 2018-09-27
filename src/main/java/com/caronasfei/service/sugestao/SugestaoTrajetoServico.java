@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
 import com.caronasfei.db.sugestao.SugestaoTrajeto;
+import com.caronasfei.db.sugestao.SugestaoTrajetoMotorista;
 import com.caronasfei.db.sugestao.SugestaoTrajetoPassageiro;
 import com.caronasfei.db.sugestao.SugestaoTrajetoPassageiro.SugestaoTrajetoPassageiroEstado;
-import com.caronasfei.db.sugestao.SugestaoTrajetoUsuario;
 import com.caronasfei.db.usuario.Usuario;
 import com.caronasfei.service.exception.DomainSecurityException;
 import com.caronasfei.service.intencao.IntencaoCaronaServico;
@@ -54,15 +54,15 @@ public class SugestaoTrajetoServico {
 	}
 	
 	@Transactional(readOnly = true)
-	public SugestaoTrajetoUsuario findMotoristaById(int motoristaId) {
-		TypedQuery<SugestaoTrajetoUsuario> query = this.em.createQuery("SELECT stu FROM SugestaoTrajeto st "
+	public SugestaoTrajetoMotorista findMotoristaById(int motoristaId) {
+		TypedQuery<SugestaoTrajetoMotorista> query = this.em.createQuery("SELECT stu FROM SugestaoTrajeto st "
 				+ "INNER JOIN SugestaoTrajetoUsuario stu "
 				+ "ON st.motorista = stu.id "
-				+ "WHERE stu.id = :motorista_id", SugestaoTrajetoUsuario.class);
+				+ "WHERE stu.id = :motorista_id", SugestaoTrajetoMotorista.class);
 		
 		query.setParameter("motorista_id", motoristaId);
 		
-		List<SugestaoTrajetoUsuario> resultList = query.getResultList();
+		List<SugestaoTrajetoMotorista> resultList = query.getResultList();
 		
 		if (resultList.isEmpty()) {
 			return null;
@@ -166,7 +166,7 @@ public class SugestaoTrajetoServico {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void aceitarPassageiro(SugestaoTrajetoUsuario motorista, SugestaoTrajetoPassageiro passageiro, Usuario usuario) throws DomainSecurityException {
+	public void aceitarPassageiro(SugestaoTrajetoMotorista motorista, SugestaoTrajetoPassageiro passageiro, Usuario usuario) throws DomainSecurityException {
 		
 		IntencaoCarona intencaoCaronaUsuarioLogado = this.intencaoCaronaServico.findByUsuario(usuario);
 		
@@ -206,7 +206,7 @@ public class SugestaoTrajetoServico {
 	
 
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void rejeitarPassageiro(SugestaoTrajetoUsuario motorista, SugestaoTrajetoPassageiro passageiro, Usuario usuario) throws DomainSecurityException {
+	public void rejeitarPassageiro(SugestaoTrajetoMotorista motorista, SugestaoTrajetoPassageiro passageiro, Usuario usuario) throws DomainSecurityException {
 		
 		IntencaoCarona intencaoCaronaUsuarioLogado = this.intencaoCaronaServico.findByUsuario(usuario);
 		
@@ -278,5 +278,67 @@ public class SugestaoTrajetoServico {
 		
 	}
 	
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void visualizarSugestao(SugestaoTrajeto sugestaoTrajeto) {
+
+		if (!sugestaoTrajeto.isVisualizada()) {
+			sugestaoTrajeto.setVisualizada(true);			
+		}
+		
+	}
+	
+
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void substituirPassageiro(SugestaoTrajetoMotorista motorista, SugestaoTrajetoPassageiro passageiro, Usuario usuario) throws DomainSecurityException {
+		
+		IntencaoCarona intencaoCaronaUsuarioLogado = this.intencaoCaronaServico.findByUsuario(usuario);
+		
+		IntencaoCarona intencaoCaronaMotorista = motorista.getIntencaoCarona();
+		
+		if (!intencaoCaronaUsuarioLogado.equals(intencaoCaronaMotorista)) {
+			String errorMsg = String.format("Motorista [IntencaoCarona] (id: %d) "
+					+ "e usuario logado [IntencaoCarona] (id: %d) não são o mesmo", 
+					intencaoCaronaMotorista.getId(), intencaoCaronaUsuarioLogado.getId());
+			
+			// loggar esta exception como error no controller mas enviar para o usuário apenas a mensagem "Requisicao inválida"
+			// sem dar muita descrição.
+			throw new DomainSecurityException(errorMsg);
+
+		}
+		// verifica se o motorista e passageiro possuem intencaoCarona ativa...
+		// verifica se o motorista e passageiro estão na mesma sugestão de carona (ativa)..
+		// caso algum erro mandar a exception como "RequestInvalido" no Controller (sem dar muito detalhe).
+		
+		SugestaoTrajeto sugestaoTrajeto = this.findSugestaoTrajetoByIntencaoCaronaMotorista(motorista.getIntencaoCarona());
+		
+		SugestaoTrajetoPassageiro sugestaoPassageiro = this.getPassageiro(passageiro.getIntencaoCarona(), sugestaoTrajeto);
+		
+		if (sugestaoPassageiro == null) {
+			String errorMsg = String.format("Passageiro [SugestaoTrajetoPassageiro] (id: %d) "
+					+ "e motorista [SugestaoTrajetoPassageiro] (id: %) não estão na mesma sugestao de trajeto", 
+					passageiro.getId(), motorista.getId());
+			
+			// loggar esta exception como error no controller mas enviar para o usuário apenas a mensagem "Requisicao inválida"
+			// sem dar muita descrição.
+			throw new DomainSecurityException(errorMsg);
+		}
+		
+		sugestaoPassageiro.setEstado(SugestaoTrajetoPassageiroEstado.SUBSTITUICAO);
+		
+	}
+	
+	@Transactional(readOnly = true)
+	public List<SugestaoTrajeto> findSugestoesComPassageirosEmSubstituicao() {
+		
+		TypedQuery<SugestaoTrajeto> query = em.createQuery("SELECT st FROM SugestaoTrajeto st "
+				   + "INNER JOIN SugestaoTrajetoPassageiro stp "
+				   + "ON st.id = stp.sugestaoTrajeto "
+				   + "AND stp.estado = :estadoPassageiro ", SugestaoTrajeto.class);
+		
+		query.setParameter("estadoPassageiro", SugestaoTrajetoPassageiroEstado.SUBSTITUICAO);
+		
+		return query.getResultList();
+		
+	}
 	
 }

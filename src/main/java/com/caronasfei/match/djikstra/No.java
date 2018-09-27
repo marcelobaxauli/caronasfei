@@ -10,7 +10,7 @@ import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
 import com.caronasfei.db.intencao.endereco.Endereco;
 import com.caronasfei.match.djikstra.model.RestricaoTempo;
 
-public class No {
+public class No<E> {
 
 	private List<Vertice> outputVertexes = new LinkedList<Vertice>();
 
@@ -27,9 +27,14 @@ public class No {
 
 	private IntencaoCarona intencaoCarona;
 
+	private E sugestaoTrajetoUsuario;
+
 	private Endereco endereco;
 
 	private Grafo graph;
+
+	// nó já confirmado pelo motorista/passageiro
+	private boolean fixo;
 
 	public No(int number, Grafo graph) {
 
@@ -124,6 +129,22 @@ public class No {
 		this.endereco = endereco;
 	}
 
+	public boolean isFixo() {
+		return fixo;
+	}
+
+	public void setFixo(boolean fixo) {
+		this.fixo = fixo;
+	}
+
+	public E getSugestaoTrajetoUsuario() {
+		return sugestaoTrajetoUsuario;
+	}
+
+	public void setSugestaoTrajetoUsuario(E sugestaoTrajetoUsuario) {
+		this.sugestaoTrajetoUsuario = sugestaoTrajetoUsuario;
+	}
+
 	public void spanCosts(Map<Integer, No> visitedNodes) {
 
 		if (this.intencaoCarona.getAcaoCarona() == AcaoCarona.OFERECER_CARONA
@@ -145,9 +166,13 @@ public class No {
 
 			No noDestino = outputVertex.getTargetNode();
 
-			// TODO preciso verificar o car capacity da intenção carona motorista do nó
-			// adjacente.
-			// Se for passageiro nem precisa verificar.
+			// TODO preciso ver se o nó i já recusou o nó j, ou foi recusado.
+			// criar uma tabela de recusa pra facilitar o trabalho, no estilo nó i recusou
+			// nó j.
+			// em consequencia nó j foi recusado por nó i.
+			// para não ter que consultar o banco a cada verifificação, carregar essa
+			// relação de recusas em uma estrutura
+			// de dados em memória para agilizar estas verificações.
 
 			if (visitedNodes.get(noDestino.getNumber()) != null
 					&& outputVertex.getTargetNode().isInTimeRestriction(

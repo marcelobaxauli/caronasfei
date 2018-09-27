@@ -300,11 +300,15 @@ CREATE TABLE sugestao_trajeto_usuario (
 	
 );
 
-CREATE TABLE sugestao_trajeto (
+CREATE TABLE sugestao_trajeto_motorista (
 
 	id_sugestao_trajeto INTEGER PRIMARY KEY AUTO_INCREMENT,
 	
 	id_sugestao_trajeto_motorista INTEGER NOT NULL,
+	
+	visualizada TINYINT NOT NULL,
+	
+	score INTEGER NOT NULL,
 	
 	FOREIGN KEY (id_sugestao_trajeto_motorista) REFERENCES sugestao_trajeto_usuario (id_sugestao_trajeto_usuario)
 

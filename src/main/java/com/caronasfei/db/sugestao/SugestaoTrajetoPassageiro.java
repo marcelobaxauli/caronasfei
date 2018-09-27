@@ -24,20 +24,22 @@ public class SugestaoTrajetoPassageiro {
 
 	// Primeiro o motorista precisa aceitar buscar o passageiro
 	// na sugestão de carona: vai para o estado ACEITO_MOTORISTA.
-	
+
 	// Após isso o passageiro precisa aceitar a carona com o determinado
 	// motorista. Após isso a estado vai para ACEITO (estado final).
-	
+
 	// precisava fazer esse estado virar uma tabela..
 	// pra registrar os eventos de usuário (quando o motorista aceitar ou recusar
-	// esse usuário / ou usuário rejeitar a carona) e gravar o horário de 
+	// esse usuário / ou usuário rejeitar a carona) e gravar o horário de
 	// acontecimento dos evento. Pode ser útil depois.
 	public enum SugestaoTrajetoPassageiroEstado {
 		NAO_CONFIRMADO, // NEM MOTORISTA NEM PASSAGEIRO CONFIRMARAM
 		CONFIRMADO_MOTORISTA, // MOTORISTA CONFIRMOU
 		CONFIRMADO, // MOTORISTA E PASSAGEIRO CONFIRMARAM
 		REJEITADO_MOTORISTA, // MOTORISTA REJEITOU
-		REJEITADO_PASSAGEIRO // PASSAGEIRO REJEITOU
+		REJEITADO_PASSAGEIRO, // PASSAGEIRO REJEITOU
+		SUBSTITUICAO // PASSAGEIRO REJEITOU A CARONA OU FOI REJEITADO PELO MOTORISTA.
+						// MOTORISTA OPTOU POR SUBSTITUIR ESTE PASSAGEIRO
 	}
 
 	@Id
@@ -106,6 +108,12 @@ public class SugestaoTrajetoPassageiro {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public boolean isNoFixo() {
+		return this.estado == SugestaoTrajetoPassageiroEstado.CONFIRMADO
+				|| this.estado == SugestaoTrajetoPassageiroEstado.CONFIRMADO_MOTORISTA
+				|| this.estado == SugestaoTrajetoPassageiroEstado.NAO_CONFIRMADO;
 	}
 
 }

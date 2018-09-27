@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
 import com.caronasfei.db.intencao.endereco.Endereco;
+import com.caronasfei.db.sugestao.SugestaoTrajeto;
 
 @Component
 @Scope("singleton")
@@ -32,7 +33,7 @@ public class DijkstraAlgorimo /* implements Algoritmo */ {
 	
 	private Map<Integer, No> nosMotoristasVisitados;
 
-	public void rodar(List<IntencaoCarona> intencoesCarona, Endereco destino) {
+	public void rodar(List<IntencaoCarona> intencoesCarona, Endereco destino, List<SugestaoTrajeto> sugestoesTrajetoComSubstituicao) {
 
 		Date inicio = new Date();
 
@@ -40,12 +41,14 @@ public class DijkstraAlgorimo /* implements Algoritmo */ {
 		this.nosMotoristasVisitados = new HashMap<Integer, No>();
 
 		this.grafo.instancia(intencoesCarona, destino);
+		this.grafo.fixaNosConfirmados(sugestoesTrajetoComSubstituicao);
 		Set<Integer> nosMotoristas = this.grafo.getMotoristaNodesNumbers();
 
 		No no = null;
 		do {
 
 			this.grafo.init(intencoesCarona.size() + 1);
+			
 			no = this.grafo.getNoMinimoCusto();
 
 			if (no != null) {

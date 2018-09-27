@@ -19,6 +19,9 @@ import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.DirecaoCarona;
 import com.caronasfei.db.intencao.endereco.Endereco;
+import com.caronasfei.db.sugestao.SugestaoTrajeto;
+import com.caronasfei.db.sugestao.SugestaoTrajetoMotorista;
+import com.caronasfei.db.sugestao.SugestaoTrajetoPassageiro;
 import com.caronasfei.match.djikstra.model.FuncaoObjetivo;
 import com.caronasfei.match.djikstra.model.RestricaoTempo;
 import com.caronasfei.util.http.Coordenadas;
@@ -113,6 +116,44 @@ public class Grafo {
 
 		long tempoInicializacao = fim.getTime() - inicio.getTime();
 		LOGGER.info("tempo de preenchimento do grafo: {} milisegundos", tempoInicializacao);
+
+	}
+
+	public void fixaNosConfirmados(List<SugestaoTrajeto> sugestoesTrajetoComSubstituicao) {
+		// fixa os nós já confirmados
+
+		// procura por motorista primeiro
+
+		for (SugestaoTrajeto sugestaoTrajeto : sugestoesTrajetoComSubstituicao) {
+
+			SugestaoTrajetoMotorista motorista = sugestaoTrajeto.getMotorista();
+			List<SugestaoTrajetoPassageiro> passageiros = sugestaoTrajeto.getPassageiros();
+
+			No noAnterior = null;
+			for (No no : this.instanciaNos) {
+				if (no.getIntencaoCarona().equals(motorista.getIntencaoCarona())) {
+					no.setFixo(true);
+					no.setSugestaoTrajetoUsuario(motorista);
+					noAnterior = no;
+					break;
+				}
+			}
+
+			for (SugestaoTrajetoPassageiro passageiro : passageiros) {
+				if (passageiro.isNoFixo()) {
+					for (No no : this.instanciaNos) {
+						if (no.getIntencaoCarona().equals(passageiro.getIntencaoCarona())) {
+							no.setFixo(true);
+							no.setSugestaoTrajetoUsuario(passageiro);
+							noAnterior.setNextNode(no);
+							noAnterior = no;
+							break;
+						}
+					}
+				}
+			}
+
+		}
 
 	}
 
