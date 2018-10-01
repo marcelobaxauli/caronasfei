@@ -99,15 +99,15 @@ public class IntencaoCaronaServico {
 				+ "FROM IntencaoCarona i "
 				+ "WHERE i.acaoCarona = :intencao_acao " 
 				+ "AND i.estado = :estado " 			
-				+ "AND i.direcao_carona = :direcao "
+				+ "AND i.direcaoCarona = :direcao "
 				+ "AND ( " 
 				+ "		i NOT IN ( "
-				+ "					SELECT stu.intencaoCarona " 
+				+ "					SELECT stm.intencaoCarona " 
 				+ "						FROM SugestaoTrajeto s "
-				+ "						INNER JOIN SugestaoTrajetoUsuario stu "
-				+ "						ON s.motorista = stu.id "
-				+ "						WHERE stu.intencaoCarona = i.id "
-				+ "						AND stu.estado != :sugestao_estado " 
+				+ "						INNER JOIN SugestaoTrajetoMotorista stm "
+				+ "						ON s.motorista = stm.id "
+				+ "						WHERE stm.intencaoCarona = i.id "
+				+ "						AND stm.estado != :sugestao_estado " 
 				+ "		) " 
 				+ "	) "
 				+ ") ORDER BY i.dataCriacao ASC ", IntencaoCarona.class);
@@ -115,7 +115,7 @@ public class IntencaoCaronaServico {
 		query.setParameter("intencao_acao", AcaoCarona.OFERECER_CARONA);
 		query.setParameter("estado", IntencaoCaronaEstado.ATIVA);
 		query.setParameter("sugestao_estado", SugestaoTrajetoMotoristaEstado.REJEITADO);
-		query.setParameter("direcao_carona", direcao);
+		query.setParameter("direcao", direcao);
 		
 		return query.getResultList();		
 		
@@ -140,10 +140,10 @@ public class IntencaoCaronaServico {
 				+ "		i NOT IN ( "
 				+ "					SELECT stu.intencaoCarona " 
 				+ "						FROM SugestaoTrajeto s "
-				+ "						INNER JOIN SugestaoTrajetoUsuario stu "
-				+ "						ON s.motorista = stu.id "
+				+ "						INNER JOIN SugestaoTrajetoMotorista stm "
+				+ "						ON s.motorista = stm.id "
 				+ "						WHERE stu.intencaoCarona = i.id "
-				+ "						AND stu.estado != :sugestao_estado " 
+				+ "						AND stm.estado != :sugestao_estado " 
 				+ "		) " 
 				+ "	) "
 				+ ") ORDER BY i.dataCriacao ASC ", IntencaoCarona.class);

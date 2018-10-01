@@ -52,6 +52,9 @@ public class IntencaoCarona {
 	@Column(name = "direcao_carona")
 	@Enumerated(EnumType.STRING)
 	private DirecaoCarona direcaoCarona;
+	
+	@Column(name = "detour")
+	private Integer detour;
 
 	@Column(name = "numero_assentos")
 	private Integer numeroAssentos;
@@ -161,6 +164,14 @@ public class IntencaoCarona {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+	
+	public Integer getDetour() {
+		return detour;
+	}
+
+	public void setDetour(Integer detour) {
+		this.detour = detour;
 	}
 
 	public Integer getNumeroAssentos() {

@@ -27,7 +27,7 @@ public class SugestaoTrajetoMotorista {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_sugestao_trajeto_usuario")
+	@Column(name = "id_sugestao_trajeto_motorista")
 	private int id;
 
 	@OneToOne(cascade = CascadeType.MERGE)

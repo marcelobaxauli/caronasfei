@@ -13,6 +13,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
@@ -33,6 +35,7 @@ public class DijkstraAlgorimo /* implements Algoritmo */ {
 	
 	private Map<Integer, No> nosMotoristasVisitados;
 
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void rodar(List<IntencaoCarona> intencoesCarona, Endereco destino, List<SugestaoTrajeto> sugestoesTrajetoComSubstituicao) {
 
 		Date inicio = new Date();

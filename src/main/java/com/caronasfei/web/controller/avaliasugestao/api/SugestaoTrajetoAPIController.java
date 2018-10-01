@@ -172,7 +172,7 @@ public class SugestaoTrajetoAPIController {
 
 	@PostMapping("/passageiro/rejeitarcarona")
 	@ResponseBody
-	public RespostaPadraoDTO arejeitarCaronaPassageiro(
+	public RespostaPadraoDTO rejeitarCaronaPassageiro(
 			@RequestBody ConfirmaTrajetoPassageiroDTO confirmaTrajetoPassageiroDTO) {
 
 		RespostaPadraoDTO resposta = new RespostaPadraoDTO();

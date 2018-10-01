@@ -249,7 +249,7 @@ public class Grafo {
 
 		// último nó não possui vertices de saída
 		// último nó vai ser a FEI / agr no inicio
-		No ultimoNo = this.nos.get(intencoesCarona.size());
+		No ultimoNo = this.nos.get(intencoesCarona.size() - 1);
 		ultimoNo.setCurrentBestScore(0);
 		ultimoNo.setCurrentTime(0);
 		// ultimo no nao tem restricao de tempo especifico

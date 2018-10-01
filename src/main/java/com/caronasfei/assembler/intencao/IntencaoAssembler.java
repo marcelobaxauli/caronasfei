@@ -40,7 +40,13 @@ public class IntencaoAssembler {
 			throw new ValidacaoException("Acao carona inválida.");
 		}
 
-		Integer numeroAssentos = intencaoDTO.getNumeroAssentos();
+		Integer numeroAssentos = null;
+		Integer detour = null;
+		if (acaoCarona == AcaoCarona.OFERECER_CARONA) {
+			numeroAssentos = intencaoDTO.getNumeroAssentos();			
+			detour = intencaoDTO.getDetour();
+		}
+		
 
 		if (acaoCarona == AcaoCarona.OFERECER_CARONA && numeroAssentos == null) {
 			throw new ValidacaoException(
@@ -94,6 +100,7 @@ public class IntencaoAssembler {
 		intencao.setEstado(IntencaoCaronaEstado.ATIVA);
 		if (acaoCarona == AcaoCarona.PEDIR_CARONA) {
 			intencao.setNumeroAssentos(numeroAssentos);
+			intencao.setDetour(detour);
 		}
 		intencao.setDataCancelamento(null);
 		intencao.setUsuario(usuario);

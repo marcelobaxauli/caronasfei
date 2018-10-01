@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
+import com.caronasfei.db.sugestao.RejeicaoCarona;
+import com.caronasfei.db.sugestao.RejeicaoCarona.RejeicaoCaronaSentido;
 import com.caronasfei.db.sugestao.SugestaoTrajeto;
 import com.caronasfei.db.sugestao.SugestaoTrajetoMotorista;
 import com.caronasfei.db.sugestao.SugestaoTrajetoPassageiro;
@@ -56,9 +58,9 @@ public class SugestaoTrajetoServico {
 	@Transactional(readOnly = true)
 	public SugestaoTrajetoMotorista findMotoristaById(int motoristaId) {
 		TypedQuery<SugestaoTrajetoMotorista> query = this.em.createQuery("SELECT stu FROM SugestaoTrajeto st "
-				+ "INNER JOIN SugestaoTrajetoUsuario stu "
-				+ "ON st.motorista = stu.id "
-				+ "WHERE stu.id = :motorista_id", SugestaoTrajetoMotorista.class);
+				+ "INNER JOIN SugestaoTrajetoMotorista stm "
+				+ "ON st.motorista = stm.id "
+				+ "WHERE stm.id = :motorista_id", SugestaoTrajetoMotorista.class);
 		
 		query.setParameter("motorista_id", motoristaId);
 		
@@ -92,7 +94,7 @@ public class SugestaoTrajetoServico {
 	public SugestaoTrajeto findSugestaoTrajetoByIntencaoCaronaMotorista(IntencaoCarona intencaoCaronaMotorista) {
 		
 		TypedQuery<SugestaoTrajeto> query = em.createQuery("SELECT st FROM SugestaoTrajeto st "
-							   + "INNER JOIN SugestaoTrajetoUsuario stu "
+							   + "INNER JOIN SugestaoTrajetoMotorista stu "
 							   + "ON st.motorista = stu.id "
 							   + "INNER JOIN SugestaoTrajetoPassageiro stp "
 							   + "ON st.id = stp.sugestaoTrajeto "
@@ -242,6 +244,12 @@ public class SugestaoTrajetoServico {
 		
 		sugestaoPassageiro.setEstado(SugestaoTrajetoPassageiroEstado.REJEITADO_MOTORISTA);
 		
+		RejeicaoCarona rejeicaoCarona = new RejeicaoCarona();
+		rejeicaoCarona.setUsuarioMotorista(motorista.getIntencaoCarona().getUsuario());
+		rejeicaoCarona.setUsuarioPassageiro(passageiro.getIntencaoCarona().getUsuario());
+		rejeicaoCarona.setSentido(RejeicaoCaronaSentido.REJEICAO_MOTORISTA);
+		this.em.persist(rejeicaoCarona);
+		
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRED)
@@ -276,6 +284,11 @@ public class SugestaoTrajetoServico {
 		
 		passageiroBuscado.setEstado(SugestaoTrajetoPassageiroEstado.REJEITADO_PASSAGEIRO);
 		
+		RejeicaoCarona rejeicaoCarona = new RejeicaoCarona();
+		rejeicaoCarona.setUsuarioMotorista(sugestaoTrajeto.getMotorista().getIntencaoCarona().getUsuario());
+		rejeicaoCarona.setUsuarioPassageiro(sugestaoTrajetoPassageiro.getIntencaoCarona().getUsuario());
+		rejeicaoCarona.setSentido(RejeicaoCaronaSentido.REJEICAO_PASSAGEIRO);
+		this.em.persist(rejeicaoCarona);
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRED)

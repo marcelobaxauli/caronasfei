@@ -20,6 +20,9 @@ public class IntencaoCaronaDTO {
 	@JsonProperty("numero_assentos")
 	private Integer numeroAssentos;
 
+	@JsonProperty("detour")
+	private Integer detour;
+
 	@JsonProperty("opc_horario_partida")
 	private String opcaoHorarioPartida;
 
@@ -102,6 +105,14 @@ public class IntencaoCaronaDTO {
 
 	public void setNumeroAssentos(Integer numeroAssentos) {
 		this.numeroAssentos = numeroAssentos;
+	}
+
+	public Integer getDetour() {
+		return detour;
+	}
+
+	public void setDetour(Integer detour) {
+		this.detour = detour;
 	}
 
 }

@@ -110,9 +110,6 @@ CREATE TABLE perfil (
 );
 
 
-
-
-
 CREATE TABLE cadastro_etapa (
 
 	id_cadastro_etapa INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -174,10 +171,6 @@ CREATE TABLE usuario (
 );
 
 
---------------------------
--- 02/05/2018 - intenção carona
---------------------------
-
 CREATE TABLE endereco (
 	
 	id_endereco INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -202,7 +195,7 @@ CREATE TABLE endereco (
 	
 );
 
-INSERT INTO endereco VALUES (1, 'fei', 'Av. Humberto de Alencar Castelo Branco', 3972, 'Assunção', 'São Bernardo do Campo', '09850-901', 'SP', -23.72633935, -46.580927320178915);
+INSERT INTO endereco VALUES (1, 'FEI_SBC', 'Av. Humberto de Alencar Castelo Branco', 3972, 'Assunção', 'São Bernardo do Campo', '09850-901', 'SP', -23.72633935, -46.580927320178915);
 
 
 CREATE TABLE horario_tipo (
@@ -285,12 +278,9 @@ CREATE TABLE intencao_carona_motorista (
 
 );
 
+CREATE TABLE sugestao_trajeto_motorista (
 
--- 09/05/2018:
-
-CREATE TABLE sugestao_trajeto_usuario (
-
-	id_sugestao_trajeto_usuario INTEGER PRIMARY KEY AUTO_INCREMENT,
+	id_sugestao_trajeto_motorista INTEGER PRIMARY KEY AUTO_INCREMENT,
 	
 	id_intencao_carona INTEGER NOT NULL,
 	
@@ -300,7 +290,7 @@ CREATE TABLE sugestao_trajeto_usuario (
 	
 );
 
-CREATE TABLE sugestao_trajeto_motorista (
+CREATE TABLE sugestao_trajeto (
 
 	id_sugestao_trajeto INTEGER PRIMARY KEY AUTO_INCREMENT,
 	
@@ -310,7 +300,7 @@ CREATE TABLE sugestao_trajeto_motorista (
 	
 	score INTEGER NOT NULL,
 	
-	FOREIGN KEY (id_sugestao_trajeto_motorista) REFERENCES sugestao_trajeto_usuario (id_sugestao_trajeto_usuario)
+	FOREIGN KEY (id_sugestao_trajeto_motorista) REFERENCES sugestao_trajeto_motorista (id_sugestao_trajeto_motorista)
 
 	-- os passageiros desta sugestao de trajeto estão na tabela de ligação sugestao_trajeto_passageiro
 	-- relacionamento ONE-TO-MANY
@@ -338,3 +328,18 @@ CREATE TABLE sugestao_trajeto_passageiro (
 	
 );
 
+CREATE TABLE rejeicao_carona (
+	
+	id_rejeicao_carona INTEGER PRIMARY KEY AUTO_INCREMENT,
+	
+	id_usuario_motorista INTEGER NOT NULL,
+	
+	id_usuario_passageiro INTEGER NOT NULL,
+	
+	sentido VARCHAR(60),
+	
+	FOREIGN KEY (id_usuario_motorista) REFERENCES usuario (id_usuario),
+	
+	FOREIGN KEY (id_usuario_passageiro) REFERENCES usuario (id_usuario)
+
+);
