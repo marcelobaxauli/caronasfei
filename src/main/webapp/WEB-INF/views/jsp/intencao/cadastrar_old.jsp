@@ -1,3 +1,5 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
+
 <!DOCTYPE html>
 
 <html>
@@ -200,7 +202,6 @@
                      }
 
                      .form-group input[type="text"],
-                     .form-group input[type="number"],
                      .form-group-inline input[type="text"],
                      .form-group select,
                      .form-group-inline select {
@@ -343,34 +344,13 @@
         // limpa coordenadas da ultima pesquisa
         window.localStorage.clear();
 
+        
+
         $("select[name='acao']").change(function() {
 
           var acao = $("select[name='acao'] option:selected").val();
 
-          if (acao == 'oferecer_carona') {
-
-            var formGroupDetour = $("<div class='form-group'>");
-            var detourLabel = $("<label>Detour (em minutos):</label>")
-            var inputDetour = $("<input id='detour' type='number'/>");
-
-            formGroupDetour.append(detourLabel);
-            formGroupDetour.append(inputDetour);
-
-            formGroupDetour.insertAfter($("select[name='acao']").parent("div"));
-
-            var formGroupPassageiros = $("<div class='form-group'>");
-            var passageirosLabel = $("<label>Capacidade do veículo (em número de passageiros):</label>")
-            var inputPassageiros = $("<input id='passageiros' type='number'/>");
-
-            formGroupPassageiros.append(passageirosLabel);
-            formGroupPassageiros.append(inputPassageiros);
-
-            formGroupPassageiros.insertAfter($("select[name='acao']").parent("div"));
-
-          } else {
-              $("input#detour").parent("div").remove();
-              $("input#passageiros").parent("div").remove();
-          }
+          alert(acao);
 
         });
 
@@ -531,10 +511,6 @@
       var opc_local_partida_in = $("select[name='opc_local_partida'] option:selected").val();
       var opc_local_destino_in = $("select[name='opc_local_destino'] option:selected").val();
 
-      if (acao_in == 'oferecer_carona') {
-        var detourValor = $("input#detour").val();
-        var passageiros = $("input#passageiros").val();
-      }
 
       var endereco_informado = window.localStorage.getItem('endereco_informado');
 
@@ -585,11 +561,6 @@
         opc_horario_chegada: opc_horario_chegada_in,
         horario_partida: horario_partida_in,
         horario_chegada: horario_chegada_in
-      }
-
-      if (acao_in == 'oferecer_carona') {
-        intencao.numero_assentos = passageiros;
-        intencao.detour = detourValor;
       }
 
       console.log(intencao);

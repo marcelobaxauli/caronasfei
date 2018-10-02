@@ -247,6 +247,8 @@ CREATE TABLE intencao_carona (
 	
 	numero_assentos INTEGER NOT NULL, /* somente para motorista */
 	
+	detour INTEGER NOT NULL,
+	
 	id_local_partida INTEGER NOT NULL,
 	
 	id_local_destino INTEGER NOT NULL,

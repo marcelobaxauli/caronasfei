@@ -59,14 +59,13 @@ public class IntencaoCaronaAPIController {
 		RespostaPadraoDTO resposta = new RespostaPadraoDTO();
 
 		try {
-			IntencaoCarona intencao = this.intencaoAssembler.toIntencao(intencaoDTO, this.sessaoWeb.getUsuario());
 
-			this.intencaoService.cadastrarIntencao(intencao);
+			this.intencaoService.cadastrarIntencao(intencaoDTO, this.sessaoWeb.getUsuario());
 
 			resposta.setSucesso(true);
 			resposta.setProximaUrl(PagesUrl.AGUARDA_SUGESTAO.getUrl());
 
-		} catch (ValidacaoException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

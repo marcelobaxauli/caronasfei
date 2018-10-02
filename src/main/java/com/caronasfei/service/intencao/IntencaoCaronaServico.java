@@ -7,27 +7,39 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.caronasfei.assembler.exception.ValidacaoException;
+import com.caronasfei.assembler.intencao.IntencaoAssembler;
 import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.DirecaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.IntencaoCaronaEstado;
 import com.caronasfei.db.sugestao.SugestaoTrajetoMotorista.SugestaoTrajetoMotoristaEstado;
 import com.caronasfei.db.usuario.Usuario;
+import com.caronasfei.dto.intencao.IntencaoCaronaDTO;
 
 @Service
 public class IntencaoCaronaServico {
-
+	
 	@PersistenceContext(name = "CaronasFeiPersistence")
 	private EntityManager em;
 
+	@Autowired
+	private IntencaoAssembler intencaoAssembler;
+	
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void cadastrarIntencao(IntencaoCarona intencao) {
+	public void cadastrarIntencao(IntencaoCaronaDTO intencaoDTO, Usuario usuario) {
 
-		this.em.persist(intencao);
+		try {
+			IntencaoCarona intencao = this.intencaoAssembler.toIntencao(intencaoDTO, usuario);
+			this.em.persist(intencao);
+		} catch (ValidacaoException e) {
+			throw new IllegalArgumentException("Erro de validação", e);
+		}
 
 	}
 

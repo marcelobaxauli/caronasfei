@@ -15,18 +15,27 @@ import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.DirecaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.IntencaoCaronaEstado;
 import com.caronasfei.db.intencao.endereco.Endereco;
+import com.caronasfei.db.intencao.endereco.Endereco.OpcaoEndereco;
 import com.caronasfei.db.intencao.horario.Horario;
 import com.caronasfei.db.usuario.Usuario;
 import com.caronasfei.dto.intencao.IntencaoCaronaDTO;
 import com.caronasfei.dto.intencao.endereco.EnderecoDTO;
+import com.caronasfei.service.endereco.EnderecoServico;
+import com.caronasfei.service.intencao.IntencaoCaronaServico;
 
 @Component
 @Scope("prototype")
 public class IntencaoAssembler {
 
 	@Autowired
+	private IntencaoCaronaServico intencaoService;
+	
+	@Autowired
 	private EnderecoAssembler enderecoAssembler;
 
+	@Autowired
+	private EnderecoServico enderecoServico;
+	
 	@Autowired
 	private HorarioAssembler horarioAssembler;
 
@@ -77,9 +86,11 @@ public class IntencaoAssembler {
 
 		if (Endereco.OpcaoEndereco.OUTRO.getCodigo().equals(opcaoLocalPartida)) {
 			enderecoPartida = this.enderecoAssembler.toEndereco(endereco, intencaoDTO.getOpcaoLocalPartida());
+			enderecoDestino = this.enderecoServico.findEnderecoById(Endereco.ID_ENDERECO_FEI_SBC);
 			direcaoCarona = DirecaoCarona.IDA_FEI;
 		} else if (Endereco.OpcaoEndereco.OUTRO.getCodigo().equals(opcaoLocalDestino)) {
 			enderecoDestino = this.enderecoAssembler.toEndereco(endereco, intencaoDTO.getOpcaoLocalDestino());
+			enderecoPartida = this.enderecoServico.findEnderecoById(Endereco.ID_ENDERECO_FEI_SBC);
 			direcaoCarona = DirecaoCarona.VOLTA_FEI;
 		}
 
@@ -98,7 +109,7 @@ public class IntencaoAssembler {
 		intencao.setDataCriacao(new Date());
 		intencao.setDirecaoCarona(direcaoCarona);
 		intencao.setEstado(IntencaoCaronaEstado.ATIVA);
-		if (acaoCarona == AcaoCarona.PEDIR_CARONA) {
+		if (acaoCarona == AcaoCarona.OFERECER_CARONA) {
 			intencao.setNumeroAssentos(numeroAssentos);
 			intencao.setDetour(detour);
 		}
@@ -108,7 +119,7 @@ public class IntencaoAssembler {
 		intencao.setHorarioChegada(horarioChegada);
 		intencao.setEnderecoPartida(enderecoPartida);
 		intencao.setEnderecoDestino(enderecoDestino);
-
+		
 		return intencao;
 
 	}
@@ -125,12 +136,12 @@ public class IntencaoAssembler {
 		String opcEnderecoDestino = null;
 
 		Endereco local = null;
-		if (enderecoPartida == null) {
+		if (enderecoPartida.getOpcaoEndereco() == OpcaoEndereco.FEI_SBC) {
 			opcEnderecoPartida = Endereco.OpcaoEndereco.FEI_SBC.getCodigo();
 			opcEnderecoDestino = Endereco.OpcaoEndereco.OUTRO.getCodigo();
 
 			local = enderecoDestino;
-		} else if (enderecoDestino == null) {
+		} else {
 			opcEnderecoPartida = Endereco.OpcaoEndereco.OUTRO.getCodigo();
 			opcEnderecoDestino = Endereco.OpcaoEndereco.FEI_SBC.getCodigo();
 
