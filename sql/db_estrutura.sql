@@ -245,9 +245,9 @@ CREATE TABLE intencao_carona (
 	
 	estado VARCHAR(30) NOT NULL,
 	
-	numero_assentos INTEGER NOT NULL, /* somente para motorista */
+	numero_assentos INTEGER, /* somente para motorista */
 	
-	detour INTEGER NOT NULL,
+	detour INTEGER, /* somente para motorista */
 	
 	id_local_partida INTEGER NOT NULL,
 	
@@ -301,6 +301,8 @@ CREATE TABLE sugestao_trajeto (
 	visualizada TINYINT NOT NULL,
 	
 	score INTEGER NOT NULL,
+	
+	estado VARCHAR(60) NOT NULL,
 	
 	FOREIGN KEY (id_sugestao_trajeto_motorista) REFERENCES sugestao_trajeto_motorista (id_sugestao_trajeto_motorista)
 

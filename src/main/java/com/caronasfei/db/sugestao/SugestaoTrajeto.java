@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,10 +22,18 @@ import javax.persistence.Table;
 @Table(name = "sugestao_trajeto")
 public class SugestaoTrajeto {
 
+	public enum SugestaoTrajetoEstado {
+		NORMAL, INTENCAO_CANCELADA, CANCELADA
+	}
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_sugestao_trajeto")
 	private int id;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "estado")
+	private SugestaoTrajetoEstado estado;
 
 	// Por enquanto não preciso extender a SugestaoTrajetoUsuario para criar uma
 	// SugestaoTrajetoMotorista...
@@ -88,6 +98,14 @@ public class SugestaoTrajeto {
 
 	public void setScore(Integer score) {
 		this.score = score;
+	}
+
+	public SugestaoTrajetoEstado getEstado() {
+		return estado;
+	}
+
+	public void setEstado(SugestaoTrajetoEstado estado) {
+		this.estado = estado;
 	}
 
 }

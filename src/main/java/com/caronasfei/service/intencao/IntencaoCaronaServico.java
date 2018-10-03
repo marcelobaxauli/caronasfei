@@ -18,21 +18,28 @@ import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.DirecaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.IntencaoCaronaEstado;
+import com.caronasfei.db.sugestao.SugestaoTrajeto;
+import com.caronasfei.db.sugestao.SugestaoTrajeto.SugestaoTrajetoEstado;
 import com.caronasfei.db.sugestao.SugestaoTrajetoMotorista.SugestaoTrajetoMotoristaEstado;
 import com.caronasfei.db.usuario.Usuario;
 import com.caronasfei.dto.intencao.IntencaoCaronaDTO;
+import com.caronasfei.dto.intencao.NovaIntencaoCaronaDTO;
+import com.caronasfei.service.sugestao.SugestaoTrajetoServico;
 
 @Service
 public class IntencaoCaronaServico {
 	
 	@PersistenceContext(name = "CaronasFeiPersistence")
 	private EntityManager em;
-
+	
 	@Autowired
 	private IntencaoAssembler intencaoAssembler;
 	
+	@Autowired
+	private SugestaoTrajetoServico sugestaoTrajetoServico;
+	
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void cadastrarIntencao(IntencaoCaronaDTO intencaoDTO, Usuario usuario) {
+	public void cadastrarIntencao(NovaIntencaoCaronaDTO intencaoDTO, Usuario usuario) {
 
 		try {
 			IntencaoCarona intencao = this.intencaoAssembler.toIntencao(intencaoDTO, usuario);
@@ -41,6 +48,15 @@ public class IntencaoCaronaServico {
 			throw new IllegalArgumentException("Erro de validação", e);
 		}
 
+	}
+	
+	@Transactional(readOnly = true)
+	public IntencaoCarona findById(long id) {
+		
+		IntencaoCarona intencaoCarona = this.em.find(IntencaoCarona.class, id);
+		
+		return intencaoCarona;
+		
 	}
 
 	@Transactional(readOnly = true)
@@ -263,6 +279,20 @@ public class IntencaoCaronaServico {
 
 		return query.getResultList();
 
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void deletarIntencaoCarona(IntencaoCaronaDTO intencaoDTO) {
+		
+		IntencaoCarona intencaoCarona = this.findById(intencaoDTO.getId());
+		
+		SugestaoTrajeto sugestaoTrajeto = this.sugestaoTrajetoServico.findByIntencaoCarona(intencaoCarona);
+		if (sugestaoTrajeto != null) {
+			sugestaoTrajeto.setEstado(SugestaoTrajetoEstado.INTENCAO_CANCELADA);			
+		}
+		
+		intencaoCarona.setEstado(IntencaoCaronaEstado.CANCELADA);
+		
 	}
 
 	

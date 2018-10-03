@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.caronasfei.db.sugestao.SugestaoTrajeto;
+import com.caronasfei.db.sugestao.SugestaoTrajeto.SugestaoTrajetoEstado;
 import com.caronasfei.db.sugestao.SugestaoTrajetoMotorista;
 import com.caronasfei.db.sugestao.SugestaoTrajetoMotorista.SugestaoTrajetoMotoristaEstado;
 import com.caronasfei.db.sugestao.SugestaoTrajetoPassageiro;
@@ -52,6 +53,9 @@ public class GravaMatchesIda {
 				noPassageiro = noPassageiro.getProximoNo();
 			}
 
+			// TODO verificar se a intenção de carona do motorista e dos passageiros ainda estão ativas
+			// antes de criar a sugestao de trajeto
+			
 			int score = noMotorista.getCurrentBestScore(); // na ida a propagação inicia na FEI e termina no nó
 															// motorista (current best score tá no nó motorista).
 
@@ -84,7 +88,8 @@ public class GravaMatchesIda {
 				novoSugestaoTrajeto.setMotorista(sugestaoTrajetoMotorista);
 				novoSugestaoTrajeto.setScore(score);
 				novoSugestaoTrajeto.setVisualizada(false);
-
+				novoSugestaoTrajeto.setEstado(SugestaoTrajetoEstado.NORMAL);
+				
 				List<SugestaoTrajetoPassageiro> sugestaoTrajetoPassageiros = new LinkedList<SugestaoTrajetoPassageiro>();
 				for (No noPassageiroAtual : nosPassageiros) {
 					SugestaoTrajetoPassageiro sugestaoTrajetoPassageiro = new SugestaoTrajetoPassageiro();

@@ -2,16 +2,17 @@ package com.caronasfei.web.controller.intencao.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.caronasfei.assembler.exception.ValidacaoException;
 import com.caronasfei.assembler.intencao.IntencaoAssembler;
 import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.usuario.Usuario;
 import com.caronasfei.dto.intencao.IntencaoCaronaDTO;
+import com.caronasfei.dto.intencao.NovaIntencaoCaronaDTO;
 import com.caronasfei.dto.web.padrao.RespostaPadraoDTO;
 import com.caronasfei.service.intencao.IntencaoCaronaServico;
 import com.caronasfei.sessao.SessaoWeb;
@@ -31,7 +32,7 @@ public class IntencaoCaronaAPIController {
 
 	@GetMapping("/intencaocarona")
 	@ResponseBody
-	public RespostaPadraoDTO<IntencaoCaronaDTO> getIntencaoCarona() {
+	public RespostaPadraoDTO<NovaIntencaoCaronaDTO> getIntencaoCarona() {
 
 		Usuario usuario = this.sessaoWeb.getUsuario();
 
@@ -42,9 +43,9 @@ public class IntencaoCaronaAPIController {
 			// redirecionar?
 		}
 
-		IntencaoCaronaDTO intencaoCaronaDTO = this.intencaoAssembler.toIntencaoCaronaDTO(intencaoCarona);
+		NovaIntencaoCaronaDTO intencaoCaronaDTO = this.intencaoAssembler.toIntencaoCaronaDTO(intencaoCarona);
 
-		RespostaPadraoDTO<IntencaoCaronaDTO> resposta = new RespostaPadraoDTO<IntencaoCaronaDTO>();
+		RespostaPadraoDTO<NovaIntencaoCaronaDTO> resposta = new RespostaPadraoDTO<NovaIntencaoCaronaDTO>();
 		resposta.setSucesso(true);
 		resposta.setDado(intencaoCaronaDTO);
 
@@ -54,7 +55,7 @@ public class IntencaoCaronaAPIController {
 
 	@PostMapping("/intencaocarona")
 	@ResponseBody
-	public RespostaPadraoDTO cadastrarIntencao(@RequestBody IntencaoCaronaDTO intencaoDTO) {
+	public RespostaPadraoDTO cadastrarIntencao(@RequestBody NovaIntencaoCaronaDTO intencaoDTO) {
 
 		RespostaPadraoDTO resposta = new RespostaPadraoDTO();
 
@@ -72,6 +73,27 @@ public class IntencaoCaronaAPIController {
 
 		return resposta;
 
+	}
+	
+	@DeleteMapping("/intencaocarona")
+	@ResponseBody
+	public RespostaPadraoDTO deletarIntencao(@RequestBody IntencaoCaronaDTO intencaoCaronaDTO) {
+		
+		RespostaPadraoDTO resposta = new RespostaPadraoDTO();
+		
+		resposta.setSucesso(true);
+		resposta.setProximaUrl(PagesUrl.HOME.getUrl());
+		try {
+			
+			this.intencaoService.deletarIntencaoCarona(intencaoCaronaDTO);
+			
+		} catch (Exception e) {
+			resposta.setSucesso(false);
+			e.printStackTrace();
+		}
+		
+		return resposta;
+		
 	}
 
 }

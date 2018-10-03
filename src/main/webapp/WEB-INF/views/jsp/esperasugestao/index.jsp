@@ -218,7 +218,7 @@
 
         <div class="form-group">
           <button class="light_green left">Alterar</button>
-          <button class="red left">Cancelar</button>
+          <button onclick="app.cancelaIntencaoCarona()" class="red left">Cancelar</button>
         </div>
 
       </div>
@@ -335,6 +335,36 @@
 
           }
         });
+
+      }
+
+      AppEsperaSugestao.prototype.cancelaIntencaoCarona = function() {
+
+    	  var app = this;
+
+    	  var intencaoCaronaId = app.intencaoCaronaDado.id;
+
+        var deletarIntencaoCaronaJson = {};
+        deletarIntencaoCaronaJson.id = intencaoCaronaId;
+
+    	  $.ajax({
+
+    		  url: '${pageContext.request.contextPath}/intencaocarona',
+    		  type: 'DELETE',
+    		  dataType: 'json',
+          contentType: 'application/json',
+			    data: JSON.stringify(deletarIntencaoCaronaJson),
+    		  success: function (resultado) {
+
+    			  if (resultado.sucesso) {
+
+    				  window.location.href = resultado.proximaUrl;
+
+    			  }
+
+    		  }
+
+    	  });
 
       }
 

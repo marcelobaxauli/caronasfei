@@ -18,7 +18,7 @@ import com.caronasfei.db.intencao.endereco.Endereco;
 import com.caronasfei.db.intencao.endereco.Endereco.OpcaoEndereco;
 import com.caronasfei.db.intencao.horario.Horario;
 import com.caronasfei.db.usuario.Usuario;
-import com.caronasfei.dto.intencao.IntencaoCaronaDTO;
+import com.caronasfei.dto.intencao.NovaIntencaoCaronaDTO;
 import com.caronasfei.dto.intencao.endereco.EnderecoDTO;
 import com.caronasfei.service.endereco.EnderecoServico;
 import com.caronasfei.service.intencao.IntencaoCaronaServico;
@@ -40,7 +40,7 @@ public class IntencaoAssembler {
 	private HorarioAssembler horarioAssembler;
 
 	@Transactional(readOnly = true)
-	public IntencaoCarona toIntencao(IntencaoCaronaDTO intencaoDTO, Usuario usuario) throws ValidacaoException {
+	public IntencaoCarona toIntencao(NovaIntencaoCaronaDTO intencaoDTO, Usuario usuario) throws ValidacaoException {
 
 		String acaoCodigo = intencaoDTO.getAcao();
 		AcaoCarona acaoCarona = AcaoCarona.getByCodigo(acaoCodigo);
@@ -125,7 +125,7 @@ public class IntencaoAssembler {
 	}
 
 	@Transactional(readOnly = true)
-	public IntencaoCaronaDTO toIntencaoCaronaDTO(IntencaoCarona intencaoCarona) {
+	public NovaIntencaoCaronaDTO toIntencaoCaronaDTO(IntencaoCarona intencaoCarona) {
 
 		String acaoCaronaCodigo = intencaoCarona.getAcaoCarona().getCodigo();
 		
@@ -169,7 +169,8 @@ public class IntencaoAssembler {
 		enderecoDTO.setLongitude(local.getLongitude());
 		enderecoDTO.setFormatado(enderecoFormatado);
 
-		IntencaoCaronaDTO intencaoDTO = new IntencaoCaronaDTO();
+		NovaIntencaoCaronaDTO intencaoDTO = new NovaIntencaoCaronaDTO();
+		intencaoDTO.setId(intencaoCarona.getId());
 		intencaoDTO.setAcao(acaoCaronaCodigo);
 		intencaoDTO.setOpcaoHorarioPartida(opcHorarioPartida);
 		intencaoDTO.setOpcaoHorarioChegada(opcHorarioChegada);
