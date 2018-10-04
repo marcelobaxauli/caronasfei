@@ -14,7 +14,7 @@ import com.caronasfei.sessao.SessaoWeb;
 import com.caronasfei.web.url.PagesUrl;
 
 @Controller
-public class LoginAPIController {
+public class AcessoAPIController {
 
 	@Autowired
 	private UsuarioServico usuarioServico;
@@ -39,6 +39,20 @@ public class LoginAPIController {
 		}
 
 		return resposta;
+	}
+	
+	@PostMapping("/logoff")
+	@ResponseBody
+	public RespostaPadraoDTO logoff() {
+		
+		RespostaPadraoDTO resposta = new RespostaPadraoDTO();
+
+		this.sessao.setUsuario(null);
+		resposta.setSucesso(true);
+		resposta.setProximaUrl(PagesUrl.HOME.getUrl());
+		
+		return resposta;
+		
 	}
 
 }

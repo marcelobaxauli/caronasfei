@@ -41,6 +41,15 @@
 
     		 }
 
+         .header_right {
+           float: right;
+         }
+
+         .header_right span {
+           color: white;
+           cursor: pointer;
+         }
+
     		 .content {
     			 margin-top: 3.0rem;
            margin-left: 1.0rem;
@@ -118,6 +127,8 @@
 
     </style>
 
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
   </head>
 
   <body>
@@ -127,6 +138,11 @@
       <div class="header_inner">
         CARONAS FEI
       </div>
+
+      <div class="header_right">
+        <span id="logoff">logoff</a>
+      </div>
+
 
     </div>
 
@@ -151,5 +167,27 @@
     </div>
 
   </body>
+
+  <script>
+
+    $("#logoff").click(function() {
+
+      $.ajax({
+        url: "${pageContext.request.contextPath}/logoff",
+        type: "POST",
+        success: function(result, status, xhr) {
+
+          if (result.sucesso) {
+            window.location = result.proximaUrl;
+          } else {
+            alert('usuario nao encontrado');
+          }
+
+        }
+      });
+
+    });
+
+  </script>
 
 </html>
