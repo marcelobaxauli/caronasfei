@@ -11,7 +11,7 @@
 
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"></property>
-			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/caronasfei"></property>
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/caronasfei?serverTimezone=UTC"></property>
 			<property name="javax.persistence.jdbc.user" value="caronasfei_app"></property>
 			<property name="javax.persistence.jdbc.password" value="v1i$sh3ma#sin9dh0va"></property>
 

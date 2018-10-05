@@ -147,15 +147,16 @@ public class No<E> {
 
 	public void spanCosts(Map<Integer, No> visitedNodes) {
 
-		if (this.intencaoCarona.getAcaoCarona() == AcaoCarona.OFERECER_CARONA
+		if (this.intencaoCarona != null 
+				&& this.intencaoCarona.getAcaoCarona() == AcaoCarona.OFERECER_CARONA
 				&& this.numeroPassageirosAtual >= this.intencaoCarona.getNumeroAssentos()) {
 			return;
 		}
 
 		for (Vertice outputVertex : this.outputVertexes) {
 
-			if (outputVertex.getI() >= this.graph.getCurrentSize()
-					|| outputVertex.getJ() >= this.graph.getCurrentSize()) {
+			if (outputVertex.getI() > this.graph.getCurrentSize()
+					|| outputVertex.getJ() > this.graph.getCurrentSize()) {
 				break;
 			}
 

@@ -36,8 +36,8 @@ public class OSRMAPI {
 		}
 		JSONArray routes = (JSONArray) json.get("routes");
 		JSONObject route = (JSONObject) routes.get(0);
-		Long segundosObg = (Long) route.get("duration"); // segundos
-		Double segundos = Double.valueOf(segundosObg.toString()); 
+		Number segundosObg = (Number) route.get("duration"); // segundos
+		double segundos = segundosObg.doubleValue();
 
 		return segundos;
 

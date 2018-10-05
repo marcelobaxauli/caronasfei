@@ -101,7 +101,7 @@ public class Grafo {
 
 		this.instanciaNos = new LinkedList<No>();
 
-		this.tamanhoAtual = this.instanciaNos.size();
+		this.tamanhoAtual = intencoesCarona.size() + 1;
 
 		this.preencheNos(intencoesCarona, destino);
 		this.preencheArestas();
@@ -161,7 +161,7 @@ public class Grafo {
 
 		Set<Integer> nosMotoristas = new HashSet<Integer>();
 		for (No no : this.instanciaNos) {
-			if (no.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA) {
+			if (no.getIntencaoCarona() != null && no.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA) {
 				nosMotoristas.add(no.getNumber());
 			}
 		}
@@ -249,7 +249,7 @@ public class Grafo {
 
 		// último nó não possui vertices de saída
 		// último nó vai ser a FEI / agr no inicio
-		No ultimoNo = this.nos.get(intencoesCarona.size() - 1);
+		No ultimoNo = this.nos.get(intencoesCarona.size());
 		ultimoNo.setCurrentBestScore(0);
 		ultimoNo.setCurrentTime(0);
 		// ultimo no nao tem restricao de tempo especifico
@@ -276,9 +276,12 @@ public class Grafo {
 				}
 
 				No noDestino = aresta.getTargetNode();
-
-				Endereco enderecoOrigem = noOrigem.getEndereco();
-				Endereco enderecoDestino = noDestino.getEndereco();
+				
+				// MUITO IMPORTANTE!!!
+				// AQUI A VERIFICAÇÃO É INVERTIDA, O ALGORITMO RODA DO DESTINO COMO SE FOSSE ORIGEM,
+				// E CADA COMPARAÇÃO PRECISA SER INVERTIDA PROPOSITALMENTE
+				Endereco enderecoOrigem = noDestino.getEndereco();
+				Endereco enderecoDestino = noOrigem.getEndereco();
 
 				Double segundosDistancia = this.osrmApi.getTempo(
 						Coordenadas.converte(enderecoOrigem.getLongitude(), enderecoOrigem.getLatitude()),

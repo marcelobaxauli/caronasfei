@@ -58,7 +58,8 @@ public class DijkstraAlgorimo /* implements Algoritmo */ {
 
 				nosVisitados.put(no.getNumber(), no);
 
-				if (no.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA) {
+				if (no.getIntencaoCarona() != null 
+						&& no.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA) {
 					nosMotoristas.add(no.getNumber());
 				}
 			}
