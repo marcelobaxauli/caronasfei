@@ -220,6 +220,13 @@
 				window.location = "/caronasfei/registro";
 			});
 
+      $(document).keypress(function(event){
+          var keycode = (event.keyCode ? event.keyCode : event.which);
+          if(keycode == '13'){
+            $("#loginbtn").click();
+          }
+      });
+
 			$("#loginbtn").click(function() {
 
         var emailInput = $("#emailinput").val();

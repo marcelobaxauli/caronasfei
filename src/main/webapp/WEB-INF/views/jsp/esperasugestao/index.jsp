@@ -43,6 +43,15 @@
 
       }
 
+      .header_right {
+        float: right;
+      }
+
+      .header_right span {
+        color: white;
+        cursor: pointer;
+      }
+
       .content {
         margin-top: 3.0rem;
         margin-left: 1.0rem;
@@ -200,6 +209,10 @@
         CARONAS FEI
       </div>
 
+      <div class="header_right">
+        <span onclick="app.logoff()">logoff</a>
+      </div>
+
     </div>
 
     <div class="content_s">
@@ -280,6 +293,24 @@
         this.registraHelpers();
         this.buscaIntencaoCarona();
         this.sincronizaJob();
+
+      }
+
+      AppEsperaSugestao.prototype.logoff = function() {
+
+        $.ajax({
+          url: "${pageContext.request.contextPath}/logoff",
+          type: "POST",
+          success: function(result, status, xhr) {
+
+            if (result.sucesso) {
+              window.location = result.proximaUrl;
+            } else {
+              alert('usuario nao encontrado');
+            }
+
+          }
+        });
 
       }
 

@@ -43,14 +43,13 @@ public class DijkstraAlgorimo /* implements Algoritmo */ {
 		Map<Integer, No> nosVisitados = new HashMap<Integer, No>();
 		this.nosMotoristasVisitados = new HashMap<Integer, No>();
 
+		this.grafo.init(intencoesCarona.size() + 1);
 		this.grafo.instancia(intencoesCarona, destino);
 		this.grafo.fixaNosConfirmados(sugestoesTrajetoComSubstituicao);
 		Set<Integer> nosMotoristas = this.grafo.getMotoristaNodesNumbers();
 
 		No no = null;
 		do {
-
-			this.grafo.init(intencoesCarona.size() + 1);
 			
 			no = this.grafo.getNoMinimoCusto();
 

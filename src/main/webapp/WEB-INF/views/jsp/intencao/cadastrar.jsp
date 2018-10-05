@@ -681,9 +681,6 @@
 
                     var bairro = enderecoPartes[1].trim();
 
-                    alert('cep: ' + cep);
-                    alert('bairro: ' + bairro);
-
                     var map = L.map('map').setView([location.y, location.x], 10);
 
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

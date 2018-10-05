@@ -105,7 +105,7 @@ public class Grafo {
 
 		this.preencheNos(intencoesCarona, destino);
 		this.preencheArestas();
-
+		
 		this.primeiroNo = this.nos.get(0);
 		this.ultimoNo = this.nos.get(this.instanciaNos.size() - 1);
 
