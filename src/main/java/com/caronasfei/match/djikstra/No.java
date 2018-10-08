@@ -1,9 +1,9 @@
 package com.caronasfei.match.djikstra;
 
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
@@ -11,14 +11,14 @@ import com.caronasfei.db.intencao.endereco.Endereco;
 import com.caronasfei.match.djikstra.model.RestricaoTempo;
 
 public class No<E> {
-
-	private List<Vertice> outputVertexes = new LinkedList<Vertice>();
-
-	private No proximoNo;
+	
+	private Set<Vertice> verticesDeSaida = new HashSet<Vertice>();
+	
+	private Vertice verticeSelecionado;
 
 	private int number;
 
-	private RestricaoTempo timeRestriction;
+	private RestricaoTempo restricaoTempo;
 
 	private int numeroPassageirosAtual;
 	private long currentTime;
@@ -40,27 +40,24 @@ public class No<E> {
 
 		this.number = number;
 		this.graph = graph;
+		this.verticeSelecionado = null;
 
 	}
 
-	public No getProximoNo() {
-		return proximoNo;
+	public Vertice getVerticeSelecionado() {
+		return verticeSelecionado;
 	}
 
-	public void setNextNode(No nextNode) {
-		this.proximoNo = nextNode;
+	public void setVerticeSelecionado(Vertice verticeSelecionado) {
+		this.verticeSelecionado = verticeSelecionado;
+	}
+	
+	public Set<Vertice> getVerticesDeSaida() {
+		return verticesDeSaida;
 	}
 
-	public List<Vertice> getOutputVertexes() {
-		return outputVertexes;
-	}
-
-	public void setOutputVertexes(List<Vertice> outputVertexes) {
-		this.outputVertexes = outputVertexes;
-	}
-
-	public void addOutputVertex(Vertice vertex) {
-		this.outputVertexes.add(vertex);
+	public void addVerticeDeSaida(Vertice vertex) {
+		this.verticesDeSaida.add(vertex);
 	}
 
 	public int getNumber() {
@@ -85,15 +82,15 @@ public class No<E> {
 			return true;
 		}
 
-		return this.timeRestriction.isInTimeRestriction(visitTime, maximumTime);
+		return this.restricaoTempo.isInTimeRestriction(visitTime, maximumTime);
 	}
 
-	public RestricaoTempo getTimeRestriction() {
-		return this.timeRestriction;
+	public RestricaoTempo getRestricaoTempo() {
+		return this.restricaoTempo;
 	}
 
-	public void setTimeRestriction(RestricaoTempo timeRestriction) {
-		this.timeRestriction = timeRestriction;
+	public void setRestricaoTempo(RestricaoTempo timeRestriction) {
+		this.restricaoTempo = timeRestriction;
 	}
 
 	public int getCurrentNumberOfPassengers() {
@@ -145,7 +142,7 @@ public class No<E> {
 		this.sugestaoTrajetoUsuario = sugestaoTrajetoUsuario;
 	}
 
-	public void spanCosts(Map<Integer, No> visitedNodes) {
+	public void spanCustos(Map<Integer, No> nosVisitados) {
 
 		if (this.intencaoCarona != null 
 				&& this.intencaoCarona.getAcaoCarona() == AcaoCarona.OFERECER_CARONA
@@ -153,19 +150,27 @@ public class No<E> {
 			return;
 		}
 
-		for (Vertice outputVertex : this.outputVertexes) {
+		for (Vertice verticeDeSaida : this.verticesDeSaida) {
 
-			if (outputVertex.getI() > this.graph.getCurrentSize()
-					|| outputVertex.getJ() > this.graph.getCurrentSize()) {
+			if (verticeDeSaida.getI() > this.graph.getCurrentSize()
+					|| verticeDeSaida.getJ() > this.graph.getCurrentSize()) {
 				break;
 			}
 
-			long estimatedTimeCost = (long) (this.currentTime + outputVertex.getTimeCost());
+			No noCandidato = verticeDeSaida.getNoDestino();
+			
+			long custoEstimadoNoCandidato = (long) (this.currentTime + verticeDeSaida.getCustoTransito());
+			custoEstimadoNoCandidato /= 60; // custo esta em segundos / transforma em minutos
 
-			int adjacentNodeScore = this.graph.getObjectiveValue(this.numeroPassageirosAtual + 1,
-					estimatedTimeCost / 1000 / 60);
+			int numeroPassageirosCandidato = this.numeroPassageirosAtual;
 
-			No noDestino = outputVertex.getTargetNode();
+			if (noCandidato.getIntencaoCarona().getAcaoCarona() == AcaoCarona.PEDIR_CARONA) {
+				numeroPassageirosCandidato++;
+			}
+			
+			// TODO só somar o numero de passageiros se o nó candidato for de passageiro fera.
+			int noCandidatoScore = this.graph.getObjectiveValue(numeroPassageirosCandidato,
+					custoEstimadoNoCandidato);
 
 			// TODO preciso ver se o nó i já recusou o nó j, ou foi recusado.
 			// criar uma tabela de recusa pra facilitar o trabalho, no estilo nó i recusou
@@ -175,18 +180,22 @@ public class No<E> {
 			// relação de recusas em uma estrutura
 			// de dados em memória para agilizar estas verificações.
 
-			if (visitedNodes.get(noDestino.getNumber()) != null
-					&& outputVertex.getTargetNode().isInTimeRestriction(
-							new Date(this.graph.getRideDepart().getTime() + estimatedTimeCost),
-							this.graph.getRideArriveTime())
-					&& (noDestino.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA
-							&& this.numeroPassageirosAtual + 1 <= noDestino.getIntencaoCarona().getNumeroAssentos())
-					&& adjacentNodeScore < noDestino.getCurrentBestScore()) {
+			if (nosVisitados.get(noCandidato.getNumber()) == null
+					&& RestricaoTempo.isCaminhoValido(verticeDeSaida, this)
+					&& (noCandidato.getIntencaoCarona().getAcaoCarona() == AcaoCarona.PEDIR_CARONA ||
+							(noCandidato.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA
+								&& this.numeroPassageirosAtual + 1 <= noCandidato.getIntencaoCarona().getNumeroAssentos()))
+					&& noCandidatoScore < noCandidato.getCurrentBestScore()) {
 
-				noDestino.setCurrentBestScore(adjacentNodeScore);
-				noDestino.setNextNode(this);
-				noDestino.setCurrentTime(estimatedTimeCost);
-				noDestino.setCurrentNumberOfPassengers(this.numeroPassageirosAtual + 1);
+				noCandidato.setCurrentBestScore(noCandidatoScore);
+				noCandidato.setVerticeSelecionado(verticeDeSaida);
+				noCandidato.setCurrentTime(custoEstimadoNoCandidato);
+				
+				if (noCandidato.getIntencaoCarona().getAcaoCarona() == AcaoCarona.PEDIR_CARONA) {
+					noCandidato.setCurrentNumberOfPassengers(this.numeroPassageirosAtual + 1);	
+				} else {
+					noCandidato.setCurrentNumberOfPassengers(this.numeroPassageirosAtual);					
+				}
 			}
 
 		}

@@ -54,13 +54,13 @@ public class DijkstraAlgorimo /* implements Algoritmo */ {
 			no = this.grafo.getNoMinimoCusto();
 
 			if (no != null) {
-				no.spanCosts(nosVisitados);
+				no.spanCustos(nosVisitados);
 
 				nosVisitados.put(no.getNumber(), no);
 
 				if (no.getIntencaoCarona() != null 
 						&& no.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA) {
-					nosMotoristas.add(no.getNumber());
+					nosMotoristasVisitados.put(no.getNumber(), no);
 				}
 			}
 

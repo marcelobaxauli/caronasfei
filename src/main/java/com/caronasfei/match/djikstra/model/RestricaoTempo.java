@@ -3,9 +3,14 @@ package com.caronasfei.match.djikstra.model;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.caronasfei.db.intencao.horario.Horario;
+import com.caronasfei.match.djikstra.No;
+import com.caronasfei.match.djikstra.Vertice;
 
 public class RestricaoTempo {
 
@@ -13,34 +18,34 @@ public class RestricaoTempo {
 	
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("kk:mm:ss");
 	
-	private Date departTime;
-	private Date arriveTime;
+	private Date horarioMinimo;
+	private Date horarioMaximo;
 
 	public RestricaoTempo(long leaveTime, long arriveTime) {
 		super();
-		this.departTime = new Date(leaveTime);
-		this.arriveTime = new Date(arriveTime);
+		this.horarioMinimo = new Date(leaveTime);
+		this.horarioMaximo = new Date(arriveTime);
 	}
 
-	public long getDepartTime() {
-		return departTime.getTime();
+	public long getHorarioMinimo() {
+		return horarioMinimo.getTime();
 	}
 
-	public void setDepartTime(long departTime) {
-		this.departTime = new Date(departTime);
+	public void setHorarioMinimo(long departTime) {
+		this.horarioMinimo = new Date(departTime);
 	}
 
-	public long getArriveTime() {
-		return arriveTime.getTime();
+	public long getHorarioMaximo() {
+		return horarioMaximo.getTime();
 	}
 
-	public void setArriveTime(long arriveTime) {
-		this.arriveTime = new Date(arriveTime);
+	public void setHorarioMaximo(long horarioMaximo) {
+		this.horarioMaximo = new Date(horarioMaximo);
 	}
 
 	public boolean isInTimeRestriction(Date visitTime, Date maximumTime) {
-		return  visitTime.getTime() >= this.departTime.getTime() && this.arriveTime.getTime() >= maximumTime.getTime() 
-				&& this.departTime.getTime() < maximumTime.getTime();
+		return  visitTime.getTime() >= this.horarioMinimo.getTime() && this.horarioMaximo.getTime() >= maximumTime.getTime() 
+				&& this.horarioMinimo.getTime() < maximumTime.getTime();
 	}
 	
 	public static RestricaoTempo converte(Date inicio, Date fim) {
@@ -68,11 +73,49 @@ public class RestricaoTempo {
 		return new RestricaoTempo(limiteBase.getTime(), limiteTopo.getTime());
 		
 	}
+	
+	public static boolean isCaminhoValido(Vertice verticeCandidato, No noCaminho) {
+
+		// Por causa do algoritmo de dijkstra, que parte do destino como se fosse origem
+		// o nó aqui eh invertido
+		No noOrigem = verticeCandidato.getNoDestino();
+		
+		RestricaoTempo restricaoTempo = noOrigem.getRestricaoTempo();
+
+		long horarioMinimoCandidato = restricaoTempo.getHorarioMinimo();
+		long horarioMaximoCandidato = restricaoTempo.getHorarioMaximo();
+		
+		Vertice verticeAtual = verticeCandidato;
+		double horarioEstimado = horarioMinimoCandidato;
+		boolean valido = true;
+		while (verticeAtual != null && valido) {
+			
+			// TODO transformar todos os custos em mili segundos.
+			// fzr isso direto da api.
+			horarioEstimado += verticeAtual.getCustoTransito() * 1000.0; // transforma em milisegundos;
+			No noAtual = verticeAtual.getNoDestino();
+			
+			long horarioMinimoNoAtual = noAtual.getRestricaoTempo().getHorarioMinimo();
+			long horarioMaximoNoAtual = noAtual.getRestricaoTempo().getHorarioMaximo();
+			
+			if (!(horarioEstimado >= horarioMinimoNoAtual
+				&& horarioEstimado <= horarioMaximoNoAtual
+				&& horarioEstimado <= horarioMaximoCandidato)) {
+				valido = false;
+			}
+			
+			verticeAtual = noAtual.getVerticeSelecionado();
+			
+		}
+		
+		return valido;
+
+	}
 
 	@Override
 	public String toString() {
 
-		return String.format("leave = %s, arrive = %s", this.departTime, this.arriveTime);
+		return String.format("leave = %s, arrive = %s", this.horarioMinimo, this.horarioMaximo);
 	}
 
 }

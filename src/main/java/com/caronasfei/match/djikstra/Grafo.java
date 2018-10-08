@@ -73,12 +73,12 @@ public class Grafo {
 					No noOrigem = nos.get(i);
 					No noDestino = nos.get(j);
 
-					Vertice novoVertice = new Vertice();
-					novoVertice.setTargetNode(noDestino);
-					novoVertice.setI(i);
-					novoVertice.setJ(j);
+					Vertice novoVerticeSaida = new Vertice();
+					novoVerticeSaida.setNoDestino(noDestino);
+					novoVerticeSaida.setI(i);
+					novoVerticeSaida.setJ(j);
 
-					noOrigem.addOutputVertex(novoVertice);
+					noOrigem.addVerticeDeSaida(novoVerticeSaida);
 				}
 
 			}
@@ -109,8 +109,8 @@ public class Grafo {
 		this.primeiroNo = this.nos.get(0);
 		this.ultimoNo = this.nos.get(this.instanciaNos.size() - 1);
 
-		this.tempoDePartida = new Date(this.nos.get(0).getTimeRestriction().getDepartTime());
-		this.tempodeChegada = new Date(this.nos.get(0).getTimeRestriction().getArriveTime());
+		this.tempoDePartida = new Date(this.nos.get(0).getRestricaoTempo().getHorarioMinimo());
+		this.tempodeChegada = new Date(this.nos.get(0).getRestricaoTempo().getHorarioMaximo());
 
 		Date fim = new Date();
 
@@ -145,7 +145,10 @@ public class Grafo {
 						if (no.getIntencaoCarona().equals(passageiro.getIntencaoCarona())) {
 							no.setFixo(true);
 							no.setSugestaoTrajetoUsuario(passageiro);
-							noAnterior.setNextNode(no);
+							
+							Vertice vertice = new Vertice();
+							vertice.setNoDestino(no);
+							noAnterior.setVerticeSelecionado(vertice);
 							noAnterior = no;
 							break;
 						}
@@ -235,7 +238,7 @@ public class Grafo {
 			node.setCurrentBestScore(Integer.MAX_VALUE);
 			node.setCurrentTime(0);
 			node.setIntencaoCarona(intencaoCarona);
-			node.setTimeRestriction(RestricaoTempo.converte(intencaoCarona.getHorarioPartida().getHorario(),
+			node.setRestricaoTempo(RestricaoTempo.converte(intencaoCarona.getHorarioPartida().getHorario(),
 					intencaoCarona.getHorarioChegada().getHorario()));
 
 			if (intencaoCarona.getDirecaoCarona() == DirecaoCarona.IDA_FEI) {
@@ -253,7 +256,7 @@ public class Grafo {
 		ultimoNo.setCurrentBestScore(0);
 		ultimoNo.setCurrentTime(0);
 		// ultimo no nao tem restricao de tempo especifico
-		ultimoNo.setTimeRestriction(RestricaoTempo.converte(null, null));
+		ultimoNo.setRestricaoTempo(RestricaoTempo.converte(null, null));
 		ultimoNo.setEndereco(destino);
 		this.instanciaNos.add(ultimoNo);
 
@@ -266,16 +269,16 @@ public class Grafo {
 		for (int i = this.instanciaNos.size() - 1; i > 0; i--) {
 
 			No noOrigem = this.instanciaNos.get(i);
-			List<Vertice> arestasSaida = noOrigem.getOutputVertexes();
+			Set<Vertice> verticesSaida = noOrigem.getVerticesDeSaida();
 
-			for (Vertice aresta : arestasSaida) {
+			for (Vertice vertice : verticesSaida) {
 
 				// TODO acho que só precisa verificar o J
-				if (aresta.getI() >= this.instanciaNos.size() || aresta.getJ() >= this.instanciaNos.size()) {
+				if (vertice.getI() >= this.instanciaNos.size() || vertice.getJ() >= this.instanciaNos.size()) {
 					break;
 				}
 
-				No noDestino = aresta.getTargetNode();
+				No noDestino = vertice.getNoDestino();
 				
 				// MUITO IMPORTANTE!!!
 				// AQUI A VERIFICAÇÃO É INVERTIDA, O ALGORITMO RODA DO DESTINO COMO SE FOSSE ORIGEM,
@@ -287,7 +290,7 @@ public class Grafo {
 						Coordenadas.converte(enderecoOrigem.getLongitude(), enderecoOrigem.getLatitude()),
 						Coordenadas.converte(enderecoDestino.getLongitude(), enderecoDestino.getLatitude()));
 
-				aresta.setTimeCost(segundosDistancia);
+				vertice.setCustoTransito(segundosDistancia);
 
 			}
 
@@ -295,7 +298,7 @@ public class Grafo {
 
 		Date fim = new Date();
 		long tempoInicializacao = fim.getTime() - inicio.getTime();
-		LOGGER.info("tempo de preenchimento das arestas: {} milisegundos", tempoInicializacao);
+//		LOGGER.info("tempo de preenchimento das arestas: {} milisegundos", tempoInicializacao);
 
 	}
 

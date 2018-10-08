@@ -2,27 +2,27 @@ package com.caronasfei.match.djikstra;
 
 public class Vertice {
 
-	private No targetNode;
+	private No noDestino;
 
-	private double timeCost;
+	private double custoTransito;
 
 	private int i;
 	private int j;
 
-	public No getTargetNode() {
-		return targetNode;
+	public No getNoDestino() {
+		return noDestino;
 	}
 
-	public void setTargetNode(No targetNode) {
-		this.targetNode = targetNode;
+	public void setNoDestino(No noDestino) {
+		this.noDestino = noDestino;
 	}
 
-	public double getTimeCost() {
-		return timeCost;
+	public double getCustoTransito() {
+		return custoTransito;
 	}
 
-	public void setTimeCost(double cost) {
-		this.timeCost = cost;
+	public void setCustoTransito(double custo) {
+		this.custoTransito = custo;
 	}
 
 	public int getI() {
@@ -39,6 +39,42 @@ public class Vertice {
 
 	public void setJ(int j) {
 		this.j = j;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + i;
+		result = prime * result + j;
+		result = prime * result + ((noDestino == null) ? 0 : noDestino.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(custoTransito);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Vertice other = (Vertice) obj;
+		if (i != other.i)
+			return false;
+		if (j != other.j)
+			return false;
+		if (noDestino == null) {
+			if (other.noDestino != null)
+				return false;
+		} else if (!noDestino.equals(other.noDestino))
+			return false;
+		if (Double.doubleToLongBits(custoTransito) != Double.doubleToLongBits(other.custoTransito))
+			return false;
+		return true;
 	}
 
 }
