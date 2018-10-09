@@ -27,9 +27,9 @@ public class FuncaoObjetivo {
 		int score = 1;
 		int timeIndex = 1;
 
-		for (int passengerIndex = this.numberPassengers; passengerIndex >= 0; passengerIndex--) {
+		for (int passengerIndex = this.numberPassengers; passengerIndex > 0; passengerIndex--) {
 
-			for (; timeIndex <= detourTime; timeIndex++) {
+			for (timeIndex = 1; timeIndex <= detourTime; timeIndex++) {
 
 				NumberPassengerTimeTuple tuple = new NumberPassengerTimeTuple();
 				tuple.setNumberPassagenders(passengerIndex);
@@ -42,7 +42,7 @@ public class FuncaoObjetivo {
 		}
 
 		for (; timeIndex <= this.timeHorizon; timeIndex++) {
-			for (int passengerIndex = this.numberPassengers; passengerIndex >= 0; passengerIndex--) {
+			for (int passengerIndex = 0; passengerIndex <= this.numberPassengers; passengerIndex++) {
 
 				NumberPassengerTimeTuple tuple = new NumberPassengerTimeTuple();
 				tuple.setNumberPassagenders(passengerIndex);
