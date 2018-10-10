@@ -168,6 +168,9 @@ public class No<E> {
 				numeroPassageirosCandidato++;
 			}
 			
+			String bairroNodo = noCandidato.getEndereco().getBairro();
+			String cidadeNodo = noCandidato.getEndereco().getCidade();
+			
 			// TODO só somar o numero de passageiros se o nó candidato for de passageiro fera.
 			int noCandidatoScore = this.graph.getObjectiveValue(numeroPassageirosCandidato,
 					custoEstimadoNoCandidato);
@@ -187,8 +190,17 @@ public class No<E> {
 								&& this.numeroPassageirosAtual + 1 <= noCandidato.getIntencaoCarona().getNumeroAssentos()))
 					&& noCandidatoScore < noCandidato.getCurrentBestScore()) {
 
+				if (noCandidato.getNumber() == 0) {
+					System.out.println("debug");
+				}
+				
 				noCandidato.setCurrentBestScore(noCandidatoScore);
-				noCandidato.setVerticeSelecionado(verticeDeSaida);
+				Vertice verticeInvertido = new Vertice();
+				verticeInvertido.setCustoTransito(verticeDeSaida.getCustoTransito());
+				verticeInvertido.setI(verticeDeSaida.getJ());
+				verticeInvertido.setJ(verticeDeSaida.getI());
+				verticeInvertido.setNoDestino(this);
+				noCandidato.setVerticeSelecionado(verticeInvertido);
 				noCandidato.setCurrentTime(custoEstimadoNoCandidato);
 				
 				if (noCandidato.getIntencaoCarona().getAcaoCarona() == AcaoCarona.PEDIR_CARONA) {

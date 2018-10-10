@@ -38,8 +38,6 @@ public class DijkstraAlgorimo /* implements Algoritmo */ {
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void rodar(List<IntencaoCarona> intencoesCarona, Endereco destino, List<SugestaoTrajeto> sugestoesTrajetoComSubstituicao) {
 
-		Date inicio = new Date();
-
 		Map<Integer, No> nosVisitados = new HashMap<Integer, No>();
 		this.nosMotoristasVisitados = new HashMap<Integer, No>();
 
@@ -48,6 +46,8 @@ public class DijkstraAlgorimo /* implements Algoritmo */ {
 		this.grafo.fixaNosConfirmados(sugestoesTrajetoComSubstituicao);
 		Set<Integer> nosMotoristas = this.grafo.getMotoristaNodesNumbers();
 
+		Date inicio = new Date();
+		
 		No no = null;
 		do {
 			

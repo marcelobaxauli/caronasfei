@@ -25,15 +25,16 @@ public class FuncaoObjetivo {
 	private void buildObjectiveTable() {
 
 		int score = 1;
-		int timeIndex = 1;
+		int tempoComPassageiros = 1;
+		int tempoSemPassageiros = 1;
 
 		for (int passengerIndex = this.numberPassengers; passengerIndex > 0; passengerIndex--) {
 
-			for (timeIndex = 1; timeIndex <= detourTime; timeIndex++) {
+			for (tempoComPassageiros = 1; tempoComPassageiros <= detourTime; tempoComPassageiros++) {
 
 				NumberPassengerTimeTuple tuple = new NumberPassengerTimeTuple();
 				tuple.setNumberPassagenders(passengerIndex);
-				tuple.setTime(timeIndex);
+				tuple.setTime(tempoComPassageiros);
 
 				this.objectiveTable.put(tuple, score++);
 
@@ -41,14 +42,21 @@ public class FuncaoObjetivo {
 
 		}
 
-		for (; timeIndex <= this.timeHorizon; timeIndex++) {
-			for (int passengerIndex = 0; passengerIndex <= this.numberPassengers; passengerIndex++) {
+		for (tempoSemPassageiros = 1; tempoSemPassageiros <= this.timeHorizon; tempoSemPassageiros++, tempoComPassageiros++) {
 
-				NumberPassengerTimeTuple tuple = new NumberPassengerTimeTuple();
-				tuple.setNumberPassagenders(passengerIndex);
-				tuple.setTime(timeIndex);
+			NumberPassengerTimeTuple tuplaSemPassageiro = new NumberPassengerTimeTuple();
+			tuplaSemPassageiro.setNumberPassagenders(0);
+			tuplaSemPassageiro.setTime(tempoSemPassageiros);					
 
-				this.objectiveTable.put(tuple, score++);
+			this.objectiveTable.put(tuplaSemPassageiro, score++);
+			
+			for (int passengerIndex = this.numberPassengers; passengerIndex > 0; passengerIndex--) {
+				
+				NumberPassengerTimeTuple tuplaComPassageiro = new NumberPassengerTimeTuple();
+				tuplaComPassageiro.setNumberPassagenders(passengerIndex);
+				tuplaComPassageiro.setTime(tempoComPassageiros);										
+
+				this.objectiveTable.put(tuplaComPassageiro, score++);
 
 			}
 		}
