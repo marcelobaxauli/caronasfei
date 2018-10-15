@@ -56,7 +56,7 @@ public class GravaMatchesIda {
 			// TODO verificar se a intenção de carona do motorista e dos passageiros ainda estão ativas
 			// antes de criar a sugestao de trajeto
 			
-			int score = noMotorista.getCurrentBestScore(); // na ida a propagação inicia na FEI e termina no nó
+			int score = noMotorista.getScore(); // na ida a propagação inicia na FEI e termina no nó
 															// motorista (current best score tá no nó motorista).
 
 			// pode ser uma substituição de passageiro tbm.. mas acredito que rode

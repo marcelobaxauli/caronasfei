@@ -20,6 +20,7 @@ import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
 import com.caronasfei.db.intencao.endereco.Endereco;
 import com.caronasfei.db.sugestao.SugestaoTrajeto;
+import com.caronasfei.match.djikstra.model.PercorreNos;
 
 @Component
 @Scope("singleton")
@@ -52,20 +53,32 @@ public class DijkstraAlgorimo /* implements Algoritmo */ {
 		do {
 			
 			no = this.grafo.getNoMinimoCusto();
-
+			
 			if (no != null) {
-				no.spanCustos(nosVisitados);
-
-				nosVisitados.put(no.getNumber(), no);
-
-				if (no.getIntencaoCarona() != null 
+				
+				if (no.getScore() != Integer.MAX_VALUE 
+						&& no.getIntencaoCarona() != null // endereço final por exemplo qnd é FEI não possui intenção de carona associada
 						&& no.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA) {
-					nosMotoristasVisitados.put(no.getNumber(), no);
+					// TODO só funciona quando o destino é a FEI
+					// e as folhas sao os motoristas
+					
+					PercorreNos.preencheScoreCaminho(no, no.getScore(), destino);
+					
+				} else {
+					no.spanCustos(nosVisitados);
+
+					nosVisitados.put(no.getNumber(), no);
+
+					if (no.getIntencaoCarona() != null 
+							&& no.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA) {
+						nosMotoristasVisitados.put(no.getNumber(), no);
+					}					
 				}
+				
 			}
 
-		} while (no != null && no.getCurrentBestScore() != Integer.MAX_VALUE
-				&& nosMotoristasVisitados.size() != nosMotoristas.size());
+		} while (no != null && no.getScore() != Integer.MAX_VALUE
+				/*&& nosMotoristasVisitados.size() != nosMotoristas.size()*/);
 
 		Date fim = new Date();
 

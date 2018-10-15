@@ -6,9 +6,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.caronasfei.match.MatchCaronasIda;
-import com.caronasfei.service.endereco.EnderecoServico;
-import com.caronasfei.service.intencao.IntencaoCaronaServico;
-import com.caronasfei.service.sugestao.SugestaoTrajetoServico;
 
 @Component
 @EnableScheduling
@@ -17,8 +14,9 @@ public class CronFormacaoTrajeto {
 	@Autowired
 	private MatchCaronasIda matchCaronasIda;
 
-	@Scheduled(fixedRate = 30000)
+	@Scheduled(fixedRate = 5000)
 	public void executar() {
+		System.out.println("INFO");
 		this.matchCaronasIda.encontraMatches();
 	}
 

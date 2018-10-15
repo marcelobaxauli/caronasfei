@@ -57,7 +57,7 @@ public class Grafo {
 
 		this.nos = new HashMap<Integer, No>(maxNumeroNos, 1);
 
-		this.funcaoObjetivo = new FuncaoObjetivo(3, 4 * 60, 30);
+		this.funcaoObjetivo = new FuncaoObjetivo(3, 4 * 60, 120);
 
 		for (int i = 0; i < maxNumeroNos; i++) {
 
@@ -183,7 +183,7 @@ public class Grafo {
 
 			@Override
 			public int compare(No o1, No o2) {
-				return o1.getCurrentBestScore() - o2.getCurrentBestScore();
+				return o1.getScore() - o2.getScore();
 			}
 
 		});
@@ -233,27 +233,28 @@ public class Grafo {
 		for (int i = 0; i < intencoesCarona.size(); i++) {
 
 			IntencaoCarona intencaoCarona = intencoesCarona.get(i);
-
-			No node = this.nos.get(i);
-			node.setCurrentBestScore(Integer.MAX_VALUE);
-			node.setCurrentTime(0);
-			node.setIntencaoCarona(intencaoCarona);
-			node.setRestricaoTempo(RestricaoTempo.converte(intencaoCarona.getHorarioPartida().getHorario(),
+			
+			No nodo = this.nos.get(i);
+			nodo.setScore(Integer.MAX_VALUE);
+			nodo.setCurrentTime(0);
+			nodo.setIntencaoCarona(intencaoCarona);
+			nodo.setRestricaoTempo(RestricaoTempo.converte(intencaoCarona.getHorarioPartida().getHorario(),
 					intencaoCarona.getHorarioChegada().getHorario()));
 
 			if (intencaoCarona.getDirecaoCarona() == DirecaoCarona.IDA_FEI) {
-				node.setEndereco(intencaoCarona.getEnderecoPartida());
+				nodo.setEndereco(intencaoCarona.getEnderecoPartida());
 			} else if (intencaoCarona.getDirecaoCarona() == DirecaoCarona.VOLTA_FEI) {
-				node.setEndereco(intencaoCarona.getEnderecoDestino());
+				nodo.setEndereco(intencaoCarona.getEnderecoDestino());
 			}
 
-			this.instanciaNos.add(node);
+			this.instanciaNos.add(nodo);
 		}
 
 		// último nó não possui vertices de saída
 		// último nó vai ser a FEI / agr no inicio
+				
 		No ultimoNo = this.nos.get(intencoesCarona.size());
-		ultimoNo.setCurrentBestScore(0);
+		ultimoNo.setScore(0);
 		ultimoNo.setCurrentTime(0);
 		// ultimo no nao tem restricao de tempo especifico
 		ultimoNo.setRestricaoTempo(RestricaoTempo.converte(null, null));
