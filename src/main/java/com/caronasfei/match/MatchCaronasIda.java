@@ -1,8 +1,6 @@
 package com.caronasfei.match;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -57,30 +55,29 @@ public class MatchCaronasIda {
 
 	public void encontraMatches() {
 
-		List<IntencaoCarona> intencoesMotoristas = this.intencaoServico
-				.findMotoristasDisponiveis(DirecaoCarona.IDA_FEI);
-		List<IntencaoCarona> intencoesPassageiros = this.intencaoServico
-				.findAllPassageirosDisponiveis(DirecaoCarona.IDA_FEI);
-		List<IntencaoCarona> intencoes = new ArrayList<IntencaoCarona>();
-		intencoes.addAll(intencoesMotoristas);
-		intencoes.addAll(intencoesPassageiros);
+		List<IntencaoCarona> intencoesMotoristas = this.intencaoServico.findMotoristasDisponiveis(DirecaoCarona.IDA_FEI);
+		List<IntencaoCarona> intencoesPassageiros = this.intencaoServico.findAllPassageirosDisponiveis(DirecaoCarona.IDA_FEI);
 		Endereco enderecoFei = this.enderecoServico.findEnderecoById(Endereco.ID_ENDERECO_FEI_SBC);
-		List<SugestaoTrajeto> sugestoesComPassageirosEmSubstituicao = this.sugestaoTrajetoService
-				.findSugestoesComPassageirosEmSubstituicao();
 
-		if (intencoesMotoristas.size() > 0 && intencoesPassageiros.size() > 0) {
-			LOGGER.info("encontrando matches para {} intencoes de motoristas e {} de passageiros",
-					intencoesMotoristas.size(), intencoesPassageiros.size());
-			this.dijkstraAlgoritmo.rodar(intencoes, enderecoFei, sugestoesComPassageirosEmSubstituicao);
-			Set<No> nosMotoristas = this.dijkstraAlgoritmo.getNosMotoristasVisitados();
+		LOGGER.info("encontrando matches para {} intencoes de motoristas e {} de passageiros",
+				intencoesMotoristas.size(), intencoesPassageiros.size());
+		
+		for (IntencaoCarona intencaoMotorista : intencoesMotoristas) {
+
+			SugestaoTrajeto sugestaoComPassageirosEmSubstituicao = this.sugestaoTrajetoService.findSugestaoComPassageirosEmSubstituicaoParaMotorista(intencaoMotorista);
+			
+			this.dijkstraAlgoritmo.rodar(intencaoMotorista, intencoesPassageiros, enderecoFei, sugestaoComPassageirosEmSubstituicao);
+
+			No noMotorista = this.dijkstraAlgoritmo.getNoMotorista();			
+			//this.gravaMatches.gravaSugestoes(nosMotoristas);
 
 			LOGGER.info("gravando sugestoes de carona encontradas...");
+
 			
-			//this.gravaMatches.gravaSugestoes(nosMotoristas);
-		} else {
-			LOGGER.info("não executando procura de matches. {} intencoes de motoristas e {} de passageiros",
-					intencoesMotoristas.size(), intencoesPassageiros.size());			
 		}
+		
+//			LOGGER.info("não executando procura de matches. {} intencoes de motoristas e {} de passageiros",
+//					intencoesMotoristas.size(), intencoesPassageiros.size());			
 
 	}
 

@@ -341,16 +341,28 @@ public class SugestaoTrajetoServico {
 	}
 	
 	@Transactional(readOnly = true)
-	public List<SugestaoTrajeto> findSugestoesComPassageirosEmSubstituicao() {
+	public SugestaoTrajeto findSugestaoComPassageirosEmSubstituicaoParaMotorista(IntencaoCarona intencaoCaronaMotorista) {
 		
 		TypedQuery<SugestaoTrajeto> query = em.createQuery("SELECT st FROM SugestaoTrajeto st "
+				   + "INNER JOIN SugestaoTrajetoMotorista stm "
+				   + "ON st.motorista = stm.id "
+				   + "INNER JOIN IntencaoCarona i " 
+				   + "ON stm.intencaoCarona = i.id "
 				   + "INNER JOIN SugestaoTrajetoPassageiro stp "
 				   + "ON st.id = stp.sugestaoTrajeto "
+				   + "AND i.id = :intencaoMotoristaId "
 				   + "AND stp.estado = :estadoPassageiro ", SugestaoTrajeto.class);
 		
+		query.setParameter("intencaoMotoristaId", intencaoCaronaMotorista.getId());
 		query.setParameter("estadoPassageiro", SugestaoTrajetoPassageiroEstado.SUBSTITUICAO);
 		
-		return query.getResultList();
+		List<SugestaoTrajeto> resultList = query.getResultList();
+		
+		if (resultList.isEmpty()) {
+			return null;
+		}
+		
+		return resultList.get(0);
 		
 	}
 	

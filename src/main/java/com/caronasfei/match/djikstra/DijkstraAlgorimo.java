@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,67 +34,53 @@ public class DijkstraAlgorimo /* implements Algoritmo */ {
 
 	@Autowired
 	private Grafo grafo;
-	
+
 	private Map<Integer, No> nosMotoristasVisitados;
 
 	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	public void rodar(List<IntencaoCarona> intencoesCarona, Endereco destino, List<SugestaoTrajeto> sugestoesTrajetoComSubstituicao) {
+	public void rodar(IntencaoCarona intencaoCaronaMotorista, List<IntencaoCarona> intencoesCaronaPassageiro,
+			Endereco destino, SugestaoTrajeto sugestaoTrajetoComSubstituicao) {
 
 		Map<Integer, No> nosVisitados = new HashMap<Integer, No>();
 		this.nosMotoristasVisitados = new HashMap<Integer, No>();
 
-		this.grafo.init(intencoesCarona.size() + 1);
-		this.grafo.instancia(intencoesCarona, destino);
-		this.grafo.fixaNosConfirmados(sugestoesTrajetoComSubstituicao);
-		Set<Integer> nosMotoristas = this.grafo.getMotoristaNodesNumbers();
+		List<IntencaoCarona> intencoes = new LinkedList<IntencaoCarona>();
+		intencoes.add(intencaoCaronaMotorista);
+		intencoes.addAll(intencoesCaronaPassageiro);
+		this.grafo.init(intencoesCaronaPassageiro.size() + 2, intencaoCaronaMotorista);
+		this.grafo.instancia(intencoes, destino);
+		if (sugestaoTrajetoComSubstituicao != null) {
+			this.grafo.fixaNosConfirmados(sugestaoTrajetoComSubstituicao);			
+		}
 
 		Date inicio = new Date();
-		
+
 		No no = null;
 		do {
-			
+
 			no = this.grafo.getNoMinimoCusto();
-			
+
 			if (no != null) {
-				
-				if (no.getScore() != Integer.MAX_VALUE 
-						&& no.getIntencaoCarona() != null // endereço final por exemplo qnd é FEI não possui intenção de carona associada
-						&& no.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA) {
-					// TODO só funciona quando o destino é a FEI
-					// e as folhas sao os motoristas
-					
-					PercorreNos.preencheScoreCaminho(no, no.getScore(), destino);
-					
-				} else {
-					no.spanCustos(nosVisitados);
 
-					nosVisitados.put(no.getNumber(), no);
+				no.expandeCustos(nosVisitados);
+				nosVisitados.put(no.getNumber(), no);
 
-					if (no.getIntencaoCarona() != null 
-							&& no.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA) {
-						nosMotoristasVisitados.put(no.getNumber(), no);
-					}					
-				}
-				
 			}
+			
+			// TODO apagar isto daqui.
+			// isso só serve pra debug, no auxilio do solucaoParcialDebug.print
+			System.out.println();
 
-		} while (no != null && no.getScore() != Integer.MAX_VALUE
-				/*&& nosMotoristasVisitados.size() != nosMotoristas.size()*/);
+		} while (no != null && no.getScore() != Integer.MAX_VALUE && no.getIntencaoCarona() != null);
 
 		Date fim = new Date();
 
 		LOGGER.info("tempo de processamento: " + ((fim.getTime() - inicio.getTime())) + " milisegundos");
 
 	}
-	
-	public Set<No> getNosMotoristasVisitados() {
-		
-		Collection<No> values = this.nosMotoristasVisitados.values();
-		
-		Set<No> nos = new HashSet<No>();
-		nos.addAll(values);
-		
-		return nos;
+
+	public No getNoMotorista() {
+		return this.grafo.getPrimeiroNo();
 	}
 
 }

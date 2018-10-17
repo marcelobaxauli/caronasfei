@@ -12,7 +12,7 @@ public class SolucaoParcialDebug {
 		String bairroNodo = noCandidato.getEndereco().getBairro();
 		String cidadeNodo = noCandidato.getEndereco().getCidade();
 
-		System.out.printf(" <- %s(%s)", bairroNodo, cidadeNodo);				
+		System.out.printf(" %s(%s)", bairroNodo, cidadeNodo);				
 		
 		System.out.printf(" %d passageiros", numeroPassageiros);		
 		
@@ -33,20 +33,15 @@ public class SolucaoParcialDebug {
 	public static void printDoInicio(No no) {
 		
 		if (no != null) {
-			if (no.getVerticeSelecionado() != null) {
-				SolucaoParcialDebug.printDoInicio(no.getVerticeSelecionado().getNoDestino());				
-			}
 
+			if (no.getNoAnterior() != null) {
+				SolucaoParcialDebug.printDoInicio(no.getNoAnterior());				
+			}
+			
 			String bairroOrigem = no.getEndereco().getBairro();
 			String cidadeOrigem = no.getEndereco().getCidade();
 			
-			if (no.getVerticeSelecionado() == null) {
-				System.out.printf(" %s(%s) ", bairroOrigem, cidadeOrigem);				
-			} else {
-				System.out.printf("<- %s(%s)", bairroOrigem, cidadeOrigem);				
-			}
-			
-			
+			System.out.printf("%s(%s) ->", bairroOrigem, cidadeOrigem);				
 			
 		}
 		

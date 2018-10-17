@@ -10,7 +10,6 @@ import java.util.Set;
 import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
 import com.caronasfei.db.intencao.endereco.Endereco;
-import com.caronasfei.match.djikstra.model.PercorreNos;
 import com.caronasfei.match.djikstra.model.RestricaoTempo;
 import com.caronasfei.match.djikstra.model.SolucaoParcialDebug;
 
@@ -20,6 +19,9 @@ public class No<E> {
 
 	private Vertice verticeSelecionado;
 
+	// TODO: só pra debug
+	private No noAnterior;
+	
 	private int numero;
 
 	private int score;
@@ -37,7 +39,7 @@ public class No<E> {
 
 	private Endereco endereco;
 
-	private Grafo graph;
+	private Grafo grafo;
 
 	// nó já confirmado pelo motorista/passageiro
 	private boolean fixo;
@@ -45,9 +47,10 @@ public class No<E> {
 	public No(int numero, Grafo graph) {
 
 		this.numero = numero;
-		this.graph = graph;
+		this.grafo = graph;
 		this.verticeSelecionado = null;
 		this.caminhoScore = null;
+		this.noAnterior = null;
 		
 	}
 
@@ -57,6 +60,14 @@ public class No<E> {
 
 	public void setVerticeSelecionado(Vertice verticeSelecionado) {
 		this.verticeSelecionado = verticeSelecionado;
+	}
+	
+	public No getNoAnterior() {
+		return noAnterior;
+	}
+
+	public void setNoAnterior(No noAnterior) {
+		this.noAnterior = noAnterior;
 	}
 
 	public Set<Vertice> getVerticesDeSaida() {
@@ -85,7 +96,7 @@ public class No<E> {
 
 	public boolean isInTimeRestriction(Date visitTime, Date maximumTime) {
 
-		if (this.numero == this.graph.getCurrentSize()) {
+		if (this.numero == this.grafo.getCurrentSize()) {
 			return true;
 		}
 
@@ -157,7 +168,7 @@ public class No<E> {
 		this.sugestaoTrajetoUsuario = sugestaoTrajetoUsuario;
 	}
 
-	public void spanCustos(Map<Integer, No> nosVisitados) {
+	public void expandeCustos(Map<Integer, No> nosVisitados) {
 
 		if (this.intencaoCarona != null && this.intencaoCarona.getAcaoCarona() == AcaoCarona.OFERECER_CARONA
 				&& this.numeroPassageirosAtual >= this.intencaoCarona.getNumeroAssentos()) {
@@ -166,20 +177,19 @@ public class No<E> {
 
 		for (Vertice verticeDeSaida : this.verticesDeSaida) {
 
-			if (verticeDeSaida.getI() > this.graph.getCurrentSize()
-					|| verticeDeSaida.getJ() > this.graph.getCurrentSize()) {
+			if (verticeDeSaida.getI() > this.grafo.getCurrentSize()
+					|| verticeDeSaida.getJ() > this.grafo.getCurrentSize()) {
 				break;
 			}
 
 			No noCandidato = verticeDeSaida.getNoDestino();
 
-			
 			double custoTransitoMinutos = verticeDeSaida.getCustoTransito() / 60; // custo esta em segundos / transforma em minutos
 			long custoEstimadoNoCandidato = (long) (this.currentTime + custoTransitoMinutos);
 
 			int numeroPassageirosCandidato = this.numeroPassageirosAtual;
 
-			if (noCandidato.getIntencaoCarona().getAcaoCarona() == AcaoCarona.PEDIR_CARONA) {
+			if (noCandidato.getIntencaoCarona() != null && noCandidato.getIntencaoCarona().getAcaoCarona() == AcaoCarona.PEDIR_CARONA) {
 				numeroPassageirosCandidato++;
 			}
 
@@ -191,7 +201,7 @@ public class No<E> {
 
 			// TODO só somar o numero de passageiros se o nó candidato for de passageiro
 			// fera.
-			int noCandidatoScore = this.graph.getObjectiveValue(numeroPassageirosCandidato, custoEstimadoNoCandidato);
+			int noCandidatoScore = this.grafo.getObjectiveValue(numeroPassageirosCandidato, custoEstimadoNoCandidato);
 			
 			// TODO preciso ver se o nó i já recusou o nó j, ou foi recusado.
 			// criar uma tabela de recusa pra facilitar o trabalho, no estilo nó i recusou
@@ -204,34 +214,33 @@ public class No<E> {
 			if (nosVisitados.get(noCandidato.getNumber()) == null
 					&& noCandidatoScore < noCandidato.getScore()
 					&& RestricaoTempo.isCaminhoValido(verticeDeSaida, this)
-					&& (noCandidato.getIntencaoCarona().getAcaoCarona() == AcaoCarona.PEDIR_CARONA 
+					&& (noCandidato.getIntencaoCarona() == null 
+						|| (noCandidato.getIntencaoCarona().getAcaoCarona() == AcaoCarona.PEDIR_CARONA 
 						|| (noCandidato.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA
 							&& this.numeroPassageirosAtual + 1 <= noCandidato.getIntencaoCarona().getNumeroAssentos())
-						)
-					&& PercorreNos.isMelhorCaminhoScore(this, noCandidatoScore)
+						))
 					) {
 
 				// print para debug
 				SolucaoParcialDebug.print(this, noCandidato, numeroPassageirosCandidato, custoTransitoMinutos, custoEstimadoNoCandidato, noCandidatoScore, true);
-				
-				PercorreNos.destravaDependencias(this);
-				
-				List<No> nosCarona = this.getNosCarona(noCandidato);
 
-				Vertice verticeInvertido = new Vertice();
-				verticeInvertido.setCustoTransito(verticeDeSaida.getCustoTransito());
-				verticeInvertido.setI(verticeDeSaida.getJ());
-				verticeInvertido.setJ(verticeDeSaida.getI());
-				verticeInvertido.setNoDestino(this);
+				Vertice vertice = new Vertice();
+				vertice.setCustoTransito(verticeDeSaida.getCustoTransito());
+				vertice.setI(verticeDeSaida.getI());
+				vertice.setJ(verticeDeSaida.getJ());
+				vertice.setNoDestino(noCandidato);
 				
 				noCandidato.setScore(noCandidatoScore);
-				noCandidato.setVerticeSelecionado(verticeInvertido);
+				this.setVerticeSelecionado(vertice);
 				noCandidato.setCurrentTime(custoEstimadoNoCandidato);
-
-				if (noCandidato.getIntencaoCarona().getAcaoCarona() == AcaoCarona.PEDIR_CARONA) {
-					noCandidato.setCurrentNumberOfPassengers(this.numeroPassageirosAtual + 1);
-				} else {
-					noCandidato.setCurrentNumberOfPassengers(this.numeroPassageirosAtual);
+				noCandidato.setNoAnterior(this);
+				
+				if (noCandidato.getIntencaoCarona() != null) {
+					if (noCandidato.getIntencaoCarona().getAcaoCarona() == AcaoCarona.PEDIR_CARONA) {
+						noCandidato.setCurrentNumberOfPassengers(this.numeroPassageirosAtual + 1);
+					} else {
+						noCandidato.setCurrentNumberOfPassengers(this.numeroPassageirosAtual);
+					}	
 				}
 			} else {
 				// print para debug
