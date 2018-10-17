@@ -79,8 +79,8 @@ public class DijkstraAlgorimo /* implements Algoritmo */ {
 
 	}
 
-	public No getNoMotorista() {
-		return this.grafo.getPrimeiroNo();
+	public No getNoDestino() {
+		return this.grafo.getUltimoNo();
 	}
 
 }

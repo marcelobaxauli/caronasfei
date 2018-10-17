@@ -2,26 +2,27 @@ package com.caronasfei.match.djikstra;
 
 public class Vertice {
 
-	private No noDestino;
+	private No noOrigem;
 
-	private double custoTransito;
+	// em milisegundos
+	private long custoTransito;
 
 	private int i;
 	private int j;
 
-	public No getNoDestino() {
-		return noDestino;
+	public No getNoOrigem() {
+		return noOrigem;
 	}
 
-	public void setNoDestino(No noDestino) {
-		this.noDestino = noDestino;
+	public void setNoOrigem(No noOrigem) {
+		this.noOrigem = noOrigem;
 	}
 
-	public double getCustoTransito() {
+	public long getCustoTransito() {
 		return custoTransito;
 	}
 
-	public void setCustoTransito(double custo) {
+	public void setCustoTransito(long custo) {
 		this.custoTransito = custo;
 	}
 
@@ -47,7 +48,7 @@ public class Vertice {
 		int result = 1;
 		result = prime * result + i;
 		result = prime * result + j;
-		result = prime * result + ((noDestino == null) ? 0 : noDestino.hashCode());
+		result = prime * result + ((noOrigem == null) ? 0 : noOrigem.hashCode());
 		long temp;
 		temp = Double.doubleToLongBits(custoTransito);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -67,10 +68,10 @@ public class Vertice {
 			return false;
 		if (j != other.j)
 			return false;
-		if (noDestino == null) {
-			if (other.noDestino != null)
+		if (noOrigem == null) {
+			if (other.noOrigem != null)
 				return false;
-		} else if (!noDestino.equals(other.noDestino))
+		} else if (!noOrigem.equals(other.noOrigem))
 			return false;
 		if (Double.doubleToLongBits(custoTransito) != Double.doubleToLongBits(other.custoTransito))
 			return false;

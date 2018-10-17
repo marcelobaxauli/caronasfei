@@ -31,7 +31,7 @@ public class No<E> {
 	private RestricaoTempo restricaoTempo;
 
 	private int numeroPassageirosAtual;
-	private long currentTime;
+	private long horarioEstimado;
 
 	private IntencaoCarona intencaoCarona;
 
@@ -128,12 +128,12 @@ public class No<E> {
 	}
 
 	// span costs to forward adjacent vertices
-	public long getCurrentTime() {
-		return currentTime;
+	public long getHorarioEstimado() {
+		return horarioEstimado;
 	}
 
-	public void setCurrentTime(long currentTime) {
-		this.currentTime = currentTime;
+	public void setHorarioEstimado(long currentTime) {
+		this.horarioEstimado = currentTime;
 	}
 	
 	public void setScore(int score) {
@@ -175,17 +175,17 @@ public class No<E> {
 			return;
 		}
 
-		for (Vertice verticeDeSaida : this.verticesDeSaida) {
+		for (Vertice verticeIncidente : this.verticesDeSaida) {
 
-			if (verticeDeSaida.getI() > this.grafo.getCurrentSize()
-					|| verticeDeSaida.getJ() > this.grafo.getCurrentSize()) {
+			if (verticeIncidente.getI() > this.grafo.getCurrentSize()
+					|| verticeIncidente.getJ() > this.grafo.getCurrentSize()) {
 				break;
 			}
 
-			No noCandidato = verticeDeSaida.getNoDestino();
+			No noCandidato = verticeIncidente.getNoOrigem();
 
-			double custoTransitoMinutos = verticeDeSaida.getCustoTransito() / 60; // custo esta em segundos / transforma em minutos
-			long custoEstimadoNoCandidato = (long) (this.currentTime + custoTransitoMinutos);
+			double custoTransitoMinutos = verticeIncidente.getCustoTransito(); // custo esta em milisegundos
+			long horarioEstimadoNoCandidato = (long) (this.horarioEstimado + custoTransitoMinutos);
 
 			int numeroPassageirosCandidato = this.numeroPassageirosAtual;
 
@@ -201,7 +201,7 @@ public class No<E> {
 
 			// TODO só somar o numero de passageiros se o nó candidato for de passageiro
 			// fera.
-			int noCandidatoScore = this.grafo.getObjectiveValue(numeroPassageirosCandidato, custoEstimadoNoCandidato);
+			int noCandidatoScore = this.grafo.getObjectiveValue(numeroPassageirosCandidato, horarioEstimadoNoCandidato);
 			
 			// TODO preciso ver se o nó i já recusou o nó j, ou foi recusado.
 			// criar uma tabela de recusa pra facilitar o trabalho, no estilo nó i recusou
@@ -211,28 +211,32 @@ public class No<E> {
 			// relação de recusas em uma estrutura
 			// de dados em memória para agilizar estas verificações.
 
+			if (noCandidato.getNumber() == 9) {
+				System.out.println("debug");
+			}
+			
 			if (nosVisitados.get(noCandidato.getNumber()) == null
 					&& noCandidatoScore < noCandidato.getScore()
-					&& RestricaoTempo.isCaminhoValido(verticeDeSaida, this)
+					&& RestricaoTempo.isCaminhoValido(horarioEstimadoNoCandidato, noCandidato)
 					&& (noCandidato.getIntencaoCarona() == null 
 						|| (noCandidato.getIntencaoCarona().getAcaoCarona() == AcaoCarona.PEDIR_CARONA 
 						|| (noCandidato.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA
 							&& this.numeroPassageirosAtual + 1 <= noCandidato.getIntencaoCarona().getNumeroAssentos())
 						))
 					) {
-
+				
 				// print para debug
-				SolucaoParcialDebug.print(this, noCandidato, numeroPassageirosCandidato, custoTransitoMinutos, custoEstimadoNoCandidato, noCandidatoScore, true);
+				SolucaoParcialDebug.print(this, noCandidato, numeroPassageirosCandidato, custoTransitoMinutos, horarioEstimadoNoCandidato, noCandidatoScore, true);
 
 				Vertice vertice = new Vertice();
-				vertice.setCustoTransito(verticeDeSaida.getCustoTransito());
-				vertice.setI(verticeDeSaida.getI());
-				vertice.setJ(verticeDeSaida.getJ());
-				vertice.setNoDestino(noCandidato);
+				vertice.setCustoTransito(verticeIncidente.getCustoTransito());
+				vertice.setI(verticeIncidente.getI());
+				vertice.setJ(verticeIncidente.getJ());
+				vertice.setNoOrigem(this);
 				
 				noCandidato.setScore(noCandidatoScore);
-				this.setVerticeSelecionado(vertice);
-				noCandidato.setCurrentTime(custoEstimadoNoCandidato);
+				noCandidato.setVerticeSelecionado(vertice);
+				noCandidato.setHorarioEstimado(horarioEstimadoNoCandidato);
 				noCandidato.setNoAnterior(this);
 				
 				if (noCandidato.getIntencaoCarona() != null) {
@@ -244,7 +248,7 @@ public class No<E> {
 				}
 			} else {
 				// print para debug
-				SolucaoParcialDebug.print(this, noCandidato, numeroPassageirosCandidato, custoTransitoMinutos, custoEstimadoNoCandidato, noCandidatoScore, false);
+				SolucaoParcialDebug.print(this, noCandidato, numeroPassageirosCandidato, custoTransitoMinutos, horarioEstimadoNoCandidato, noCandidatoScore, false);
 
 			}
 
@@ -259,7 +263,7 @@ public class No<E> {
 		nosCarona.add(this);
 		
 		for (Vertice verticeAtual = this.verticeSelecionado; verticeAtual != null; ) {
-			No noDestino = verticeAtual.getNoDestino();
+			No noDestino = verticeAtual.getNoOrigem();
 			
 			if (noDestino != null) {
 				nosCarona.add(noDestino);
@@ -278,7 +282,7 @@ public class No<E> {
 		List<No> nosCarona = new ArrayList<No>();
 		
 		for (Vertice verticeAtual = this.verticeSelecionado; verticeAtual != null; ) {
-			No noDestino = verticeAtual.getNoDestino();
+			No noDestino = verticeAtual.getNoOrigem();
 			
 			if (noDestino != null) {
 				nosCarona.add(noDestino);

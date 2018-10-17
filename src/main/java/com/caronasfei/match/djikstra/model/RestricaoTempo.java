@@ -74,41 +74,14 @@ public class RestricaoTempo {
 		
 	}
 	
-	public static boolean isCaminhoValido(Vertice verticeCandidato, No noCaminho) {
-
-		// Por causa do algoritmo de dijkstra, que parte do destino como se fosse origem
-		// o nó aqui eh invertido
-		No noOrigem = verticeCandidato.getNoDestino();
+	public static boolean isCaminhoValido(long horarioEstimadoNoCandidato, No noCandidato) {
 		
-		RestricaoTempo restricaoTempo = noOrigem.getRestricaoTempo();
+		RestricaoTempo restricaoTempo = noCandidato.getRestricaoTempo();
 
 		long horarioMinimoCandidato = restricaoTempo.getHorarioMinimo();
 		long horarioMaximoCandidato = restricaoTempo.getHorarioMaximo();
-		
-		Vertice verticeAtual = verticeCandidato;
-		double horarioEstimado = horarioMinimoCandidato;
-		boolean valido = true;
-		while (verticeAtual != null && valido) {
-			
-			// TODO transformar todos os custos em mili segundos.
-			// fzr isso direto da api.
-			horarioEstimado += verticeAtual.getCustoTransito() * 1000.0; // transforma em milisegundos;
-			No noAtual = verticeAtual.getNoDestino();
-			
-			long horarioMinimoNoAtual = noAtual.getRestricaoTempo().getHorarioMinimo();
-			long horarioMaximoNoAtual = noAtual.getRestricaoTempo().getHorarioMaximo();
-			
-			if (!(horarioEstimado >= horarioMinimoNoAtual
-				&& horarioEstimado <= horarioMaximoNoAtual
-				&& horarioEstimado <= horarioMaximoCandidato)) {
-				valido = false;
-			}
-			
-			verticeAtual = noAtual.getVerticeSelecionado();
-			
-		}
-		
-		return valido;
+
+		return horarioEstimadoNoCandidato >= horarioMinimoCandidato && horarioEstimadoNoCandidato <= horarioMaximoCandidato;
 
 	}
 

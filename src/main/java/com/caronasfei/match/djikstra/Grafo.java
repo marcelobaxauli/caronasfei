@@ -81,7 +81,7 @@ public class Grafo {
 					No noDestino = nos.get(j);
 
 					Vertice novoVerticeSaida = new Vertice();
-					novoVerticeSaida.setNoDestino(noDestino);
+					novoVerticeSaida.setNoOrigem(noDestino);
 					novoVerticeSaida.setI(i);
 					novoVerticeSaida.setJ(j);
 
@@ -152,7 +152,7 @@ public class Grafo {
 						no.setSugestaoTrajetoUsuario(passageiro);
 						
 						Vertice vertice = new Vertice();
-						vertice.setNoDestino(no);
+						vertice.setNoOrigem(no);
 						noAnterior.setVerticeSelecionado(vertice);
 						noAnterior = no;
 						break;
@@ -228,7 +228,7 @@ public class Grafo {
 	}
 
 	public int getObjectiveValue(int numberOfPassengers, long timeCost) {
-		return this.funcaoObjetivo.getObjectiveFunctionValue(numberOfPassengers, timeCost);
+		return this.funcaoObjetivo.getObjectiveFunctionValue(numberOfPassengers, timeCost / 1000 / 60);
 	}
 
 	private void preencheNos(List<IntencaoCarona> intencoesCarona, Endereco destino) {
@@ -242,11 +242,12 @@ public class Grafo {
 			No nodo = this.nos.get(i);
 			if (primeiroNo) {
 				primeiroNo = false;
-				nodo.setScore(0);				
+				nodo.setScore(0);		
+				nodo.setHorarioEstimado(intencaoCarona.getHorarioPartida().getHorario().getTime());
 			} else {
 				nodo.setScore(Integer.MAX_VALUE);				
+				nodo.setHorarioEstimado(0);
 			}
-			nodo.setCurrentTime(0);
 			nodo.setIntencaoCarona(intencaoCarona);
 			nodo.setRestricaoTempo(RestricaoTempo.converte(intencaoCarona.getHorarioPartida().getHorario(),
 					intencaoCarona.getHorarioChegada().getHorario()));
@@ -265,7 +266,7 @@ public class Grafo {
 				
 		No ultimoNo = this.nos.get(intencoesCarona.size());
 		ultimoNo.setScore(Integer.MAX_VALUE);
-		ultimoNo.setCurrentTime(0);
+		ultimoNo.setHorarioEstimado(0);
 		// ultimo no nao tem restricao de tempo especifico
 		ultimoNo.setRestricaoTempo(RestricaoTempo.converte(null, null));
 		ultimoNo.setEndereco(destino);
@@ -289,7 +290,7 @@ public class Grafo {
 					break;
 				}
 
-				No noDestino = vertice.getNoDestino();
+				No noDestino = vertice.getNoOrigem();
 				
 				Endereco enderecoOrigem = noOrigem.getEndereco();
 				Endereco enderecoDestino = noDestino.getEndereco();
@@ -298,7 +299,7 @@ public class Grafo {
 						Coordenadas.converte(enderecoOrigem.getLongitude(), enderecoOrigem.getLatitude()),
 						Coordenadas.converte(enderecoDestino.getLongitude(), enderecoDestino.getLatitude()));
 
-				vertice.setCustoTransito(segundosDistancia);
+				vertice.setCustoTransito((long) (segundosDistancia * 1000));
 
 			}
 

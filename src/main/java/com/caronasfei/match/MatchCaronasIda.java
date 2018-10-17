@@ -68,7 +68,7 @@ public class MatchCaronasIda {
 			
 			this.dijkstraAlgoritmo.rodar(intencaoMotorista, intencoesPassageiros, enderecoFei, sugestaoComPassageirosEmSubstituicao);
 
-			No noMotorista = this.dijkstraAlgoritmo.getNoMotorista();			
+			No noDestino = this.dijkstraAlgoritmo.getNoDestino();			
 			//this.gravaMatches.gravaSugestoes(nosMotoristas);
 
 			LOGGER.info("gravando sugestoes de carona encontradas...");
