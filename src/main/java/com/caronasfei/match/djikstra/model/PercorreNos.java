@@ -11,7 +11,7 @@ public class PercorreNos {
 		if (no != null && !no.getEndereco().equals(destino)) {
 
 			no.setCaminhoScore(score);
-			Vertice verticeSelecionado = no.getVerticeSelecionado();
+			Vertice verticeSelecionado = no.getVerticeIncidente();
 
 			if (verticeSelecionado != null && verticeSelecionado.getNoOrigem() != null) {
 
@@ -26,13 +26,13 @@ public class PercorreNos {
 	public static void destacaMotorista(No no) {
 
 		No ultimoNo = null;
-		while (no.getVerticeSelecionado() != null) {
+		while (no.getVerticeIncidente() != null) {
 			ultimoNo = no;
 			no.setCaminhoScore(null);
-			no = no.getVerticeSelecionado().getNoOrigem();
+			no = no.getVerticeIncidente().getNoOrigem();
 		}
 
-		ultimoNo.setVerticeSelecionado(null);
+		ultimoNo.setVerticeIncidente(null);
 
 	}
 
@@ -46,10 +46,10 @@ public class PercorreNos {
 				break;
 			}
 
-			if (noAtual.getVerticeSelecionado() != null) {
-				noAtual = noAtual.getVerticeSelecionado().getNoOrigem();
+			if (noAtual.getVerticeIncidente() != null) {
+				noAtual = noAtual.getVerticeIncidente().getNoOrigem();
 			}
-		} while (noAtual.getVerticeSelecionado() != null);
+		} while (noAtual.getVerticeIncidente() != null);
 
 		return caminhoMelhorScore;
 
@@ -70,10 +70,10 @@ public class PercorreNos {
 				PercorreNos.destacaMotorista(noAtual);
 			}
 
-			if (noAtual.getVerticeSelecionado() != null) {
-				noAtual = noAtual.getVerticeSelecionado().getNoOrigem();
+			if (noAtual.getVerticeIncidente() != null) {
+				noAtual = noAtual.getVerticeIncidente().getNoOrigem();
 			}
-		} while (noAtual.getVerticeSelecionado() != null);
+		} while (noAtual.getVerticeIncidente() != null);
 
 	}
 

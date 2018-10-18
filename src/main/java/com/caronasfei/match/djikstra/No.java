@@ -17,7 +17,7 @@ public class No<E> {
 
 	private Set<Vertice> verticesDeSaida = new HashSet<Vertice>();
 
-	private Vertice verticeSelecionado;
+	private Vertice verticeIncidente;
 
 	// TODO: só pra debug
 	private No noAnterior;
@@ -48,18 +48,18 @@ public class No<E> {
 
 		this.numero = numero;
 		this.grafo = graph;
-		this.verticeSelecionado = null;
+		this.verticeIncidente = null;
 		this.caminhoScore = null;
 		this.noAnterior = null;
 		
 	}
 
-	public Vertice getVerticeSelecionado() {
-		return verticeSelecionado;
+	public Vertice getVerticeIncidente() {
+		return verticeIncidente;
 	}
 
-	public void setVerticeSelecionado(Vertice verticeSelecionado) {
-		this.verticeSelecionado = verticeSelecionado;
+	public void setVerticeIncidente(Vertice verticeIncidente) {
+		this.verticeIncidente = verticeIncidente;
 	}
 	
 	public No getNoAnterior() {
@@ -175,17 +175,17 @@ public class No<E> {
 			return;
 		}
 
-		for (Vertice verticeIncidente : this.verticesDeSaida) {
+		for (Vertice verticeSaida : this.verticesDeSaida) {
 
-			if (verticeIncidente.getI() > this.grafo.getCurrentSize()
-					|| verticeIncidente.getJ() > this.grafo.getCurrentSize()) {
+			if (verticeSaida.getI() > this.grafo.getCurrentSize()
+					|| verticeSaida.getJ() > this.grafo.getCurrentSize()) {
 				break;
 			}
 
-			No noCandidato = verticeIncidente.getNoOrigem();
+			No noCandidato = verticeSaida.getNoOrigem();
 
-			double custoTransitoMinutos = verticeIncidente.getCustoTransito(); // custo esta em milisegundos
-			long horarioEstimadoNoCandidato = (long) (this.horarioEstimado + custoTransitoMinutos);
+			long custoTransitoSaida = verticeSaida.getCustoTransito(); // custo esta em milisegundos
+			long horarioEstimadoNoCandidato = (long) (this.horarioEstimado + custoTransitoSaida);
 
 			int numeroPassageirosCandidato = this.numeroPassageirosAtual;
 
@@ -201,7 +201,7 @@ public class No<E> {
 
 			// TODO só somar o numero de passageiros se o nó candidato for de passageiro
 			// fera.
-			int noCandidatoScore = this.grafo.getObjectiveValue(numeroPassageirosCandidato, horarioEstimadoNoCandidato);
+			int noCandidatoScore = this.grafo.getObjectiveValue(numeroPassageirosCandidato, this.getCustoTransitoAcumulado() + custoTransitoSaida);
 			
 			// TODO preciso ver se o nó i já recusou o nó j, ou foi recusado.
 			// criar uma tabela de recusa pra facilitar o trabalho, no estilo nó i recusou
@@ -226,16 +226,16 @@ public class No<E> {
 					) {
 				
 				// print para debug
-				SolucaoParcialDebug.print(this, noCandidato, numeroPassageirosCandidato, custoTransitoMinutos, horarioEstimadoNoCandidato, noCandidatoScore, true);
+				SolucaoParcialDebug.print(this, noCandidato, numeroPassageirosCandidato, custoTransitoSaida, horarioEstimadoNoCandidato, noCandidatoScore, true);
 
 				Vertice vertice = new Vertice();
-				vertice.setCustoTransito(verticeIncidente.getCustoTransito());
-				vertice.setI(verticeIncidente.getI());
-				vertice.setJ(verticeIncidente.getJ());
+				vertice.setCustoTransito(verticeSaida.getCustoTransito());
+				vertice.setI(verticeSaida.getI());
+				vertice.setJ(verticeSaida.getJ());
 				vertice.setNoOrigem(this);
 				
 				noCandidato.setScore(noCandidatoScore);
-				noCandidato.setVerticeSelecionado(vertice);
+				noCandidato.setVerticeIncidente(vertice);
 				noCandidato.setHorarioEstimado(horarioEstimadoNoCandidato);
 				noCandidato.setNoAnterior(this);
 				
@@ -248,7 +248,27 @@ public class No<E> {
 				}
 			} else {
 				// print para debug
-				SolucaoParcialDebug.print(this, noCandidato, numeroPassageirosCandidato, custoTransitoMinutos, horarioEstimadoNoCandidato, noCandidatoScore, false);
+
+				if (noCandidatoScore >= noCandidato.getScore()) {
+					System.out.println("	+ invalido score calculado não é menor que score do nó candidato");
+				}
+
+				
+				if (nosVisitados.get(noCandidato.getNumber()) != null) {
+					System.out.println("	+ invalido porque o nó candidato já foi visitado");
+				}
+				
+				if (!RestricaoTempo.isCaminhoValido(horarioEstimadoNoCandidato, noCandidato)) {
+					System.out.println("	+ invalido porque o não satisfaz restrição de tempo do nó candidato");
+					
+				}
+				
+				if (noCandidato.getIntencaoCarona() != null && (noCandidato.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA
+						&& this.numeroPassageirosAtual + 1 > noCandidato.getIntencaoCarona().getNumeroAssentos())) {
+					System.out.println("	+ invalido porque o número de assentos é maior que o limite");
+				}
+				
+				SolucaoParcialDebug.print(this, noCandidato, numeroPassageirosCandidato, custoTransitoSaida, horarioEstimadoNoCandidato, noCandidatoScore, false);
 
 			}
 
@@ -262,12 +282,12 @@ public class No<E> {
 		nosCarona.add(noCandidato);
 		nosCarona.add(this);
 		
-		for (Vertice verticeAtual = this.verticeSelecionado; verticeAtual != null; ) {
+		for (Vertice verticeAtual = this.verticeIncidente; verticeAtual != null; ) {
 			No noDestino = verticeAtual.getNoOrigem();
 			
 			if (noDestino != null) {
 				nosCarona.add(noDestino);
-				verticeAtual = noDestino.getVerticeSelecionado();
+				verticeAtual = noDestino.getVerticeIncidente();
 			}
 			
 			
@@ -281,18 +301,38 @@ public class No<E> {
 
 		List<No> nosCarona = new ArrayList<No>();
 		
-		for (Vertice verticeAtual = this.verticeSelecionado; verticeAtual != null; ) {
+		for (Vertice verticeAtual = this.verticeIncidente; verticeAtual != null; ) {
 			No noDestino = verticeAtual.getNoOrigem();
 			
 			if (noDestino != null) {
 				nosCarona.add(noDestino);
-				verticeAtual = noDestino.getVerticeSelecionado();
+				verticeAtual = noDestino.getVerticeIncidente();
 			}
 			
 			
 		}
 		
 		return nosCarona;
+		
+	}
+	
+	public long getCustoTransitoAcumulado() {
+		
+		if (this.verticeIncidente == null) {
+			return 0;
+		}
+		
+		long custoTransitoAcumulado = 0;
+		Vertice verticeIncidenteAtual = this.verticeIncidente;
+		do {
+			
+			custoTransitoAcumulado += verticeIncidenteAtual.getCustoTransito();
+			
+			verticeIncidenteAtual = verticeIncidenteAtual.getNoOrigem().getVerticeIncidente();
+			
+		} while (verticeIncidenteAtual != null);
+		
+		return custoTransitoAcumulado;
 		
 	}
 	

@@ -65,11 +65,11 @@ public class FuncaoObjetivo {
 
 	public int getObjectiveFunctionValue(int numberOfPassengers, long time) {
 
-		NumberPassengerTimeTuple tuple = new NumberPassengerTimeTuple(numberOfPassengers, time);
+		NumberPassengerTimeTuple tupla = new NumberPassengerTimeTuple(numberOfPassengers, time);
 
-		Integer objective = this.objectiveTable.get(tuple);
+		Integer objetivo = this.objectiveTable.get(tupla);
 
-		return (objective == null) ? Integer.MAX_VALUE : objective;
+		return (objetivo == null) ? Integer.MAX_VALUE : objetivo;
 	}
 
 	public void printObjectiveTable() {

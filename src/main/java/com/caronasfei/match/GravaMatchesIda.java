@@ -47,10 +47,10 @@ public class GravaMatchesIda {
 
 			List<No> nosPassageiros = new LinkedList<No>();
 
-			No noPassageiro = noMotorista.getVerticeSelecionado().getNoOrigem();
+			No noPassageiro = noMotorista.getVerticeIncidente().getNoOrigem();
 			while (noPassageiro != null) {
 				nosPassageiros.add(noPassageiro);
-				noPassageiro = noPassageiro.getVerticeSelecionado().getNoOrigem();
+				noPassageiro = noPassageiro.getVerticeIncidente().getNoOrigem();
 			}
 
 			// TODO verificar se a intenção de carona do motorista e dos passageiros ainda estão ativas

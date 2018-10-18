@@ -153,7 +153,7 @@ public class Grafo {
 						
 						Vertice vertice = new Vertice();
 						vertice.setNoOrigem(no);
-						noAnterior.setVerticeSelecionado(vertice);
+						noAnterior.setVerticeIncidente(vertice);
 						noAnterior = no;
 						break;
 					}
