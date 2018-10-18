@@ -18,8 +18,11 @@ public class OSRMAPI {
 	
 	// TODO: obter o endereço da API OSRM por aquivo. Assim da pra mudar pra
 	// localhost qnd baixar e instalar o backend
-	private String enderecoBaseApiUrl = "http://localhost:5000/route/v1/driving";
+	//private String enderecoBaseApiUrl = "http://localhost:5000/route/v1/driving";
 
+	// Endpoint online demo:
+	private String enderecoBaseApiUrl = "http://router.project-osrm.org/route/v1/driving";
+	
 	public Double getTempo(Coordenadas origem, Coordenadas destino) {
 
 		String enderecoApiUrl = this.enderecoBaseApiUrl + "/" + origem.toString() + ";" + destino.toString();

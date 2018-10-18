@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
 import com.caronasfei.db.sugestao.SugestaoTrajeto;
 import com.caronasfei.db.sugestao.SugestaoTrajeto.SugestaoTrajetoEstado;
 import com.caronasfei.db.sugestao.SugestaoTrajetoMotorista;
@@ -33,7 +34,7 @@ public class GravaMatchesIda {
 	private EntityManager entityManager;
 	
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void gravaSugestoes(Set<No> nosMotoristas) {
+	public void gravaSugestoes(No noDestino) {
 
 		// puxa os trajetos atraves dos nós motoristas. Verifica se esses trajetos já
 		// estão gravados como sugestão no banco.
@@ -43,71 +44,74 @@ public class GravaMatchesIda {
 		// o score da sugestao cadastrada, para "substituir", lógico que se o usuário
 		// não tiver visualizado a sugestão em questão.
 
-		for (No noMotorista : nosMotoristas) {
+		List<No> nosPassageiros = new LinkedList<No>();
 
-			List<No> nosPassageiros = new LinkedList<No>();
-
-			No noPassageiro = noMotorista.getVerticeIncidente().getNoOrigem();
-			while (noPassageiro != null) {
-				nosPassageiros.add(noPassageiro);
-				noPassageiro = noPassageiro.getVerticeIncidente().getNoOrigem();
+		No noAtual = noDestino.getVerticeIncidente().getNoOrigem();
+		while (noAtual.getVerticeIncidente() != null) {
+			if (noAtual.getIntencaoCarona().getAcaoCarona() == AcaoCarona.PEDIR_CARONA) {
+				nosPassageiros.add(noAtual);				
 			}
 
-			// TODO verificar se a intenção de carona do motorista e dos passageiros ainda estão ativas
-			// antes de criar a sugestao de trajeto
+			if (noAtual.getVerticeIncidente() != null) {				
+				noAtual = noAtual.getVerticeIncidente().getNoOrigem();
+			}
+		}
+
+		// depois de percorrer todos os nós chegamos ao nó motorista
+		No noMotorista = noAtual;
+		
+		// TODO verificar se a intenção de carona do motorista e dos passageiros ainda estão ativas
+		// antes de criar a sugestao de trajeto
+		
+		int score = noDestino.getScore(); // na ida a propagação inicia na FEI e termina no nó
+														// motorista (current best score tá no nó motorista).
+
+		// pode ser uma substituição de passageiro tbm.. mas acredito que rode
+		// corretamente da mesma forma.
+
+		SugestaoTrajeto sugestaoTrajeto = this.sugestaoTrajetoService
+				.findSugestaoTrajetoByIntencaoCaronaMotorista(noMotorista.getIntencaoCarona());
+
+		if (sugestaoTrajeto != null && !sugestaoTrajeto.isVisualizada() && score < sugestaoTrajeto.getScore()) {
+			// deleta sugestao anterior, grava sugestao nova
+			this.entityManager.remove(sugestaoTrajeto);
+		}
+
+		if (sugestaoTrajeto == null || !sugestaoTrajeto.isVisualizada()) {
+
+			SugestaoTrajetoMotorista sugestaoTrajetoMotorista = new SugestaoTrajetoMotorista();
+			SugestaoTrajetoMotorista sugestaoTrajetoMotoristaNo = (SugestaoTrajetoMotorista) noMotorista
+					.getSugestaoTrajetoUsuario();
+
+			if (sugestaoTrajetoMotoristaNo != null) {
+				sugestaoTrajetoMotorista.setEstado(sugestaoTrajetoMotoristaNo.getEstado());
+			} else {
+				sugestaoTrajetoMotorista.setEstado(SugestaoTrajetoMotoristaEstado.NAO_CONFIRMADO);
+			}
+
+			sugestaoTrajetoMotorista.setIntencaoCarona(noMotorista.getIntencaoCarona());
+
+			SugestaoTrajeto novoSugestaoTrajeto = new SugestaoTrajeto();
+			novoSugestaoTrajeto.setMotorista(sugestaoTrajetoMotorista);
+			novoSugestaoTrajeto.setScore(score);
+			novoSugestaoTrajeto.setVisualizada(false);
+			novoSugestaoTrajeto.setEstado(SugestaoTrajetoEstado.NORMAL);
 			
-			int score = noMotorista.getScore(); // na ida a propagação inicia na FEI e termina no nó
-															// motorista (current best score tá no nó motorista).
+			for (No noPassageiroAtual : nosPassageiros) {
+				SugestaoTrajetoPassageiro sugestaoTrajetoPassageiro = new SugestaoTrajetoPassageiro();
 
-			// pode ser uma substituição de passageiro tbm.. mas acredito que rode
-			// corretamente da mesma forma.
-
-			SugestaoTrajeto sugestaoTrajeto = this.sugestaoTrajetoService
-					.findSugestaoTrajetoByIntencaoCaronaMotorista(noMotorista.getIntencaoCarona());
-
-			if (sugestaoTrajeto != null && !sugestaoTrajeto.isVisualizada() && score < sugestaoTrajeto.getScore()) {
-				// deleta sugestao anterior, grava sugestao nova
-				this.entityManager.remove(sugestaoTrajeto);
-			}
-
-			if (sugestaoTrajeto == null || !sugestaoTrajeto.isVisualizada()) {
-
-				SugestaoTrajetoMotorista sugestaoTrajetoMotorista = new SugestaoTrajetoMotorista();
-				SugestaoTrajetoMotorista sugestaoTrajetoMotoristaNo = (SugestaoTrajetoMotorista) noMotorista
-						.getSugestaoTrajetoUsuario();
-
-				if (sugestaoTrajetoMotoristaNo != null) {
-					sugestaoTrajetoMotorista.setEstado(sugestaoTrajetoMotoristaNo.getEstado());
+				if (noPassageiroAtual.getSugestaoTrajetoUsuario() != null) {
+					SugestaoTrajetoPassageiro sugestaoTrajetoPassageiroExistente = (SugestaoTrajetoPassageiro) noPassageiroAtual
+							.getSugestaoTrajetoUsuario();
+					sugestaoTrajetoPassageiro.setEstado(sugestaoTrajetoPassageiroExistente.getEstado());
 				} else {
-					sugestaoTrajetoMotorista.setEstado(SugestaoTrajetoMotoristaEstado.NAO_CONFIRMADO);
+					sugestaoTrajetoPassageiro.setEstado(SugestaoTrajetoPassageiroEstado.NAO_CONFIRMADO);
 				}
 
-				sugestaoTrajetoMotorista.setIntencaoCarona(noMotorista.getIntencaoCarona());
-
-				SugestaoTrajeto novoSugestaoTrajeto = new SugestaoTrajeto();
-				novoSugestaoTrajeto.setMotorista(sugestaoTrajetoMotorista);
-				novoSugestaoTrajeto.setScore(score);
-				novoSugestaoTrajeto.setVisualizada(false);
-				novoSugestaoTrajeto.setEstado(SugestaoTrajetoEstado.NORMAL);
-				
-				List<SugestaoTrajetoPassageiro> sugestaoTrajetoPassageiros = new LinkedList<SugestaoTrajetoPassageiro>();
-				for (No noPassageiroAtual : nosPassageiros) {
-					SugestaoTrajetoPassageiro sugestaoTrajetoPassageiro = new SugestaoTrajetoPassageiro();
-
-					if (noPassageiroAtual.getSugestaoTrajetoUsuario() != null) {
-						SugestaoTrajetoPassageiro sugestaoTrajetoPassageiroExistente = (SugestaoTrajetoPassageiro) noPassageiroAtual
-								.getSugestaoTrajetoUsuario();
-						sugestaoTrajetoPassageiro.setEstado(sugestaoTrajetoPassageiroExistente.getEstado());
-					} else {
-						sugestaoTrajetoPassageiro.setEstado(SugestaoTrajetoPassageiroEstado.NAO_CONFIRMADO);
-					}
-
-				}
-				
-				if (sugestaoTrajeto == null) {
-					this.entityManager.persist(novoSugestaoTrajeto);
-				}
-
+			}
+			
+			if (sugestaoTrajeto == null) {
+				this.entityManager.persist(novoSugestaoTrajeto);
 			}
 
 		}

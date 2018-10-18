@@ -210,10 +210,6 @@ public class No<E> {
 			// para não ter que consultar o banco a cada verifificação, carregar essa
 			// relação de recusas em uma estrutura
 			// de dados em memória para agilizar estas verificações.
-
-			if (noCandidato.getNumber() == 9) {
-				System.out.println("debug");
-			}
 			
 			if (nosVisitados.get(noCandidato.getNumber()) == null
 					&& noCandidatoScore < noCandidato.getScore()
