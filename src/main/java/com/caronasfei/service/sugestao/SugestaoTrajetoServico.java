@@ -57,7 +57,7 @@ public class SugestaoTrajetoServico {
 	
 	@Transactional(readOnly = true)
 	public SugestaoTrajetoMotorista findMotoristaById(int motoristaId) {
-		TypedQuery<SugestaoTrajetoMotorista> query = this.em.createQuery("SELECT stu FROM SugestaoTrajeto st "
+		TypedQuery<SugestaoTrajetoMotorista> query = this.em.createQuery("SELECT stm FROM SugestaoTrajeto st "
 				+ "INNER JOIN SugestaoTrajetoMotorista stm "
 				+ "ON st.motorista = stm.id "
 				+ "WHERE stm.id = :motorista_id", SugestaoTrajetoMotorista.class);
@@ -94,11 +94,11 @@ public class SugestaoTrajetoServico {
 	public SugestaoTrajeto findSugestaoTrajetoByIntencaoCaronaMotorista(IntencaoCarona intencaoCaronaMotorista) {
 		
 		TypedQuery<SugestaoTrajeto> query = em.createQuery("SELECT st FROM SugestaoTrajeto st "
-							   + "INNER JOIN SugestaoTrajetoMotorista stu "
-							   + "ON st.motorista = stu.id "
+							   + "INNER JOIN SugestaoTrajetoMotorista stm "
+							   + "ON st.motorista = stm.id "
 							   + "INNER JOIN SugestaoTrajetoPassageiro stp "
-							   + "ON st.id = stp.sugestaoTrajeto "
-							   + "WHERE stu.intencaoCarona = :intencaoCarona "
+							   + "ON stm.id = stp.sugestaoTrajeto "
+							   + "WHERE stm.intencaoCarona = :intencaoCarona "
 							   + "AND stp.estado != 'REJEITADO_MOTORISTA' "
 							   + "AND stp.estado != 'REJEITADO_PASSAGEIRO' ", SugestaoTrajeto.class);
 		

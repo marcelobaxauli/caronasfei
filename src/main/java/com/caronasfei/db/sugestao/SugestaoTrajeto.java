@@ -43,8 +43,10 @@ public class SugestaoTrajeto {
 
 	// salva a ordem, pq é a ordem que o motorista deve pegar cada passageiro.
 	// fundamental manter a ordem aqui
-	@OrderColumn
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "sugestaoTrajeto", cascade = { CascadeType.PERSIST })
+	@OrderColumn(name = "ordem_carona")
+	@OneToMany(fetch = FetchType.LAZY, 
+			   mappedBy = "sugestaoTrajeto",
+			   cascade = CascadeType.ALL)
 	private List<SugestaoTrajetoPassageiro> passageiros;
 
 	// indica se a sugestao foi visualizada
@@ -72,7 +74,7 @@ public class SugestaoTrajeto {
 		return passageiros;
 	}
 
-	public void addPassageiro(SugestaoTrajetoPassageiro passageiro) {
+	public void addSugestaoTrajetoPassageiro(SugestaoTrajetoPassageiro passageiro) {
 		this.passageiros.add(passageiro);
 	}
 

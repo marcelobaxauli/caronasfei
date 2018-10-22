@@ -7,11 +7,19 @@
 		</Console>
 	</Appenders>
 	<Loggers>
+
 		<Root level="ERROR">
 			<AppenderRef ref="Console" />
 		</Root>
+
 		<Logger name="com.caronasfei" level="INFO" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
+
+		<logger name="org.hibernate" level="INFO" additivity="false">
+			<AppenderRef ref="Console" />
+		</logger>
+		
+
 	</Loggers>
 </Configuration>

@@ -321,7 +321,9 @@ CREATE TABLE sugestao_trajeto_passageiro (
 	
 	distancia DECIMAL NOT NULL,
 	
-	id_sugestao_trajeto INTEGER NOT NULL,
+	id_sugestao_trajeto INTEGER,
+	
+	ordem_carona INTEGER NOT NULL DEFAULT 1,
 	
 	FOREIGN KEY (id_intencao_carona) REFERENCES intencao_carona (id_intencao_carona),
 	

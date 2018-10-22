@@ -105,8 +105,12 @@ public class GravaMatchesIda {
 							.getSugestaoTrajetoUsuario();
 					sugestaoTrajetoPassageiro.setEstado(sugestaoTrajetoPassageiroExistente.getEstado());
 				} else {
+					sugestaoTrajetoPassageiro.setIntencaoCarona(noPassageiroAtual.getIntencaoCarona());
+					sugestaoTrajetoPassageiro.setSugestaoTrajeto(novoSugestaoTrajeto);
 					sugestaoTrajetoPassageiro.setEstado(SugestaoTrajetoPassageiroEstado.NAO_CONFIRMADO);
 				}
+				
+				novoSugestaoTrajeto.addSugestaoTrajetoPassageiro(sugestaoTrajetoPassageiro);
 
 			}
 			

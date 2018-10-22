@@ -66,7 +66,7 @@ public class SugestaoTrajetoPassageiro {
 	@Column(name = "estado")
 	private SugestaoTrajetoPassageiroEstado estado;
 
-	@ManyToOne(cascade = CascadeType.PERSIST)
+	@ManyToOne(optional=false)
 	@JoinColumn(name = "id_sugestao_trajeto")
 	private SugestaoTrajeto sugestaoTrajeto;
 
