@@ -16,10 +16,5 @@
 			<AppenderRef ref="Console" />
 		</Logger>
 
-		<logger name="org.hibernate" level="INFO" additivity="false">
-			<AppenderRef ref="Console" />
-		</logger>
-		
-
 	</Loggers>
 </Configuration>

@@ -64,11 +64,10 @@ public class AvaliaSugestaoTrajetoJSPController {
 			}
 
 			return "avaliasugestao/index_passageiro";
+		} else {
+			throw new IllegalStateException("Acao de carona não identificada: " + intencaoCarona.getAcaoCarona());
 		}
 
-		
-		return "";
-		
 	}
 	
 }

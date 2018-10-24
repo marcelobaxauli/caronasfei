@@ -97,7 +97,7 @@ public class SugestaoTrajetoServico {
 							   + "INNER JOIN SugestaoTrajetoMotorista stm "
 							   + "ON st.motorista = stm.id "
 							   + "INNER JOIN SugestaoTrajetoPassageiro stp "
-							   + "ON stm.id = stp.sugestaoTrajeto "
+							   + "ON st.id = stp.sugestaoTrajeto "
 							   + "WHERE stm.intencaoCarona = :intencaoCarona "
 							   + "AND stp.estado != 'REJEITADO_MOTORISTA' "
 							   + "AND stp.estado != 'REJEITADO_PASSAGEIRO' ", SugestaoTrajeto.class);

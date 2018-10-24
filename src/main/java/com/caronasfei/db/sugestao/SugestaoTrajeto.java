@@ -23,7 +23,14 @@ import javax.persistence.Table;
 public class SugestaoTrajeto {
 
 	public enum SugestaoTrajetoEstado {
-		NORMAL, INTENCAO_CANCELADA, CANCELADA
+		NORMAL, 
+		INTENCAO_CANCELADA, 
+		CANCELADA,
+		CONFIRMADA // quando pelo menos um passageiro aceitou e
+				   // o motorista confirma(finaliza) a carona
+		
+		// TODO: novos passageiros podem ser adicionados após a confirmação
+		// da sugestao ter sido CONFIRMADA pelo motorista?
 	}
 	
 	@Id
@@ -44,7 +51,7 @@ public class SugestaoTrajeto {
 	// salva a ordem, pq é a ordem que o motorista deve pegar cada passageiro.
 	// fundamental manter a ordem aqui
 	@OrderColumn(name = "ordem_carona")
-	@OneToMany(fetch = FetchType.LAZY, 
+	@OneToMany(fetch = FetchType.EAGER, 
 			   mappedBy = "sugestaoTrajeto",
 			   cascade = CascadeType.ALL)
 	private List<SugestaoTrajetoPassageiro> passageiros;

@@ -242,25 +242,6 @@
       .box_avaliacao_usuario--botao_finalizar {
         margin-top: 1.5rem;
       }
-	  
-	  
-	  
-	  .painel {
-		display: flex;
-	  }
-	  
-	  .painel-info-pagina {
-		float: left;
-		width: 60%;
-	  }
-	  
-	  .painel-botao {
-		float: right;
-		width: 40%;
-		display: flex;
-		align-items: center;
-		justify-content: flex-end;
-	  }
 
     </style>
 
@@ -279,18 +260,21 @@
     <div class="content">
 
       <div class="form-group">
-		<div class="painel">
-			<div class="painel-info-pagina">
-				<h2>Sugestao de carona</h2>
+        <h2>Sugestao de carona</h2>
 
-				<h4>seu perfil: motorista</h4>
-			</div>
-			
-			<div class="painel-botao">
-				<button class="light_green">Ver no mapa</button>
-			</div>
-		</div>
-	  </div>
+        <h4>seu perfil: passageiro</h4>
+      </div>
+
+      <div class="form-group">
+        <h4>Motorista:</h4>
+
+        <div id="motorista">
+
+          <!-- Conteúdo irá ser gerado dinamicamente pela aplicação.
+             usando template do Handlebars -->
+
+        </div>
+      </div>
 
       <div class="form-group">
         <h4>Passageiros:</h4>
@@ -301,12 +285,55 @@
              usando template do Handlebars -->
 
         </div>
-
       </div>
 
     </div>
 
-    <script id="box_usuario_template" type="text/x-handlebars-template">
+    <script id="box_usuario_motorista" type="text/x-handlebars-template">
+
+      <div class="box_avaliacao_usuario">
+
+        <div class="box_avaliacao_usuario--foto">
+          <img class="box_avaliacao_usuario--foto--img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQgygYGC_4TN6JA9x_FLoZyuVqfvLOC5b6uj30Op87i51mT_2iSw"/>
+        </div>
+
+        <div class="box_avaliacao_usuario--detalhes_box">
+
+          <div class="box_avaliacao_usuario--detalhes">
+
+            <div class="box_avaliacao_usuario--detalhe">
+              <span>{{nome}}</span>
+            </div>
+
+            <div class="box_avaliacao_usuario--detalhe">
+              <span>{{curso}}</span>
+            </div>
+
+            <div class="box_avaliacao_usuario--detalhe">
+              <span>{{periodo}}</span>
+            </div>
+
+            <div class="box_avaliacao_usuario--detalhe">
+              <span>{{local}}</span>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="box_avaliacao_usuario--status_box">
+          <div id="status_area" class="box_avaliacao_usuario--status">
+            <!-- O motorista já confirmou o passageiro. -->
+
+            <span>Confirmado</span>
+
+          </div>
+        </div>
+      </div>
+
+    </script>
+
+    <script id="box_usuario_passageiros" type="text/x-handlebars-template">
       <div>
         {{#each this}}
           <div class="box_avaliacao_usuario">
@@ -332,7 +359,7 @@
                 </div>
 
                 <div class="box_avaliacao_usuario--detalhe">
-                  <span>{{enderecoPartida.rua}}, {{enderecoPartida.bairro}}. {{enderecoPartida.cidade}}. {{enderecoPartida.estado}}</span>
+                  <span>{{local}}</span>
                 </div>
 
               </div>
@@ -346,28 +373,19 @@
                    o motorista indicar que irá buscá-lo, ou estado
                    informando se passageiro já aceitou o trajeto.) -->
 
-                {{#if (notEquals estado 'NAO_CONFIRMADO')}}
-                  <span>{{estado}}</span>
-                {{else}}
-                  <input type="hidden" name="idPassageiro" value="{{id}}"/>
-                  <button class="light_green" onclick="app.aceitarPassageiro(this)">Aceitar</button>
-                  <button class="red" onclick="app.rejeitarPassageiro(this)">Rejeitar</button>
-                {{/if}}
+                <span>{{estado}}</span>
 
               </div>
             </div>
           </div>
 
-          {{#if peloMenosUmPassageiroConfirmado}}
-            <div class="box_avaliacao_usuario--botao_finalizar">
-              <button class="light_blue" onclick="app.finalizaSugestao()">Finalizar carona</button>
-            </div>
-          {{else}}
-            <div class="box_avaliacao_usuario--botao_finalizar">
-              <button class="light_blue" disabled>Finalizar carona</button>
-            </div>
-          {{/if}}
         {{/each}}
+
+        <div class="box_avaliacao_usuario--botao_finalizar">
+          <button class="light_blue" onclick="app.aceitarCarona(this)">Confirmar carona</button>
+          <button class="red" onclick="app.rejeitarCarona(this)">Rejeitar carona</button>
+        </div>
+
       </div>
 
     </script>
@@ -380,6 +398,12 @@
       }
 
       AppAvaliaSugestaoMotorista.prototype.init = function () {
+        this.registraHelpers();
+        this.sincronizaInfo();
+        this.sincronizaJob();
+      }
+
+      AppAvaliaSugestaoMotorista.prototype.registraHelpers = function () {
         Handlebars.registerHelper("equals", function (input1, input2) {
           return input1 == input2;
         });
@@ -403,14 +427,16 @@
           }
 
           return peloMenosUmaConfirmacao;
-        })
-
-        this.sincronizaInfo();
-        this.sincronizaJob();
+        });
       }
 
       AppAvaliaSugestaoMotorista.prototype.renderTemplate = function () {
-        var source = $("#box_usuario_template").html();
+        var source = $("#box_usuario_motorista").html();
+        var template = Handlebars.compile(source);
+        var html = template(this.sugestaoTrajetoDado.motorista);
+        $('#motorista').html(html);
+
+        var source = $("#box_usuario_passageiros").html();
         var template = Handlebars.compile(source);
         var html = template(this.sugestaoTrajetoDado.passageiros);
         $('#passageiros').html(html);
@@ -421,21 +447,21 @@
         this.renderTemplate();
       }
 
-      AppAvaliaSugestaoMotorista.prototype.aceitarPassageiro = function (botao) {
+      AppAvaliaSugestaoMotorista.prototype.aceitarCarona = function (botao) {
         var idPassageiro = $(botao).siblings("input[name='idPassageiro']").val();
 
-        var aceitarPassageiroDado = {};
+        var aceitarCaronaDado = {};
         // só tem um motorista por sugestao de trajeto
-        aceitarPassageiroDado.idMotorista = this.sugestaoTrajetoDado.motorista.id;
-        aceitarPassageiroDado.idPassageiro = Number.parseInt(idPassageiro);
+        aceitarCaronaDado.idMotorista = this.sugestaoTrajetoDado.motorista.id;
+        aceitarCaronaDado.idPassageiro = Number.parseInt(idPassageiro);
 
         var app = this;
 
         $.ajax({
-          url: '${pageContext.request.contextPath}/motorista/aceitarpassageiro',
+          url: '${pageContext.request.contextPath}/passageiro/aceitarcarona',
           type: 'POST',
           contentType: 'application/json; charset=utf-8',
-          data: JSON.stringify(aceitarPassageiroDado),
+          data: JSON.stringify(aceitarCaronaDado),
           success: function (result) {
 
             if (result.sucesso) {
@@ -448,21 +474,21 @@
         });
       }
 
-      AppAvaliaSugestaoMotorista.prototype.rejeitarPassageiro = function (botao) {
+      AppAvaliaSugestaoMotorista.prototype.rejeitarCarona = function (botao) {
         var idPassageiro = $(botao).siblings("input[name='idPassageiro']").val();
 
-        var rejeitarPassageiroDado = {};
+        var rejeitarCaronaDado = {};
         // só tem um motorista por sugestao de trajeto
-        confirmacaoPassageiroDado.idMotorista = this.sugestaoTrajetoDado.motorista.id;
-        confirmacaoPassageiroDado.idPassageiro = Number.parseInt(idPassageiro);
+        rejeitarCaronaDado.idMotorista = this.sugestaoTrajetoDado.motorista.id;
+        rejeitarCaronaDado.idPassageiro = Number.parseInt(idPassageiro);
 
         var app = this;
 
         $.ajax({
-          url: '${pageContext.request.contextPath}/motorista/rejeitarpassageiro',
+          url: '${pageContext.request.contextPath}/passageiro/rejeitarcarona',
           type: 'POST',
           contentType: 'application/json; charset=utf-8',
-          data: JSON.stringify(rejeitarPassageiroDado),
+          data: JSON.stringify(aceitarCaronaDado),
           success: function (result) {
 
             if (result.sucesso) {
@@ -504,7 +530,7 @@
 
       AppAvaliaSugestaoMotorista.prototype.sincronizaJob = function () {
 
-        setTimeout(function() {
+        setTimeout(function () {
 
           app.sincronizaInfo();
           app.sincronizaJob();

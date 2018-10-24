@@ -25,7 +25,7 @@
 			<property name="hibernate.c3p0.idle_test_period" value="3000"></property>
 
 			<!-- Show and print nice SQL on stdout -->
-			<property name="hibernate.show_sql" value="true"></property>
+			<property name="hibernate.show_sql" value="false"></property>
 			<property name="hibernate.format_sql" value="true"></property>
 			<property name="hibernate.use_sql_comments" value="true"></property>
 		</properties>

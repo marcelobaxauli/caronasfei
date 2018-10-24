@@ -12,8 +12,8 @@ import com.caronasfei.db.curso.CursoPeriodo;
 import com.caronasfei.db.intencao.IntencaoCarona;
 import com.caronasfei.db.intencao.endereco.Endereco;
 import com.caronasfei.db.sugestao.SugestaoTrajeto;
-import com.caronasfei.db.sugestao.SugestaoTrajetoPassageiro;
 import com.caronasfei.db.sugestao.SugestaoTrajetoMotorista;
+import com.caronasfei.db.sugestao.SugestaoTrajetoPassageiro;
 import com.caronasfei.db.usuario.Usuario;
 import com.caronasfei.dto.consultasugestao.MotoristaSaidaDTO;
 import com.caronasfei.dto.consultasugestao.PassageiroSaidaDTO;
@@ -60,19 +60,8 @@ public class SugestaoTrajetoAssembler {
 		Endereco enderecoPartida = intencaoCaronaMotorista.getEnderecoPartida();
 		Endereco enderecoDestino = intencaoCaronaMotorista.getEnderecoDestino();
 
-		EnderecoDTO enderecoDestinoDTO = null;
-		EnderecoDTO enderecoPartidaDTO = null;
-		if (enderecoPartida == null) {
-			// FEI_SBC
-			enderecoDestinoDTO = this.enderecoAssembler.toEnderecoDTO(enderecoDestino);
-			enderecoPartidaDTO = null;
-		}
-
-		if (enderecoDestino == null) {
-			// FEI_SBC
-			enderecoPartidaDTO = this.enderecoAssembler.toEnderecoDTO(enderecoPartida);
-			enderecoDestinoDTO = null;
-		}
+		EnderecoDTO enderecoDestinoDTO = this.enderecoAssembler.toEnderecoDTO(enderecoDestino);
+		EnderecoDTO enderecoPartidaDTO = this.enderecoAssembler.toEnderecoDTO(enderecoPartida);
 
 		motoristaSaidaDTO.setEnderecoPartida(enderecoPartidaDTO);
 		motoristaSaidaDTO.setEnderecoDestino(enderecoDestinoDTO);
@@ -117,7 +106,7 @@ public class SugestaoTrajetoAssembler {
 		return passageiroSaidaDTO;
 
 	}
-
+	
 	public List<PassageiroSaidaDTO> toPassageiroListSaidaDTO(List<SugestaoTrajetoPassageiro> passageiros) {
 
 		List<PassageiroSaidaDTO> passageiroSaidaDTOList = new ArrayList<PassageiroSaidaDTO>();
@@ -138,19 +127,8 @@ public class SugestaoTrajetoAssembler {
 			Endereco enderecoPartida = intencaoCaronaPassageiro.getEnderecoPartida();
 			Endereco enderecoDestino = intencaoCaronaPassageiro.getEnderecoDestino();
 
-			EnderecoDTO enderecoDestinoDTO = null;
-			EnderecoDTO enderecoPartidaDTO = null;
-			if (enderecoPartida == null) {
-				// FEI_SBC
-				enderecoDestinoDTO = this.enderecoAssembler.toEnderecoDTO(enderecoDestino);
-				enderecoPartidaDTO = null;
-			}
-
-			if (enderecoDestino == null) {
-				// FEI_SBC
-				enderecoPartidaDTO = this.enderecoAssembler.toEnderecoDTO(enderecoPartida);
-				enderecoDestinoDTO = null;
-			}
+			EnderecoDTO enderecoDestinoDTO = this.enderecoAssembler.toEnderecoDTO(enderecoDestino);
+			EnderecoDTO enderecoPartidaDTO = this.enderecoAssembler.toEnderecoDTO(enderecoPartida);
 
 			passageiroSaidaDTO.setEnderecoPartida(enderecoPartidaDTO);
 			passageiroSaidaDTO.setEnderecoDestino(enderecoDestinoDTO);
