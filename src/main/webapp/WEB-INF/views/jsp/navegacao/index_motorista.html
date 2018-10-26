@@ -13,7 +13,7 @@
    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
 	 <style>
-      * {
+     * {
         box-sizing: border-box;
         margin: 0;
         font-family: 'Ubuntu';
@@ -260,7 +260,6 @@
 		align-items: center;
 		justify-content: flex-end;
 	  }
-
 	 </style>
 
  </head>
@@ -276,8 +275,163 @@
 
 	 </div>
 
-	navegacao
+	 
+	 <div class="content">
+      <div class="form-group">
+		<div class="painel">
+			<div class="painel-info-pagina">
+				<h2>Modo navegação</h2>
 
+				<h4>seu perfil: motorista</h4>
+				<h4>seu horário de saída: XX:XX AM/PM</h4>
+			</div>
+			
+			<div class="painel-botao">
+				<button class="light_green">Ver no mapa</button>
+			</div>
+		</div>
+	  </div>
+	  
+	  <div class="form-group">
+		<div id="passageiro_area">
+		
+		</div>
+	  </div>
+
+	 </div>
+
+	 
+	 
+	 
+	<script id="box_passageiro_template" type="text/x-handlebars-template">
+      <div>
+
+		<div class="box_avaliacao_usuario">
+
+            <div class="box_avaliacao_usuario--foto">
+              <img class="box_avaliacao_usuario--foto--img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQgygYGC_4TN6JA9x_FLoZyuVqfvLOC5b6uj30Op87i51mT_2iSw"/>
+            </div>
+
+            <div class="box_avaliacao_usuario--detalhes_box">
+
+              <div class="box_avaliacao_usuario--detalhes">
+
+                <div class="box_avaliacao_usuario--detalhe">
+                  <span>{{nome}}</span>
+                </div>
+
+                <div class="box_avaliacao_usuario--detalhe">
+                  <span>{{curso}}</span>
+                </div>
+
+                <div class="box_avaliacao_usuario--detalhe">
+                  <span>{{periodo}}</span>
+                </div>
+
+                <div class="box_avaliacao_usuario--detalhe">
+                  <span>{{enderecoPartida.rua}}, {{enderecoPartida.bairro}}. {{enderecoPartida.cidade}}. {{enderecoPartida.estado}}</span>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="box_avaliacao_usuario--status_box">
+              <div id="status_area" class="box_avaliacao_usuario--status">
+                <!-- essa parte precisa ser criada dinamicamente.. -->
+                <!-- representa o estado passageiro (com botão para
+                   o motorista indicar que irá buscá-lo, ou estado
+                   informando se passageiro já aceitou o trajeto.) -->
+
+                {{#if (notEquals estado 'NAO_CONFIRMADO')}}
+                  <span>{{estado}}</span>
+                {{else}}
+                  <input type="hidden" name="idPassageiro" value="{{id}}"/>
+                  <button class="light_green" onclick="app.aceitarPassageiro(this)">Aceitar</button>
+                  <button class="red" onclick="app.rejeitarPassageiro(this)">Rejeitar</button>
+                {{/if}}
+
+              </div>
+            </div>
+          </div>
+
+      </div>
+
+    </script>
+	 
+	<script>
+	
+		function NavegacaoApp() {
+			
+			this.passageiroNavegacaoDado = null;
+			
+		}
+		
+		NavegacaoApp.prototype.init = function() {
+			
+			// register helpers
+		
+		}
+		
+		NavegacaoApp.prototype.renderTemplate = function() {
+		
+			var source = $("#box_passageiro_template").html();
+			var template = Handlebars.compile(source);
+			var html = template(this.passageiroNavegacaoDado);
+			$("#passageiro_area").html(html);
+		
+		}
+		
+		NavegacaoApp.prototype.atualizaPassageirosView = function() {
+		
+			$("#passageiro_area").empty();
+			this.renderTemplate();
+			
+		}	
+		
+		NavegacaoApp.prototype.sincronizaInfo = function() {
+		
+			var app = this;
+			
+			$.ajax({
+				url: '${pageContext.request.contextPath}/trajeto/navegacaoinfo',
+				type: 'GET',
+				success: function (resultado) {
+					
+					console.log("result:");
+					console.log(resultado);
+					if (resultado.sucesso) {
+						var passageiroNavegacaoDado = resultado.dado;
+						
+						if (passageiroNavegacaoDado == null || app.contemMudanca(passageiroNavegacaoDado)) {
+							
+							console.log("passageiro navegacao dado:");
+							console.log(passageiroNavegacaoDado);
+							
+							app.passageiroNavegacaoDado = passageiroNavegacaoDado;
+							app.atualizaPassageirosView();
+							
+						}
+						
+					}
+					
+				}
+				
+			});
+		
+		}
+		
+		$(document).ready(function() {
+			
+			var app = new NavegacaoApp();
+			app.init();
+			
+			window.app = app;
+			
+		});
+	
+	</script>
+	 
 	</body>
 
 </html>

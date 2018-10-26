@@ -162,7 +162,7 @@
       }
 
       button.small_button {
-        width: 9.5rem;
+        width: 5.5rem;
       }
 
       .left {
@@ -239,7 +239,7 @@
         margin: 0 auto;
       }
 
-      .box_avaliacao_usuario--botao_modo_navegacao {
+      .box_avaliacao_usuario--botao_finalizar {
         margin-top: 1.5rem;
       }
 	  
@@ -300,10 +300,6 @@
           <!-- Conteúdo irá ser gerado dinamicamente pela aplicação.
              usando template do Handlebars -->
 
-		  <div class="box_avaliacao_usuario--botao_modo_navegacao">
-			<button class="light_blue small_button" onclick="${pageContext.request.contextPath}/trajeto/negegacao">Modo navegação</button>
-		  </div>
-			 
         </div>
 
       </div>
@@ -362,6 +358,15 @@
             </div>
           </div>
 
+          {{#if peloMenosUmPassageiroConfirmado}}
+            <div class="box_avaliacao_usuario--botao_finalizar">
+              <button class="light_blue" onclick="app.finalizaSugestao()">Finalizar carona</button>
+            </div>
+          {{else}}
+            <div class="box_avaliacao_usuario--botao_finalizar">
+              <button class="light_blue" disabled>Finalizar carona</button>
+            </div>
+          {{/if}}
         {{/each}}
       </div>
 
@@ -383,8 +388,6 @@
           return input1 != input2;
         });
 
-		// não precisa mais deste helper 
-		// mas é interessante manter aqui pra ver o funcionamento
         Handlebars.registerHelper("peloMenosUmPassageiroConfirmado", function (passageirosElement) {
 
           var passageiros = passageirosElement.data.root;
