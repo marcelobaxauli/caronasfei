@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.caronasfei.db.intencao.IntencaoCarona;
+import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
 import com.caronasfei.db.intencao.IntencaoCarona.IntencaoCaronaEstado;
 import com.caronasfei.db.sugestao.SugestaoTrajeto;
 import com.caronasfei.db.sugestao.SugestaoTrajetoMotorista;
@@ -45,53 +46,20 @@ public class NavegacaoCaronaJSPController {
 		}
 
 		SugestaoTrajeto sugestaoTrajeto = this.sugestaoTrajetoServico.findSugestaoTrajetoByIntencaoCaronaMotorista(intencaoCarona);
-
-		boolean sugestaoConfirmada = true;
-		if (sugestaoTrajeto != null) {
-			
-			SugestaoTrajetoMotorista motorista = sugestaoTrajeto.getMotorista();
-			List<SugestaoTrajetoPassageiro> passageiros = sugestaoTrajeto.getPassageiros();
-			
-			if (motorista.getEstado() != SugestaoTrajetoMotoristaEstado.CONFIRMADO) {
-				sugestaoConfirmada = false;
-			}
-			
-			// TODO e agora para passageiros? 
-			// como funciona 
-			
-		} 
 		
-		if (sugestaoTrajeto == null || !sugestaoConfirmada) {
-
-			if (intencaoCarona.getAcaoCarona() == IntencaoCarona.AcaoCarona.OFERECER_CARONA) {
-				sugestaoTrajeto = this.sugestaoTrajetoServico.findSugestaoTrajetoByIntencaoCaronaMotorista(intencaoCarona);
-				
-				if (sugestaoTrajeto == null) {
-					return "redirect:esperasugestao";
-				}
-							
-				return "avaliasugestao/index_motorista";
-			} else if (intencaoCarona.getAcaoCarona() == IntencaoCarona.AcaoCarona.PEDIR_CARONA) {
-				sugestaoTrajeto = this.sugestaoTrajetoServico.findSugestaoTrajetoByIntencaoCaronaPassageiro(intencaoCarona);
-				
-				if (sugestaoTrajeto == null) {
-					return "redirect:esperasugestao";
-				}
-				
-				SugestaoTrajetoPassageiro passageiro = this.sugestaoTrajetoServico.getPassageiro(intencaoCarona, sugestaoTrajeto);
-				
-				if (passageiro == null) {
-					return "redirect:esperasugestao";				
-				}
-
-				return "avaliasugestao/index_passageiro";
-			} else {
-				throw new IllegalStateException("Acao de carona não identificada: " + intencaoCarona.getAcaoCarona());
-			}
+		if (sugestaoTrajeto == null) {
+			return "redirect:esperasugestao";
 			
 		}
 
-		return "/navegacao/index_motorista";
+		if (intencaoCarona.getAcaoCarona() == AcaoCarona.OFERECER_CARONA) {
+			return "/navegacao/index_motorista";			
+		} else if (intencaoCarona.getAcaoCarona() == AcaoCarona.PEDIR_CARONA) {
+			return "/navegacao/index_passageiro";			
+		} else {
+			throw new IllegalStateException("Acao de carona nao mapeada: " + intencaoCarona.getAcaoCarona());
+		}
+		
 		
 	}
 	

@@ -242,18 +242,18 @@
       .box_avaliacao_usuario--botao_modo_navegacao {
         margin-top: 1.5rem;
       }
-	  
-	  
-	  
+
+
+
 	  .painel {
 		display: flex;
 	  }
-	  
+
 	  .painel-info-pagina {
 		float: left;
 		width: 60%;
 	  }
-	  
+
 	  .painel-botao {
 		float: right;
 		width: 40%;
@@ -285,7 +285,7 @@
 
 				<h4>seu perfil: motorista</h4>
 			</div>
-			
+
 			<div class="painel-botao">
 				<button class="light_green">Ver no mapa</button>
 			</div>
@@ -300,11 +300,16 @@
           <!-- Conteúdo irá ser gerado dinamicamente pela aplicação.
              usando template do Handlebars -->
 
-		  <div class="box_avaliacao_usuario--botao_modo_navegacao">
-			<button class="light_blue small_button" onclick="${pageContext.request.contextPath}/trajeto/negegacao">Modo navegação</button>
-		  </div>
-			 
         </div>
+
+  		  <div class="box_avaliacao_usuario--botao_modo_navegacao">
+        <a href="${pageContext.request.contextPath}/trajeto/navegacao">
+          <button class="light_blue small_button">
+            Modo navegação
+          </button>
+        </a>
+  		  </div>
+
 
       </div>
 
@@ -383,7 +388,7 @@
           return input1 != input2;
         });
 
-		// não precisa mais deste helper 
+		// não precisa mais deste helper
 		// mas é interessante manter aqui pra ver o funcionamento
         Handlebars.registerHelper("peloMenosUmPassageiroConfirmado", function (passageirosElement) {
 
