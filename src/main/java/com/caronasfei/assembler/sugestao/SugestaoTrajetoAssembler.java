@@ -54,6 +54,7 @@ public class SugestaoTrajetoAssembler {
 		motoristaSaidaDTO.setNome(usuarioMotorista.getNome());
 		CursoPeriodo cursoPeriodo = usuarioMotorista.getCursoPeriodo();
 		motoristaSaidaDTO.setCurso(cursoPeriodo.getCurso().getNome());
+		motoristaSaidaDTO.setHorarioPartida(sugestaoTrajetoMotorista.getIntencaoCarona().getHorarioPartida().getHorarioFormatado());
 		motoristaSaidaDTO.setPeriodo(cursoPeriodo.getPeriodo().getNome());
 		motoristaSaidaDTO.setEstado(sugestaoTrajetoMotorista.getEstado().name());
 

@@ -260,7 +260,21 @@
             justify-content: flex-end;
           }
 
+
+		  .icon-desc {
+		  	margin-left: 8px;
+		  	font-size: 18px;
+		  	line-height: 28px;
+		  	display: inline-block;
+		  }
+
+		  .nav i {
+		  	font-size: 22px;
+		  }
+
         </style>
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
 
       </head>
 
@@ -275,6 +289,13 @@
         </div>
 
         <div class="content">
+
+          <div class="form-group nav">
+          	<a href="${pageContext.request.contextPath}/trajeto/avalia">
+				<i class="fas fa-arrow-left icon-large"></i><div class="icon-desc">Voltar</div>
+			</a>
+          </div>
+
           <div class="form-group">
             <div class="painel">
               <div class="painel-info-pagina">
@@ -289,13 +310,13 @@
             </div>
           </div>
 
-          <h2>seu horário de saída: XX:XX AM/PM</h2>
+          <h2>seu horário de saída: <span id="horario_saida_motorista"></span></h2>
 
 
           <div class="form-group">
             <h3>Passageiro a buscar:</h3>
             <div id="passageiro_area"></div>
-            <h3>Distância atual: XXX km</h3>
+            <h3>Distância atual: <span id="distancia_atual_motorista_passageiro"></span></h3>
           </div>
 
         </div>
@@ -365,6 +386,7 @@
           function NavegacaoApp() {
 
             this.passageiro = null;
+            this.motorista = null;
 
           }
 
@@ -382,6 +404,8 @@
 
             this.sincronizaInfo();
             this.sincronizaJob();
+
+            // parte estática
 
           }
 
@@ -421,6 +445,13 @@
                     console.log(sugestaoTrajeto);
 
                     app.passageiro = sugestaoTrajeto.passageiros[0];
+
+                    // parte estática
+                    // TODO: onde colocar isso de forma mais organizada?
+                    if (app.motorista == null) {
+                      app.motorista = sugestaoTrajeto.motorista;
+                      $("#horario_saida_motorista").text(sugestaoTrajeto.motorista.horarioPartida);
+                    }
                     app.atualizaPassageirosView();
 
                   }
@@ -467,12 +498,35 @@
 
           }
 
+          NavegacaoApp.prototype.atualizaLocalizacao = function() {
+
+            app = this;
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+              coords = position.coords;
+              latitude = coords.latitude;
+              longitude = coords.longitude;
+
+              var coordenadas = {};
+              coordenadas.latitude = latitude;
+              coordenadas.longitude = longitude;
+
+              // compara essas coordenadas obtidas com as
+              // coordenadas do passageiro (app.passageiro)
+              // atualiza span com informação
+
+
+            }, function() {alert('erro, sem acesso a localizacao')})
+
+          }
+
           NavegacaoApp.prototype.sincronizaJob = function () {
 
             setTimeout(function () {
 
               app.sincronizaInfo();
               app.sincronizaJob();
+              app.atualizaLocalizacao();
 
             }, 3000);
 
