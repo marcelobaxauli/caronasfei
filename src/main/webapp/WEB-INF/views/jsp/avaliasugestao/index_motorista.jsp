@@ -287,7 +287,7 @@
 			</div>
 
 			<div class="painel-botao">
-				<button class="light_green">Ver no mapa</button>
+				<button class="light_green" onclick="app.exportaMapa()">Ver no mapa</button>
 			</div>
 		</div>
 	  </div>
@@ -503,7 +503,22 @@
           }
         });
       }
+	  
+      AppAvaliaSugestaoMotorista.prototype.exportaMapa = function() {
+		
+    	  var motoristaPartidaLatitude = this.sugestaoTrajetoDado.motorista.enderecoPartida.latitude;
+    	  var motoristaPartidaLongitude = this.sugestaoTrajetoDado.motorista.enderecoPartida.longitude;
+    	  
+    	  console.log(this.sugestaoTrajetoDado.passageiros);
+    	  
+    	  var ultimo
+    	  
+    	  var destinoUrlParte = "destination=";
+    	  
+    	  window.open("https://www.google.com/maps/dir/?api=1&", "_blank");
 
+      }
+      
       AppAvaliaSugestaoMotorista.prototype.sincronizaJob = function () {
 
         setTimeout(function() {

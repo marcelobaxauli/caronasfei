@@ -26,7 +26,7 @@ public class SugestaoTrajetoAssembler {
 
 	@Autowired
 	private EnderecoAssembler enderecoAssembler;
-
+	
 	public SugestaoTrajetoDTO toDTO(SugestaoTrajeto sugestaoTrajeto) {
 
 		SugestaoTrajetoMotorista sugestaoTrajetoMotorista = sugestaoTrajeto.getMotorista();
@@ -37,11 +37,12 @@ public class SugestaoTrajetoAssembler {
 
 		List<PassageiroSaidaDTO> passageiroListSaidaDTO = this.toPassageiroListSaidaDTO(passageiros);
 
-		SugestaoTrajetoDTO sugestaoTrajetoPerfilMotoristaDTO = new SugestaoTrajetoDTO();
-		sugestaoTrajetoPerfilMotoristaDTO.setMotorista(motoristaSaidaDTO);
-		sugestaoTrajetoPerfilMotoristaDTO.setPassageiros(passageiroListSaidaDTO);
-
-		return sugestaoTrajetoPerfilMotoristaDTO;
+		SugestaoTrajetoDTO sugestaoTrajetoDTO = new SugestaoTrajetoDTO();
+		sugestaoTrajetoDTO.setMotorista(motoristaSaidaDTO);
+		sugestaoTrajetoDTO.setPassageiros(passageiroListSaidaDTO);
+		sugestaoTrajetoDTO.setDestino(this.enderecoAssembler.toEnderecoDTO(sugestaoTrajeto.getEnderecoDestino()));
+		
+		return sugestaoTrajetoDTO;
 
 	}
 

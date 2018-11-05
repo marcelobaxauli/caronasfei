@@ -18,6 +18,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
+import com.caronasfei.db.intencao.endereco.Endereco;
+
 @Entity
 @Table(name = "sugestao_trajeto")
 public class SugestaoTrajeto {
@@ -65,6 +67,9 @@ public class SugestaoTrajeto {
 	@Column(name = "score")
 	private Integer score;
 
+	@OneToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+	private Endereco enderecoDestino;
+	
 	public SugestaoTrajeto() {
 		this.passageiros = new LinkedList<SugestaoTrajetoPassageiro>();
 	}
@@ -115,6 +120,14 @@ public class SugestaoTrajeto {
 
 	public void setEstado(SugestaoTrajetoEstado estado) {
 		this.estado = estado;
+	}
+
+	public Endereco getEnderecoDestino() {
+		return enderecoDestino;
+	}
+
+	public void setEnderecoDestino(Endereco enderecoDestino) {
+		this.enderecoDestino = enderecoDestino;
 	}
 
 }

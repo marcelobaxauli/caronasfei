@@ -304,8 +304,12 @@ CREATE TABLE sugestao_trajeto (
 	
 	estado VARCHAR(60) NOT NULL,
 	
-	FOREIGN KEY (id_sugestao_trajeto_motorista) REFERENCES sugestao_trajeto_motorista (id_sugestao_trajeto_motorista)
+	id_endereco_destino INTEGER NOT NULL,
+	
+	FOREIGN KEY (id_sugestao_trajeto_motorista) REFERENCES sugestao_trajeto_motorista (id_sugestao_trajeto_motorista),
 
+	FOREIGN KEY (id_endereco_destino) REFERENCES endereco (id_endereco)
+	
 	-- os passageiros desta sugestao de trajeto estão na tabela de ligação sugestao_trajeto_passageiro
 	-- relacionamento ONE-TO-MANY
 	

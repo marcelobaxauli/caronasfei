@@ -316,7 +316,7 @@
           <div class="form-group">
             <h3>Passageiro a buscar:</h3>
             <div id="passageiro_area"></div>
-            <h3>Distância atual: <span id="distancia_atual_motorista_passageiro"></span></h3>
+            <h3>Distância atual: <span id="distancia_atual_motorista_passageiro">...</span></h3>
           </div>
 
         </div>
@@ -381,12 +381,42 @@
 
         </script>
 
+		<script>
+			
+			// TODO: mover para arquivo próprio?
+			
+			function CoordenadasParaDistancia() {
+				
+			}
+					
+			CoordenadasParaDistancia.prototype.degreesToRadians = function(degrees) {
+			  return degrees * Math.PI / 180;
+			}
+			
+			CoordenadasParaDistancia.prototype.distancia = function(lat1, lon1, lat2, lon2) {
+			  var earthRadiusKm = 6371;
+			
+			  var dLat = this.degreesToRadians(lat2-lat1);
+			  var dLon = this.degreesToRadians(lon2-lon1);
+			
+			  var lat1 = this.degreesToRadians(lat1);
+			  var lat2 = this.degreesToRadians(lat2);
+			
+			  var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+			          Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+			  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+			  return earthRadiusKm * c;
+			}
+		
+		</script>
+
         <script>
 
           function NavegacaoApp() {
 
             this.passageiro = null;
             this.motorista = null;
+            this.coordenadasParaDistancia = new CoordenadasParaDistancia();
 
           }
 
@@ -500,22 +530,23 @@
 
           NavegacaoApp.prototype.atualizaLocalizacao = function() {
 
-            app = this;
+            var app = this;
 
             navigator.geolocation.getCurrentPosition(function(position) {
-              coords = position.coords;
-              latitude = coords.latitude;
-              longitude = coords.longitude;
-
-              var coordenadas = {};
-              coordenadas.latitude = latitude;
-              coordenadas.longitude = longitude;
+              var coords = position.coords;
+              var motoristaLatitude = coords.latitude;
+              var motoristaLongitude = coords.longitude;
 
               // compara essas coordenadas obtidas com as
               // coordenadas do passageiro (app.passageiro)
               // atualiza span com informação
-
-
+			  var passageiroLatitude = app.passageiro.enderecoPartida.latitude;
+			  var passageiroLongitude = app.passageiro.enderecoPartida.longitude;
+              
+			  var distancia = this.app.coordenadasParaDistancia.distancia(motoristaLatitude, motoristaLongitude, passageiroLatitude, passageiroLongitude);
+			  
+			  $("#distancia_atual_motorista_passageiro").text(distancia.toFixed(2) + ' km');
+			  
             }, function() {alert('erro, sem acesso a localizacao')})
 
           }

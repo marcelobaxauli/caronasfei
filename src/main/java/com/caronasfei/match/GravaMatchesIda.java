@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.caronasfei.db.intencao.IntencaoCarona.AcaoCarona;
+import com.caronasfei.db.intencao.endereco.Endereco;
 import com.caronasfei.db.sugestao.SugestaoTrajeto;
 import com.caronasfei.db.sugestao.SugestaoTrajeto.SugestaoTrajetoEstado;
 import com.caronasfei.db.sugestao.SugestaoTrajetoMotorista;
@@ -46,6 +47,8 @@ public class GravaMatchesIda {
 
 		List<No> nosPassageiros = new LinkedList<No>();
 
+		Endereco enderecoDestino = noDestino.getEndereco();
+		
 		No noAtual = noDestino.getVerticeIncidente().getNoOrigem();
 		while (noAtual.getVerticeIncidente() != null) {
 			if (noAtual.getIntencaoCarona().getAcaoCarona() == AcaoCarona.PEDIR_CARONA) {
@@ -113,6 +116,8 @@ public class GravaMatchesIda {
 				novoSugestaoTrajeto.addSugestaoTrajetoPassageiro(sugestaoTrajetoPassageiro);
 
 			}
+			
+			novoSugestaoTrajeto.setEnderecoDestino(enderecoDestino);
 			
 			if (sugestaoTrajeto == null) {
 				this.entityManager.persist(novoSugestaoTrajeto);
