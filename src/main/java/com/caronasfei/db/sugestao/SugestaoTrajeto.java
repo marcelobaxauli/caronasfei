@@ -68,6 +68,7 @@ public class SugestaoTrajeto {
 	private Integer score;
 
 	@OneToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+	@JoinColumn(name = "id_endereco_destino")
 	private Endereco enderecoDestino;
 	
 	public SugestaoTrajeto() {

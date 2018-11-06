@@ -15,7 +15,8 @@ public class PassageiroSaidaDTO {
 	private EnderecoDTO enderecoDestino;
 	private double distanciaMotorista;
 	// horario de saida?
-
+	private int ordemCarona;
+	
 	public String getNome() {
 		return nome;
 	}
@@ -80,4 +81,11 @@ public class PassageiroSaidaDTO {
 		this.estado = estado;
 	}
 
+	public int getOrdemCarona() {
+		return ordemCarona;
+	}
+
+	public void setOrdemCarona(int ordemCarona) {
+		this.ordemCarona = ordemCarona;
+	}
 }

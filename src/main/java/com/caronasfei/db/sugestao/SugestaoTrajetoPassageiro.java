@@ -65,6 +65,9 @@ public class SugestaoTrajetoPassageiro {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "estado")
 	private SugestaoTrajetoPassageiroEstado estado;
+	
+	@Column(name = "ordem_carona")
+	private int ordemCarona;
 
 	@ManyToOne(optional=false, cascade = CascadeType.ALL)
 	@JoinColumn(name = "id_sugestao_trajeto")
@@ -110,10 +113,18 @@ public class SugestaoTrajetoPassageiro {
 		this.id = id;
 	}
 
+	public int getOrdemCarona() {
+		return ordemCarona;
+	}
+
+	public void setOrdemCarona(int ordemCarona) {
+		this.ordemCarona = ordemCarona;
+	}
+
 	public boolean isNoFixo() {
 		return this.estado == SugestaoTrajetoPassageiroEstado.CONFIRMADO
 				|| this.estado == SugestaoTrajetoPassageiroEstado.CONFIRMADO_MOTORISTA
 				|| this.estado == SugestaoTrajetoPassageiroEstado.NAO_CONFIRMADO;
 	}
-
+	
 }

@@ -485,8 +485,6 @@
           type: 'GET',
           success: function (result) {
 
-            console.log("result:");
-            console.log(result);
             if (result.sucesso) {
               var sugestaoTrajeto = result.dado;
 
@@ -503,22 +501,45 @@
           }
         });
       }
-	  
+
       AppAvaliaSugestaoMotorista.prototype.exportaMapa = function() {
-		
+
+        var url = "https://www.google.com/maps/dir/?api=1&travelmode=driving&dir_action=navigate&";
+
+        var destinoLatitude = this.sugestaoTrajetoDado.destino.latitude;
+        var destinoLongitude = this.sugestaoTrajetoDado.destino.longitude;
+
+        url += "destination=" + destinoLatitude + "," + destinoLongitude;
+
     	  var motoristaPartidaLatitude = this.sugestaoTrajetoDado.motorista.enderecoPartida.latitude;
     	  var motoristaPartidaLongitude = this.sugestaoTrajetoDado.motorista.enderecoPartida.longitude;
-    	  
-    	  console.log(this.sugestaoTrajetoDado.passageiros);
-    	  
-    	  var ultimo
-    	  
-    	  var destinoUrlParte = "destination=";
-    	  
-    	  window.open("https://www.google.com/maps/dir/?api=1&", "_blank");
+
+    	  var passageiros = this.sugestaoTrajetoDado.passageiros;
+
+        if (passageiros != undefined && passageiros.length > 0) {
+          url += "&waypoints=";
+        }
+
+        for (var i = 0; i < passageiros.length; i++) {
+          var passageiro = passageiros[i];
+
+          var passageiroLatitude = passageiro.enderecoPartida.latitude;
+          var passageiroLongitude = passageiro.enderecoPartida.longitude;
+
+          if (i > 0) {
+            url += "|";
+          }
+
+          url += passageiroLatitude + ',' + passageiroLongitude;
+
+        }
+
+        console.log(url);
+
+    	  window.open(url, "_blank");
 
       }
-      
+
       AppAvaliaSugestaoMotorista.prototype.sincronizaJob = function () {
 
         setTimeout(function() {
