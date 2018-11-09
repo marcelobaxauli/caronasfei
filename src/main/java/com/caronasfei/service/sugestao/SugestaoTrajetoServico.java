@@ -128,16 +128,20 @@ public class SugestaoTrajetoServico {
 	
 	@Transactional(readOnly = true)
 	public SugestaoTrajeto findSugestaoTrajetoByIntencaoCaronaPassageiro(IntencaoCarona intencaoCaronaPassageiro) {
-		TypedQuery<SugestaoTrajeto> query = em.createQuery("SELECT st FROM SugestaoTrajeto st "
-							   + "INNER JOIN SugestaoTrajetoPassageiro stp "
-							   + "ON st.id = stp.sugestaoTrajeto "
-							   + "WHERE stp.intencaoCarona = :intencaoCarona "
-							   + "AND stp.estado != 'REJEITADO_MOTORISTA' "
-							   + "AND stp.estado != 'REJEITADO_PASSAGEIRO' "
-							   + "AND stp.estado != 'NAO_CONFIRMADO' "
-							   + "", SugestaoTrajeto.class);
 		
-		query.setParameter("intencaoCarona", intencaoCaronaPassageiro);
+		TypedQuery<SugestaoTrajeto> query = this.em.createQuery("SELECT st FROM SugestaoTrajeto st "
+				+ "INNER JOIN SugestaoTrajetoPassageiro stp "
+				+ "ON st.id = stp.sugestaoTrajeto "
+				+ "INNER JOIN IntencaoCarona i "
+				+ "ON stp.intencaoCarona = i.id "
+				+ "AND i.id = :intencaoPassageiroId"
+				+ "AND stp.estado = :estadoPassageiro ", SugestaoTrajeto.class);
+		
+		query.setParameter("intencaoPassageiroId", intencaoCaronaPassageiro);
+		
+		// o motorista precisa ter aceito o passageiro para 
+		// que ele consiga visualizar a sugestao de carona
+		query.setParameter("estadoPassageiro", SugestaoTrajetoPassageiroEstado.CONFIRMADO_MOTORISTA);
 		
 		List<SugestaoTrajeto> resultList = query.getResultList();
 		
@@ -343,7 +347,7 @@ public class SugestaoTrajetoServico {
 	@Transactional(readOnly = true)
 	public SugestaoTrajeto findSugestaoComPassageirosEmSubstituicaoParaMotorista(IntencaoCarona intencaoCaronaMotorista) {
 		
-		TypedQuery<SugestaoTrajeto> query = em.createQuery("SELECT st FROM SugestaoTrajeto st "
+		TypedQuery<SugestaoTrajeto> query = this.em.createQuery("SELECT st FROM SugestaoTrajeto st "
 				   + "INNER JOIN SugestaoTrajetoMotorista stm "
 				   + "ON st.motorista = stm.id "
 				   + "INNER JOIN IntencaoCarona i " 
@@ -365,5 +369,5 @@ public class SugestaoTrajetoServico {
 		return resultList.get(0);
 		
 	}
-	
+		
 }

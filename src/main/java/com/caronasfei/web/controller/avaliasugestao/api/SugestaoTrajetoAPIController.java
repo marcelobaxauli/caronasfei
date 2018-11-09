@@ -46,7 +46,7 @@ public class SugestaoTrajetoAPIController {
 
 	@GetMapping("/trajeto/sugestao")
 	@ResponseBody
-	public RespostaPadraoDTO<SugestaoTrajetoDTO> getSugestoes() {
+	public RespostaPadraoDTO<SugestaoTrajetoDTO> getSugestao() {
 
 		RespostaPadraoDTO<SugestaoTrajetoDTO> resposta = new RespostaPadraoDTO<SugestaoTrajetoDTO>();
 

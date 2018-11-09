@@ -14,7 +14,7 @@ import com.caronasfei.service.sugestao.SugestaoTrajetoServico;
 import com.caronasfei.sessao.SessaoWeb;
 
 @Controller
-public class AvaliaSugestaoTrajetoJSPController {
+public class SugestaoTrajetoJSPController {
 
 	@Autowired
 	private SessaoWeb sessaoWeb;
@@ -49,7 +49,7 @@ public class AvaliaSugestaoTrajetoJSPController {
 				return "redirect:esperasugestao";
 			}
 			
-			return "avaliasugestao/index_motorista";
+			return "avaliasugestao/index_sugestao_motorista";
 		} else if (intencaoCarona.getAcaoCarona() == IntencaoCarona.AcaoCarona.PEDIR_CARONA) {
 			SugestaoTrajeto sugestaoTrajeto = this.sugestaoTrajetoServico.findSugestaoTrajetoByIntencaoCaronaPassageiro(intencaoCarona);
 			
@@ -63,7 +63,7 @@ public class AvaliaSugestaoTrajetoJSPController {
 				return "redirect:esperasugestao";				
 			}
 
-			return "avaliasugestao/index_passageiro";
+			return "avaliasugestao/index_sugestao_passageiro";
 		} else {
 			throw new IllegalStateException("Acao de carona não identificada: " + intencaoCarona.getAcaoCarona());
 		}
