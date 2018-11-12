@@ -277,9 +277,22 @@
       </div>
 
       <div class="form-group">
-        <h4>Passageiros:</h4>
 
-        <div id="passageiros">
+        <h4>Você:</h4>
+
+        <div id="passageiro_logado">
+
+          <!-- Conteúdo irá ser gerado dinamicamente pela aplicação.
+             usando template do Handlebars -->
+
+        </div>
+      </div>
+
+      <div class="form-group">
+
+        <h4>Outros passageiros:</h4>
+
+        <div id="outros_passageiros">
 
           <!-- Conteúdo irá ser gerado dinamicamente pela aplicação.
              usando template do Handlebars -->
@@ -289,7 +302,7 @@
 
     </div>
 
-    <script id="box_usuario_motorista" type="text/x-handlebars-template">
+    <script id="box_motorista" type="text/x-handlebars-template">
 
       <div class="box_avaliacao_usuario">
 
@@ -314,7 +327,10 @@
             </div>
 
             <div class="box_avaliacao_usuario--detalhe">
-              <span>{{local}}</span>
+              <span>{{enderecoPartida.rua}},
+                {{enderecoPartida.bairro}}.
+                {{enderecoPartida.cidade}}.
+                {{enderecoPartida.estado}}</span>
             </div>
 
           </div>
@@ -333,7 +349,66 @@
 
     </script>
 
-    <script id="box_usuario_passageiros" type="text/x-handlebars-template">
+    <script id="box_passageiro_logado" type="text/x-handlebars-template">
+      <div>
+
+        <div class="box_avaliacao_usuario">
+
+          <div class="box_avaliacao_usuario--foto">
+            <img class="box_avaliacao_usuario--foto--img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQgygYGC_4TN6JA9x_FLoZyuVqfvLOC5b6uj30Op87i51mT_2iSw"/>
+          </div>
+
+          <div class="box_avaliacao_usuario--detalhes_box">
+
+            <div class="box_avaliacao_usuario--detalhes">
+
+              <div class="box_avaliacao_usuario--detalhe">
+                <span>{{nome}}</span>
+              </div>
+
+              <div class="box_avaliacao_usuario--detalhe">
+                <span>{{curso}}</span>
+              </div>
+
+              <div class="box_avaliacao_usuario--detalhe">
+                <span>{{periodo}}</span>
+              </div>
+
+              <div class="box_avaliacao_usuario--detalhe">
+                <span>{{enderecoPartida.rua}},
+                  {{enderecoPartida.bairro}}.
+                  {{enderecoPartida.cidade}}.
+                  {{enderecoPartida.estado}}</span>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="box_avaliacao_usuario--status_box">
+            <div id="status_area" class="box_avaliacao_usuario--status">
+              <!-- essa parte precisa ser criada dinamicamente.. -->
+              <!-- representa o estado passageiro (com botão para
+                   o motorista indicar que irá buscá-lo, ou estado
+                   informando se passageiro já aceitou o trajeto.) -->
+
+              {{#if (notEquals estado 'CONFIRMADO_MOTORISTA')}}
+                <span>{{estado}}</span>
+              {{else}}
+                <input type="hidden" name="idPassageiro" value="{{id}}"/>
+                <button class="light_green" onclick="app.aceitarPassageiro(this)">Aceitar</button>
+                <button class="red" onclick="app.rejeitarPassageiro(this)">Rejeitar</button>
+              {{/if}}
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </script>
+
+    <script id="box_outros_passageiros" type="text/x-handlebars-template">
       <div>
         {{#each this}}
           <div class="box_avaliacao_usuario">
@@ -359,7 +434,10 @@
                 </div>
 
                 <div class="box_avaliacao_usuario--detalhe">
-                  <span>{{local}}</span>
+                  <span>{{enderecoPartida.rua}},
+                    {{enderecoPartida.bairro}}.
+                    {{enderecoPartida.cidade}}.
+                    {{enderecoPartida.estado}}</span>
                 </div>
 
               </div>
@@ -381,11 +459,6 @@
 
         {{/each}}
 
-        <div class="box_avaliacao_usuario--botao_finalizar">
-          <button class="light_blue" onclick="app.aceitarCarona(this)">Confirmar carona</button>
-          <button class="red" onclick="app.rejeitarCarona(this)">Rejeitar carona</button>
-        </div>
-
       </div>
 
     </script>
@@ -395,6 +468,7 @@
 
       function AppAvaliaSugestaoMotorista() {
         this.sugestaoTrajetoDado = null;
+        this.passageiroLogadoDado = null;
       }
 
       AppAvaliaSugestaoMotorista.prototype.init = function () {
@@ -431,19 +505,48 @@
       }
 
       AppAvaliaSugestaoMotorista.prototype.renderTemplate = function () {
-        var source = $("#box_usuario_motorista").html();
+        var source = $("#box_motorista").html();
         var template = Handlebars.compile(source);
         var html = template(this.sugestaoTrajetoDado.motorista);
         $('#motorista').html(html);
 
-        var source = $("#box_usuario_passageiros").html();
+        var source = $("#box_passageiro_logado").html();
         var template = Handlebars.compile(source);
-        var html = template(this.sugestaoTrajetoDado.passageiros);
-        $('#passageiros').html(html);
+        var html = template(this.passageiroLogadoDado);
+        $('#passageiro_logado').html(html);
+
+        var source = $("#box_outros_passageiros").html();
+        var template = Handlebars.compile(source);
+        var html = template(this.getOutrosPassageiros());
+        $('#outros_passageiros').html(html);
+
+      }
+
+      AppAvaliaSugestaoMotorista.prototype.getOutrosPassageiros = function() {
+
+        var passageiros = this.sugestaoTrajetoDado.passageiros;
+        var passageiroLogado = this.passageiroLogadoDado;
+
+        if (passageiros == null || passageiroLogado == null) {
+          return null;
+        }
+
+        var outrosPassageiro = [];
+        for (var i = 0; i < passageiros.length; i++) {
+
+          if (passageiros[i].id != passageiroLogado.id) {
+            outrosPassageiro.push(passageiros[i]);
+          }
+
+        }
+
+        return outrosPassageiro;
+
       }
 
       AppAvaliaSugestaoMotorista.prototype.refreshPassageiros = function () {
-        $("#passageiros").empty();
+        $("#passageiro_logado").empty();
+        $("#outros_passageiros").empty();
         this.renderTemplate();
       }
 
@@ -509,8 +612,6 @@
           type: 'GET',
           success: function (result) {
 
-            console.log("result:");
-            console.log(result);
             if (result.sucesso) {
               var sugestaoTrajeto = result.dado;
 
@@ -522,6 +623,22 @@
                 app.refreshPassageiros();
               }
 
+            }
+
+          }
+        });
+
+        $.ajax({
+          url: '${pageContext.request.contextPath}/sugestao/passageiro',
+          type: 'GET',
+          success: function (result) {
+
+            console.log('get passageiroinfo result:');
+            console.log(result);
+
+            if (result.sucesso) {
+              app.passageiroLogadoDado = result.dado;
+              app.refreshPassageiros();
             }
 
           }

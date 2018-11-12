@@ -134,10 +134,10 @@ public class SugestaoTrajetoServico {
 				+ "ON st.id = stp.sugestaoTrajeto "
 				+ "INNER JOIN IntencaoCarona i "
 				+ "ON stp.intencaoCarona = i.id "
-				+ "AND i.id = :intencaoPassageiroId"
+				+ "AND i.id = :intencaoPassageiroId "
 				+ "AND stp.estado = :estadoPassageiro ", SugestaoTrajeto.class);
 		
-		query.setParameter("intencaoPassageiroId", intencaoCaronaPassageiro);
+		query.setParameter("intencaoPassageiroId", intencaoCaronaPassageiro.getId());
 		
 		// o motorista precisa ter aceito o passageiro para 
 		// que ele consiga visualizar a sugestao de carona
@@ -367,6 +367,30 @@ public class SugestaoTrajetoServico {
 		}
 		
 		return resultList.get(0);
+		
+	}
+	
+	@Transactional(readOnly = true)
+	public SugestaoTrajetoPassageiro findSugestaoTrajetoPassageiroByIntencaoCarona(IntencaoCarona intencaoCaronaPassageiro) {
+		
+		SugestaoTrajeto sugestaoTrajeto = this.findSugestaoTrajetoByIntencaoCaronaPassageiro(intencaoCaronaPassageiro);
+		
+		if (sugestaoTrajeto == null) {
+			return null;
+		}
+		
+		SugestaoTrajetoPassageiro sugestaoTrajetoPassageiro = null;
+		
+		for (SugestaoTrajetoPassageiro sugestaoTrajetoPassageiroAtual : sugestaoTrajeto.getPassageiros()) {
+			
+			if (sugestaoTrajetoPassageiroAtual.getIntencaoCarona().equals(intencaoCaronaPassageiro)) {
+				sugestaoTrajetoPassageiro = sugestaoTrajetoPassageiroAtual;
+				break;
+			}
+			
+		}
+		
+		return sugestaoTrajetoPassageiro;
 		
 	}
 		

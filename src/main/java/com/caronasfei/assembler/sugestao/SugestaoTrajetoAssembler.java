@@ -16,8 +16,8 @@ import com.caronasfei.db.sugestao.SugestaoTrajetoMotorista;
 import com.caronasfei.db.sugestao.SugestaoTrajetoPassageiro;
 import com.caronasfei.db.usuario.Usuario;
 import com.caronasfei.dto.consultasugestao.MotoristaSaidaDTO;
-import com.caronasfei.dto.consultasugestao.PassageiroSaidaDTO;
 import com.caronasfei.dto.consultasugestao.SugestaoTrajetoDTO;
+import com.caronasfei.dto.consultasugestao.SugestaoTrajetoPassageiroSaidaDTO;
 import com.caronasfei.dto.intencao.endereco.EnderecoDTO;
 
 @Component
@@ -35,7 +35,7 @@ public class SugestaoTrajetoAssembler {
 
 		List<SugestaoTrajetoPassageiro> passageiros = sugestaoTrajeto.getPassageiros();
 
-		List<PassageiroSaidaDTO> passageiroListSaidaDTO = this.toPassageiroListSaidaDTO(passageiros);
+		List<SugestaoTrajetoPassageiroSaidaDTO> passageiroListSaidaDTO = this.toPassageiroListSaidaDTO(passageiros);
 
 		SugestaoTrajetoDTO sugestaoTrajetoDTO = new SugestaoTrajetoDTO();
 		sugestaoTrajetoDTO.setMotorista(motoristaSaidaDTO);
@@ -72,16 +72,17 @@ public class SugestaoTrajetoAssembler {
 
 	}
 
-	public PassageiroSaidaDTO toPassageiroSaidaDTO(SugestaoTrajetoPassageiro passageiro) {
+	public SugestaoTrajetoPassageiroSaidaDTO toPassageiroSaidaDTO(SugestaoTrajetoPassageiro passageiro) {
 
 		IntencaoCarona intencaoCaronaPassageiro = passageiro.getIntencaoCarona();
 		Usuario usuarioPassageiro = intencaoCaronaPassageiro.getUsuario();
 
-		PassageiroSaidaDTO passageiroSaidaDTO = new PassageiroSaidaDTO();
+		SugestaoTrajetoPassageiroSaidaDTO passageiroSaidaDTO = new SugestaoTrajetoPassageiroSaidaDTO();
 		passageiroSaidaDTO.setId(passageiro.getId());
 		passageiroSaidaDTO.setNome(usuarioPassageiro.getNome());
 		CursoPeriodo cursoPeriodo = usuarioPassageiro.getCursoPeriodo();
 		passageiroSaidaDTO.setCurso(cursoPeriodo.getCurso().getNome());
+		passageiroSaidaDTO.setEstado(passageiro.getEstado().name());
 		passageiroSaidaDTO.setPeriodo(cursoPeriodo.getPeriodo().getNome());
 		passageiroSaidaDTO.setDistanciaMotorista(passageiro.getDistanciaParaMotorista());
 		passageiroSaidaDTO.setOrdemCarona(passageiro.getOrdemCarona());
@@ -89,19 +90,8 @@ public class SugestaoTrajetoAssembler {
 		Endereco enderecoPartida = intencaoCaronaPassageiro.getEnderecoPartida();
 		Endereco enderecoDestino = intencaoCaronaPassageiro.getEnderecoDestino();
 
-		EnderecoDTO enderecoDestinoDTO = null;
-		EnderecoDTO enderecoPartidaDTO = null;
-		if (enderecoPartida == null) {
-			// FEI_SBC
-			enderecoDestinoDTO = this.enderecoAssembler.toEnderecoDTO(enderecoDestino);
-			enderecoPartidaDTO = null;
-		}
-
-		if (enderecoDestino == null) {
-			// FEI_SBC
-			enderecoPartidaDTO = this.enderecoAssembler.toEnderecoDTO(enderecoPartida);
-			enderecoDestinoDTO = null;
-		}
+		EnderecoDTO enderecoDestinoDTO = this.enderecoAssembler.toEnderecoDTO(enderecoDestino);
+		EnderecoDTO enderecoPartidaDTO = this.enderecoAssembler.toEnderecoDTO(enderecoPartida);
 
 		passageiroSaidaDTO.setEnderecoPartida(enderecoPartidaDTO);
 		passageiroSaidaDTO.setEnderecoDestino(enderecoDestinoDTO);
@@ -110,15 +100,15 @@ public class SugestaoTrajetoAssembler {
 
 	}
 	
-	public List<PassageiroSaidaDTO> toPassageiroListSaidaDTO(List<SugestaoTrajetoPassageiro> passageiros) {
+	public List<SugestaoTrajetoPassageiroSaidaDTO> toPassageiroListSaidaDTO(List<SugestaoTrajetoPassageiro> passageiros) {
 
-		List<PassageiroSaidaDTO> passageiroSaidaDTOList = new ArrayList<PassageiroSaidaDTO>();
+		List<SugestaoTrajetoPassageiroSaidaDTO> passageiroSaidaDTOList = new ArrayList<SugestaoTrajetoPassageiroSaidaDTO>();
 		for (SugestaoTrajetoPassageiro sugestaoTrajetoPassageiro : passageiros) {
 
 			IntencaoCarona intencaoCaronaPassageiro = sugestaoTrajetoPassageiro.getIntencaoCarona();
 			Usuario usuarioPassageiro = intencaoCaronaPassageiro.getUsuario();
 
-			PassageiroSaidaDTO passageiroSaidaDTO = new PassageiroSaidaDTO();
+			SugestaoTrajetoPassageiroSaidaDTO passageiroSaidaDTO = new SugestaoTrajetoPassageiroSaidaDTO();
 			passageiroSaidaDTO.setId(sugestaoTrajetoPassageiro.getId());
 			passageiroSaidaDTO.setNome(usuarioPassageiro.getNome());
 			CursoPeriodo cursoPeriodo = usuarioPassageiro.getCursoPeriodo();

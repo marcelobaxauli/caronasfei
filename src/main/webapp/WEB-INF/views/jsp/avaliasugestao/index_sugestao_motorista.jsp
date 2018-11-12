@@ -292,7 +292,7 @@
 		</div>
 	  </div>
 
-      <div class="form-group">
+      <div class="form-group">        
         <h4>Passageiros:</h4>
 
         <div id="passageiros">

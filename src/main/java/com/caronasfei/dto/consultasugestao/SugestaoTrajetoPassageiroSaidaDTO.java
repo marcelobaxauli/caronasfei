@@ -2,7 +2,7 @@ package com.caronasfei.dto.consultasugestao;
 
 import com.caronasfei.dto.intencao.endereco.EnderecoDTO;
 
-public class PassageiroSaidaDTO {
+public class SugestaoTrajetoPassageiroSaidaDTO {
 
 	// id da tabela SugestaoTrajetoPassageiro. Não da do usuario em si.
 	private long id;

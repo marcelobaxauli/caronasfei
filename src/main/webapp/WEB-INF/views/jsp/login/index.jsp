@@ -193,7 +193,7 @@
 			 </div>
 
 			 <div class="login_box_input">
-				 <input id="emailinput" type="text" placeholder="Email" />
+				 <input id="emailinput" type="text" placeholder="Email" autofocus />
 			 </div>
 
 			 <div class="login_box_input">

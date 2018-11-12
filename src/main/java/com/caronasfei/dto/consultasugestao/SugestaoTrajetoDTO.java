@@ -7,7 +7,7 @@ import com.caronasfei.dto.intencao.endereco.EnderecoDTO;
 public class SugestaoTrajetoDTO {
 
 	private MotoristaSaidaDTO motorista;
-	private List<PassageiroSaidaDTO> passageiros;
+	private List<SugestaoTrajetoPassageiroSaidaDTO> passageiros;
 	private EnderecoDTO destino;
 
 	public MotoristaSaidaDTO getMotorista() {
@@ -18,11 +18,11 @@ public class SugestaoTrajetoDTO {
 		this.motorista = motorista;
 	}
 
-	public List<PassageiroSaidaDTO> getPassageiros() {
+	public List<SugestaoTrajetoPassageiroSaidaDTO> getPassageiros() {
 		return passageiros;
 	}
 
-	public void setPassageiros(List<PassageiroSaidaDTO> passageiros) {
+	public void setPassageiros(List<SugestaoTrajetoPassageiroSaidaDTO> passageiros) {
 		this.passageiros = passageiros;
 	}
 

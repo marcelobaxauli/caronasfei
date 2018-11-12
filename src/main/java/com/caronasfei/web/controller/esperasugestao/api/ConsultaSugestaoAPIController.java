@@ -12,7 +12,7 @@ import com.caronasfei.db.sugestao.SugestaoTrajeto;
 import com.caronasfei.db.sugestao.SugestaoTrajetoPassageiro;
 import com.caronasfei.db.usuario.Usuario;
 import com.caronasfei.dto.consultasugestao.MotoristaSaidaDTO;
-import com.caronasfei.dto.consultasugestao.PassageiroSaidaDTO;
+import com.caronasfei.dto.consultasugestao.SugestaoTrajetoPassageiroSaidaDTO;
 import com.caronasfei.dto.consultasugestao.SugestaoTrajetoDTO;
 import com.caronasfei.dto.consultasugestao.SugestaoTrajetoPerfilPassageiroDTO;
 import com.caronasfei.dto.web.padrao.RespostaPadraoDTO;
@@ -73,7 +73,7 @@ public class ConsultaSugestaoAPIController {
 			SugestaoTrajetoPassageiro passageiro = this.sugestaoTrajetoServico.getPassageiro(intencaoCarona, sugestaoTrajeto);
 			
 			MotoristaSaidaDTO motoristaSaidaDTO = this.sugestaoTrajetoAssembler.toMotoristaSaidaDTO(sugestaoTrajeto.getMotorista());
-			PassageiroSaidaDTO passageiroSaidaDTO = this.sugestaoTrajetoAssembler.toPassageiroSaidaDTO(passageiro);
+			SugestaoTrajetoPassageiroSaidaDTO passageiroSaidaDTO = this.sugestaoTrajetoAssembler.toPassageiroSaidaDTO(passageiro);
 
 			SugestaoTrajetoPerfilPassageiroDTO perfilPassageiroDTO = new SugestaoTrajetoPerfilPassageiroDTO();
 			perfilPassageiroDTO.setMotoristaDTO(motoristaSaidaDTO);

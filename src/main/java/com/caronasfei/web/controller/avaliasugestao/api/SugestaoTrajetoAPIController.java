@@ -19,6 +19,7 @@ import com.caronasfei.db.usuario.Usuario;
 import com.caronasfei.dto.consultasugestao.ConfirmaTrajetoPassageiroDTO;
 import com.caronasfei.dto.consultasugestao.SubstituiPassageiroTrajetoDTO;
 import com.caronasfei.dto.consultasugestao.SugestaoTrajetoDTO;
+import com.caronasfei.dto.consultasugestao.SugestaoTrajetoPassageiroSaidaDTO;
 import com.caronasfei.dto.consultasugestao.VisualizaSugestaoTrajetoDTO;
 import com.caronasfei.dto.sugestao.AcaoMotoristaPassageiroDTO;
 import com.caronasfei.dto.web.padrao.RespostaPadraoDTO;
@@ -241,6 +242,38 @@ public class SugestaoTrajetoAPIController {
 			resposta.setSucesso(false);
 			resposta.setMensagem("Requisição inválida.");
 		}
+
+		return resposta;
+
+	}
+
+	@GetMapping("/sugestao/passageiro")
+	@ResponseBody
+	public RespostaPadraoDTO getSugestaoPassageiro() {
+
+		RespostaPadraoDTO resposta = new RespostaPadraoDTO();
+
+		Usuario usuario = this.sessaoWeb.getUsuario();
+
+		resposta.setDado(null);
+		if (usuario != null) {
+
+			IntencaoCarona intencaoCarona = this.intencaoCaronaServico.findByUsuario(usuario);
+
+			if (intencaoCarona != null) {
+
+				SugestaoTrajetoPassageiro sugestaoTrajetoPassageiro = this.sugestaoTrajetoServico
+						.findSugestaoTrajetoPassageiroByIntencaoCarona(intencaoCarona);
+
+				SugestaoTrajetoPassageiroSaidaDTO sugestaoTrajetoDTO = this.sugestaoTrajetoAssembler
+						.toPassageiroSaidaDTO(sugestaoTrajetoPassageiro);
+
+				resposta.setDado(sugestaoTrajetoDTO);
+
+			}
+
+		}
+		resposta.setSucesso(true);
 
 		return resposta;
 

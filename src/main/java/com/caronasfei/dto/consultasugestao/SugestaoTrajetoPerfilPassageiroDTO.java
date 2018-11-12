@@ -3,7 +3,7 @@ package com.caronasfei.dto.consultasugestao;
 public class SugestaoTrajetoPerfilPassageiroDTO {
 
 	private MotoristaSaidaDTO motoristaDTO;
-	private PassageiroSaidaDTO passageiroDTO;
+	private SugestaoTrajetoPassageiroSaidaDTO passageiroDTO;
 
 	public MotoristaSaidaDTO getMotoristaDTO() {
 		return motoristaDTO;
@@ -13,11 +13,11 @@ public class SugestaoTrajetoPerfilPassageiroDTO {
 		this.motoristaDTO = motoristaDTO;
 	}
 
-	public PassageiroSaidaDTO getPassageiroDTO() {
+	public SugestaoTrajetoPassageiroSaidaDTO getPassageiroDTO() {
 		return passageiroDTO;
 	}
 
-	public void setPassageiroDTO(PassageiroSaidaDTO passageiroDTO) {
+	public void setPassageiroDTO(SugestaoTrajetoPassageiroSaidaDTO passageiroDTO) {
 		this.passageiroDTO = passageiroDTO;
 	}
 
