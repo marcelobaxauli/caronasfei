@@ -150,15 +150,11 @@ public class SugestaoTrajetoAPIController {
 
 		RespostaPadraoDTO resposta = new RespostaPadraoDTO();
 
-		int trajetoId = confirmaTrajetoPassageiroDTO.getTrajetoId();
+		int sugestaoId = confirmaTrajetoPassageiroDTO.getSugestaoId();
 		int passageiroId = confirmaTrajetoPassageiroDTO.getPassageiroId();
 
-		SugestaoTrajeto sugestaoTrajeto = this.sugestaoTrajetoServico.findById(trajetoId);
-		SugestaoTrajetoPassageiro sugestaoTrajetoPassageiro = this.sugestaoTrajetoServico
-				.findPassageiroById(passageiroId);
-
 		try {
-			this.sugestaoTrajetoServico.aceitarTrajetoPassageiro(sugestaoTrajeto, sugestaoTrajetoPassageiro);
+			this.sugestaoTrajetoServico.aceitarTrajetoPassageiro(sugestaoId, passageiroId);
 			resposta.setSucesso(true);
 			// resposta.nextUrl ?
 		} catch (DomainSecurityException e) {
@@ -178,7 +174,7 @@ public class SugestaoTrajetoAPIController {
 
 		RespostaPadraoDTO resposta = new RespostaPadraoDTO();
 
-		int trajetoId = confirmaTrajetoPassageiroDTO.getTrajetoId();
+		int trajetoId = confirmaTrajetoPassageiroDTO.getSugestaoId();
 		int passageiroId = confirmaTrajetoPassageiroDTO.getPassageiroId();
 
 		SugestaoTrajeto sugestaoTrajeto = this.sugestaoTrajetoServico.findById(trajetoId);

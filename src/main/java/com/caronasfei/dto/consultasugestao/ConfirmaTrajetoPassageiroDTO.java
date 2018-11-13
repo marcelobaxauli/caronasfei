@@ -4,18 +4,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ConfirmaTrajetoPassageiroDTO {
 
-	@JsonProperty("id_trajeto")
-	private int trajetoId;
+	@JsonProperty("id_sugestao")
+	private int sugestaoId;
 
 	@JsonProperty("id_passageiro")
 	private int passageiroId;
 
-	public int getTrajetoId() {
-		return trajetoId;
+	public int getSugestaoId() {
+		return sugestaoId;
 	}
 
-	public void setTrajetoId(int trajetoId) {
-		this.trajetoId = trajetoId;
+	public void setSugestaoId(int sugestaoId) {
+		this.sugestaoId = sugestaoId;
 	}
 
 	public int getPassageiroId() {

@@ -134,14 +134,13 @@ public class SugestaoTrajetoServico {
 				+ "ON st.id = stp.sugestaoTrajeto "
 				+ "INNER JOIN IntencaoCarona i "
 				+ "ON stp.intencaoCarona = i.id "
-				+ "AND i.id = :intencaoPassageiroId "
-				+ "AND stp.estado = :estadoPassageiro ", SugestaoTrajeto.class);
+				+ "AND i.id = :intencaoPassageiroId ", SugestaoTrajeto.class);
 		
 		query.setParameter("intencaoPassageiroId", intencaoCaronaPassageiro.getId());
 		
 		// o motorista precisa ter aceito o passageiro para 
 		// que ele consiga visualizar a sugestao de carona
-		query.setParameter("estadoPassageiro", SugestaoTrajetoPassageiroEstado.CONFIRMADO_MOTORISTA);
+//		query.setParameter("estadoPassageiro", SugestaoTrajetoPassageiroEstado.CONFIRMADO_MOTORISTA);
 		
 		List<SugestaoTrajeto> resultList = query.getResultList();
 		
@@ -257,7 +256,11 @@ public class SugestaoTrajetoServico {
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void aceitarTrajetoPassageiro(SugestaoTrajeto sugestaoTrajeto, SugestaoTrajetoPassageiro sugestaoTrajetoPassageiro) throws DomainSecurityException {
+	public void aceitarTrajetoPassageiro(int sugestaoTrajetoId, int sugestaoTrajetoPassageiroId) throws DomainSecurityException {
+
+		SugestaoTrajeto sugestaoTrajeto = this.findById(sugestaoTrajetoId);
+		SugestaoTrajetoPassageiro sugestaoTrajetoPassageiro = this
+				.findPassageiroById(sugestaoTrajetoPassageiroId);
 		
 		SugestaoTrajetoPassageiro passageiroBuscado = this.getPassageiro(sugestaoTrajetoPassageiro.getIntencaoCarona(), sugestaoTrajeto);
 		

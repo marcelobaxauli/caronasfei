@@ -6,9 +6,18 @@ import com.caronasfei.dto.intencao.endereco.EnderecoDTO;
 
 public class SugestaoTrajetoDTO {
 
+	private long id;
 	private MotoristaSaidaDTO motorista;
 	private List<SugestaoTrajetoPassageiroSaidaDTO> passageiros;
 	private EnderecoDTO destino;
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
 
 	public MotoristaSaidaDTO getMotorista() {
 		return motorista;

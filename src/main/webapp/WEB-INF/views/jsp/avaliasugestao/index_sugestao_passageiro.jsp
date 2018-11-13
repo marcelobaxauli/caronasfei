@@ -396,8 +396,8 @@
                 <span>{{estado}}</span>
               {{else}}
                 <input type="hidden" name="idPassageiro" value="{{id}}"/>
-                <button class="light_green" onclick="app.aceitarPassageiro(this)">Aceitar</button>
-                <button class="red" onclick="app.rejeitarPassageiro(this)">Rejeitar</button>
+                <button class="light_green" onclick="app.aceitarCarona(this)">Aceitar</button>
+                <button class="red" onclick="app.rejeitarCarona(this)">Rejeitar</button>
               {{/if}}
 
             </div>
@@ -555,8 +555,8 @@
 
         var aceitarCaronaDado = {};
         // só tem um motorista por sugestao de trajeto
-        aceitarCaronaDado.idMotorista = this.sugestaoTrajetoDado.motorista.id;
-        aceitarCaronaDado.idPassageiro = Number.parseInt(idPassageiro);
+        aceitarCaronaDado.id_sugestao = this.sugestaoTrajetoDado.id;
+        aceitarCaronaDado.id_passageiro = Number.parseInt(idPassageiro);
 
         var app = this;
 
@@ -616,8 +616,6 @@
               var sugestaoTrajeto = result.dado;
 
               if (app.sugestaoTrajetoDado == null || app.contemMudanca(sugestaoTrajeto)) {
-                console.log("sugestaotrajeto:");
-                console.log(sugestaoTrajeto);
 
                 app.sugestaoTrajetoDado = sugestaoTrajeto;
                 app.refreshPassageiros();

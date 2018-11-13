@@ -38,6 +38,7 @@ public class SugestaoTrajetoAssembler {
 		List<SugestaoTrajetoPassageiroSaidaDTO> passageiroListSaidaDTO = this.toPassageiroListSaidaDTO(passageiros);
 
 		SugestaoTrajetoDTO sugestaoTrajetoDTO = new SugestaoTrajetoDTO();
+		sugestaoTrajetoDTO.setId(sugestaoTrajeto.getId());
 		sugestaoTrajetoDTO.setMotorista(motoristaSaidaDTO);
 		sugestaoTrajetoDTO.setPassageiros(passageiroListSaidaDTO);
 		sugestaoTrajetoDTO.setDestino(this.enderecoAssembler.toEnderecoDTO(sugestaoTrajeto.getEnderecoDestino()));
