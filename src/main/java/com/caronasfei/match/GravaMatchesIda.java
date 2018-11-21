@@ -52,7 +52,7 @@ public class GravaMatchesIda {
 		No noAtual = noDestino.getVerticeIncidente().getNoOrigem();
 		while (noAtual.getVerticeIncidente() != null) {
 			if (noAtual.getIntencaoCarona().getAcaoCarona() == AcaoCarona.PEDIR_CARONA) {
-				nosPassageiros.add(noAtual);				
+				nosPassageiros.add(0, noAtual);				
 			}
 
 			if (noAtual.getVerticeIncidente() != null) {				

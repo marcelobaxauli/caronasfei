@@ -155,6 +155,11 @@
         cursor: pointer;
       }
 
+      button.dark_purple {
+        background-color: #2B4162;
+        cursor: pointer;
+      }
+
       .error_msg {
         margin-top: 0.5rem;
         font-size: 0.8rem;
@@ -243,24 +248,28 @@
         margin-top: 1.5rem;
       }
 
+      .painel {
+        display: flex;
+      }
 
+      .painel-info-pagina {
+        float: left;
+        width: 60%;
+      }
 
-	  .painel {
-		display: flex;
-	  }
+      .painel-botao {
+        float: right;
+        width: 40%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+      }
 
-	  .painel-info-pagina {
-		float: left;
-		width: 60%;
-	  }
-
-	  .painel-botao {
-		float: right;
-		width: 40%;
-		display: flex;
-		align-items: center;
-		justify-content: flex-end;
-	  }
+      .painel-botao button {
+        width: 45%;
+        height: 80%;
+        font-size: 12px;
+      }
 
     </style>
 
@@ -279,20 +288,21 @@
     <div class="content">
 
       <div class="form-group">
-		<div class="painel">
-			<div class="painel-info-pagina">
-				<h2>Sugestao de carona</h2>
+        <div class="painel">
+          <div class="painel-info-pagina">
+            <h2>Sugestao de carona</h2>
 
-				<h4>seu perfil: motorista</h4>
-			</div>
+            <h4>seu perfil: motorista</h4>
+          </div>
 
-			<div class="painel-botao">
-				<button class="light_green" onclick="app.exportaMapa()">Ver no mapa</button>
-			</div>
-		</div>
-	  </div>
+          <div class="painel-botao">
+            <button class="dark_purple" onclick="app.abreMapa()">Abrir Mapa</button>
+            <button class="light_green" onclick="app.exportaMapa()">Exportar para GPS</button>
+          </div>
+        </div>
+      </div>
 
-      <div class="form-group">        
+      <div class="form-group">
         <h4>Passageiros:</h4>
 
         <div id="passageiros">
@@ -302,14 +312,13 @@
 
         </div>
 
-  		  <div class="box_avaliacao_usuario--botao_modo_navegacao">
-        <a href="${pageContext.request.contextPath}/trajeto/navegacao">
-          <button class="light_blue small_button">
-            Modo navegação
-          </button>
-        </a>
-  		  </div>
-
+        <div class="box_avaliacao_usuario--botao_modo_navegacao">
+          <a href="${pageContext.request.contextPath}/trajeto/navegacao">
+            <button class="light_blue small_button">
+              Modo navegação
+            </button>
+          </a>
+        </div>
 
       </div>
 
@@ -341,7 +350,10 @@
                 </div>
 
                 <div class="box_avaliacao_usuario--detalhe">
-                  <span>{{enderecoPartida.rua}}, {{enderecoPartida.bairro}}. {{enderecoPartida.cidade}}. {{enderecoPartida.estado}}</span>
+                  <span>{{enderecoPartida.rua}},
+                    {{enderecoPartida.bairro}}.
+                    {{enderecoPartida.cidade}}.
+                    {{enderecoPartida.estado}}</span>
                 </div>
 
               </div>
@@ -388,8 +400,7 @@
           return input1 != input2;
         });
 
-		// não precisa mais deste helper
-		// mas é interessante manter aqui pra ver o funcionamento
+        // não precisa mais deste helper mas é interessante manter aqui pra ver o funcionamento
         Handlebars.registerHelper("peloMenosUmPassageiroConfirmado", function (passageirosElement) {
 
           var passageiros = passageirosElement.data.root;
@@ -502,7 +513,13 @@
         });
       }
 
-      AppAvaliaSugestaoMotorista.prototype.exportaMapa = function() {
+      AppAvaliaSugestaoMotorista.prototype.abreMapa = function() {
+
+        window.location.href = "${pageContext.request.contextPath}/trajeto/sugestao/mapa";
+
+      }
+
+      AppAvaliaSugestaoMotorista.prototype.exportaMapa = function () {
 
         var url = "https://www.google.com/maps/dir/?api=1&travelmode=driving&dir_action=navigate&";
 
@@ -511,10 +528,10 @@
 
         url += "destination=" + destinoLatitude + "," + destinoLongitude;
 
-    	  var motoristaPartidaLatitude = this.sugestaoTrajetoDado.motorista.enderecoPartida.latitude;
-    	  var motoristaPartidaLongitude = this.sugestaoTrajetoDado.motorista.enderecoPartida.longitude;
+        var motoristaPartidaLatitude = this.sugestaoTrajetoDado.motorista.enderecoPartida.latitude;
+        var motoristaPartidaLongitude = this.sugestaoTrajetoDado.motorista.enderecoPartida.longitude;
 
-    	  var passageiros = this.sugestaoTrajetoDado.passageiros;
+        var passageiros = this.sugestaoTrajetoDado.passageiros;
 
         if (passageiros != undefined && passageiros.length > 0) {
           url += "&waypoints=";
@@ -536,13 +553,13 @@
 
         console.log(url);
 
-    	  window.open(url, "_blank");
+        window.open(url, "_blank");
 
       }
 
       AppAvaliaSugestaoMotorista.prototype.sincronizaJob = function () {
 
-        setTimeout(function() {
+        setTimeout(function () {
 
           app.sincronizaInfo();
           app.sincronizaJob();
