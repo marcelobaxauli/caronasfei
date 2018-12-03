@@ -1,150 +1,290 @@
 * {
 	box-sizing: border-box;
-	margin: 0px;
+	margin: 0;
+	font-family: 'Ubuntu';
 }
 
-#header {
+body {
+	max-width: 600px;
+	margin: 0 auto;
+}
+
+.header {
 	width: 100%;
-	background-color: black;
-	line-height: 55px;
-}
-
-#content {
-	padding: 20px;
-}
-
-#destaques-titulo {
-	margin-bottom: 20px;
-}
-
-#nav-logo {
-	float: left;
-	color: white;
-	display: inline-block;
-}
-
-#footer {
-	width: 100%;
-	background-color: black;
-	line-height: 60px;
-	color: white;
-	text-align: center;
-}
-
-button {
-	padding: 10px 15px 10px 15px;
-	border-radius: 2px;
-	background-color: #ff4081;
-	border: 0px;
-	color: white;
-	cursor: pointer;
-}
-
-.nav-right {
-	margin-right: 20px;
-}
-
-#nav-item, #nav-logo a, #nav-item a {
-	float: right;
-	color: white;
-	display: inline-block;
-	text-decoration: none;
-}
-
-.nav-explore {
-	margin-right: 50px;
-}
-
-#nav-explore {
-	margin-right: 10px;
-}
-
-#nav-login {
-	float: right;
-}
-
-.grid {
-	width: 900px;
-	display: block;
-}
-
-.grid-item {
-	padding: 10px;
-	height: 200px;
-	width: 220px;
-	border: 1px solid black;
-	display: inline-block;
-}
-
-.wd-xl {
-	width: 1100px;
-	margin: 0px auto;
-	border: 1px solid black;
+	background-color: blue;
+	padding: 1.2rem 1rem;
 	overflow: hidden;
 }
 
-.wd-l {
-	width: 960px;
-	margin: 0px auto;
+.header_inner {
+	width: 400px;
+	margin: 0 auto;
+	color: white;
+	font-size: 1.15rem;
+	font-weight: normal;
+	float: left;
 }
 
-#box {
-	width: 600px;
-	margin: 25px auto;
-	border: 1px solid #b1aeae;
-	border-radius: 5px;
+.content {
+	margin-top: 3.0rem;
+	margin-left: 1.0rem;
+	margin-right: 1.0rem;
 }
 
-.box-input {
+.content_s {
+	margin: 3.0rem auto 0;
+	max-width: 400px;
+}
+
+.content_title {
+	margin-bottom: 2.5rem;
+}
+
+h1, h2, h3, h4 {
+	font-weight: normal;
+	margin-bottom: 0.8rem;
+}
+
+h1 {
+	font-size: 2.8rem;
+}
+
+.form-group {
+	margin-top: 1.5rem;
+	margin-bottom: 1.5rem;
+	overflow: hidden;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 0.6rem;
+}
+
+.form-group input[type="email"], .form-group input[type="password"],
+	.form-group input[type="text"], .form-group select {
 	width: 100%;
-	padding: 5px;
-	border-radius: 5px;
-	border: 1px solid gray;
+	padding: 0.5rem;
+	background-color: white;
+	border: 1px solid #cacaca;
+	border-radius: 0.25rem;
+	font-size: 0.9rem;
+	line-height: 1.8rem;
 }
 
-#box-header {
-	text-align: center;
-	padding: 20px;
-	font-size: 20px;
-	border-bottom: 1px solid #b1aeae;
+.form-group input[type="email"].error, .form-group input[type="password"].error,
+	.form-group input[type="text"].error, .form-group select.error {
+	width: 100%;
+	padding: 0.5rem;
+	background-color: white;
+	border: 1px solid red;
+	border-radius: 0.25rem;
+	font-size: 0.9rem;
+	line-height: 1.8rem;
 }
 
-#box-content {
-	padding: 25px;
-}
-
-.box-item {
-	width: 420px;
-	margin: 0px auto;
-	padding: 15px;
-}
-
-.box-item .input-label {
-	padding: 0px 0px 10px 0px;
-}
-
-.msg-sucess {
-	margin-top: 5px;
-	color: green;
-}
-
-.msg-error {
-	margin-top: 5px;
-	color: red;
-}
-
-.ok-btn {
-	background-color: blue;
-}
-
-.no-btn {
-	background-color: black;
-}
-
-input.erro {
+.form-group input.error {
 	border: 1px solid red;
 }
 
-input.sucesso {
-	border: 1px solid green;
+button, input[type="submit"] {
+	padding: 0.85rem 1.5rem;
+	border-radius: 0.25rem;
+	color: white;
+	border: 0;
+	width: 100%;
+	display: block;
+	margin: 0 auto 0.8rem;
+	font-size: 0.9rem;
+}
+
+input[type="submit"] {
+	background-color: blue;
+}
+
+button#cancelar {
+	background-color: red;
+}
+
+input[type="text"].disabled {
+	background-color: #e9ecef !important;
+	cursor: not-allowed;
+}
+
+button.dark_gray {
+	background-color: #343a40;
+}
+
+button.dark_gray:hover {
+	background-color: #757575;
+	cursor: pointer;
+}
+
+button.light_green {
+	background-color: #009688;
+	cursor: pointer;
+}
+
+button.light_green:hover {
+	background-color: #4DB6AC;
+	cursor: pointer;
+}
+
+button.dark_purple {
+	background-color: #2B4162;
+	cursor: pointer;
+}
+
+.error_msg {
+	margin-top: 0.5rem;
+	font-size: 0.8rem;
+	color: r4ed;
+}
+
+button.small_button {
+	width: 9.5rem;
+}
+
+.left {
+	float: left;
+}
+
+button.red {
+	background-color: #f44336;
+	cursor: pointer;
+}
+
+button.light_blue {
+	background-color: #0facf3;
+	cursor: pointer;
+}
+
+button:disabled {
+	background-color: #d6d6d6;
+	cursor: not-allowed;
+}
+/*
+          BOX DE AVALIAÇÃO E CONFIRMAÇÃO DE USUÁRIO / MOTORISTA-PASSAGEIRO
+        */
+.box_avaliacao_usuario {
+	width: 100%;
+	border: 1px solid black;
+	padding: 5px;
+	margin-bottom: 0.5rem;
+	overflow: hidden;
+	display: flex;
+}
+
+.box_avaliacao_usuario--foto {
+	margin: 0 auto;
+	padding: 10px;
+	display: inline;
+	float: left;
+	width: 20%;
+}
+
+.box_avaliacao_usuario--foto_marker {
+	margin: 0 auto;
+	padding: 10px;
+	padding-left: 0px;
+	padding-right: 5px;
+	display: inline;
+	float: left;
+	width: 20%;
+}
+
+.box_avaliacao_usuario--foto--img {
+	width: 100px;
+	height: 100px;
+	display: block;
+	margin: 0 auto;
+}
+
+.box_avaliacao_usuario--foto--img_marker {
+	width: 50px;
+	height: 50px;
+	display: block;
+	margin: 0 auto;
+	padding-left: 0px;
+}
+
+.box_avaliacao_usuario--detalhes_box {
+	width: 50%;
+	float: left;
+	display: flex;
+	align-items: center;
+}
+
+.box_avaliacao_usuario--detalhes, .box_avaliacao_usuario--status {
+	font-size: 0.8rem;
+}
+
+.box_avaliacao_usuario--detalhes_marker,
+	.box_avaliacao_usuario--status_marker {
+	font-size: 0.6rem;
+}
+
+.box_avaliacao_usuario--detalhe {
+	padding: 3px 8px;
+}
+
+.box_avaliacao_usuario--status_box {
+	width: 25%;
+	float: left;
+	display: flex;
+	align-items: center;
+}
+
+.box_avaliacao_usuario--status {
+	margin: 0 auto;
+}
+
+.box_avaliacao_usuario--status_marker {
+	width: 70%;
+	height: 70%;
+}
+
+.box_avaliacao_usuario--status button {
+	font-size: 0.6rem;
+}
+
+.box_avaliacao_usuario--botao_modo_navegacao {
+	margin-top: 1.5rem;
+}
+
+.painel {
+	display: flex;
+}
+
+.painel-info-pagina {
+	float: left;
+	width: 60%;
+}
+
+.painel-botao {
+	float: right;
+	width: 40%;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+}
+
+.painel-botao button {
+	width: 45%;
+	height: 80%;
+	font-size: 12px;
+}
+
+#mapa {
+	border: 1px solid black;
+}
+
+.icon-desc {
+	margin-left: 8px;
+	font-size: 18px;
+	line-height: 28px;
+	display: inline-block;
+}
+
+.nav i {
+	font-size: 22px;
 }
