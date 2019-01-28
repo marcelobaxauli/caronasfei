@@ -50,7 +50,7 @@ public class DijkstraAlgorimo /* implements Algoritmo */ {
 		this.grafo.init(intencoesCaronaPassageiro.size() + 2, intencaoCaronaMotorista);
 		this.grafo.instancia(intencoes, destino);
 		if (sugestaoTrajetoComSubstituicao != null) {
-			this.grafo.fixaNosConfirmados(sugestaoTrajetoComSubstituicao);			
+			this.grafo.fixaNosConfirmados(sugestaoTrajetoComSubstituicao, nosVisitados);			
 		}
 
 		Date inicio = new Date();

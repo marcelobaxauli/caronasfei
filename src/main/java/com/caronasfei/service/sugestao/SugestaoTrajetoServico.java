@@ -99,8 +99,10 @@ public class SugestaoTrajetoServico {
 							   + "INNER JOIN SugestaoTrajetoPassageiro stp "
 							   + "ON st.id = stp.sugestaoTrajeto "
 							   + "WHERE stm.intencaoCarona = :intencaoCarona "
-							   + "AND stp.estado != 'REJEITADO_MOTORISTA' "
-							   + "AND stp.estado != 'REJEITADO_PASSAGEIRO' ", SugestaoTrajeto.class);
+//							   + "AND stp.estado != 'REJEITADO_MOTORISTA' "
+//							   + "AND stp.estado != 'REJEITADO_PASSAGEIRO' "
+							   
+							   , SugestaoTrajeto.class);
 		
 		query.setParameter("intencaoCarona", intencaoCaronaMotorista);
 		
@@ -289,7 +291,7 @@ public class SugestaoTrajetoServico {
 			throw new DomainSecurityException(errorMsg);
 		}
 		
-		passageiroBuscado.setEstado(SugestaoTrajetoPassageiroEstado.REJEITADO_PASSAGEIRO);
+		passageiroBuscado.setEstado(SugestaoTrajetoPassageiroEstado.REJEITADO_MOTORISTA);
 		
 		RejeicaoCarona rejeicaoCarona = new RejeicaoCarona();
 		rejeicaoCarona.setUsuarioMotorista(sugestaoTrajeto.getMotorista().getIntencaoCarona().getUsuario());
@@ -394,6 +396,29 @@ public class SugestaoTrajetoServico {
 		}
 		
 		return sugestaoTrajetoPassageiro;
+		
+	}
+	
+	@Transactional(readOnly = true)
+	public List<SugestaoTrajeto> findAllSugestaoTrajetoComPassageiroEmSubstituicao() {
+		
+		/*
+		 *	TODO: A sugestao de trajeto possui estado, o motorista e o passageiro tbm.
+		 *
+		 *	estou buscando apenas pelo estado 'NORMAL' da sugestao de trajeto. 
+		 *	Deveria verificar o estado do motorista também?
+		 * 
+		 */
+		
+		TypedQuery<SugestaoTrajeto> query = this.em.createQuery("SELECT st FROM SugestaoTrajeto st" + 
+				"		INNER JOIN SugestaoTrajetoPassageiro stp" + 
+				"		ON stp.sugestaoTrajeto = st.id" + 
+				"		WHERE st.estado = 'NORMAL'" + 
+				"		AND stp.estado = 'SUBSTITUICAO'", SugestaoTrajeto.class);
+				
+		List<SugestaoTrajeto> resultList = query.getResultList();
+
+		return resultList;
 		
 	}
 		

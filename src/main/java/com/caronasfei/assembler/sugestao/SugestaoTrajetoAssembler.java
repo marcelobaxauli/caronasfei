@@ -57,6 +57,7 @@ public class SugestaoTrajetoAssembler {
 		CursoPeriodo cursoPeriodo = usuarioMotorista.getCursoPeriodo();
 		motoristaSaidaDTO.setCurso(cursoPeriodo.getCurso().getNome());
 		motoristaSaidaDTO.setHorarioPartida(sugestaoTrajetoMotorista.getIntencaoCarona().getHorarioPartida().getHorarioFormatado());
+		motoristaSaidaDTO.setHorarioChegada(sugestaoTrajetoMotorista.getIntencaoCarona().getHorarioChegada().getHorarioFormatado());
 		motoristaSaidaDTO.setPeriodo(cursoPeriodo.getPeriodo().getNome());
 		motoristaSaidaDTO.setEstado(sugestaoTrajetoMotorista.getEstado().name());
 
@@ -117,6 +118,8 @@ public class SugestaoTrajetoAssembler {
 			passageiroSaidaDTO.setPeriodo(cursoPeriodo.getPeriodo().getNome());
 			passageiroSaidaDTO.setDistanciaMotorista(sugestaoTrajetoPassageiro.getDistanciaParaMotorista());
 			passageiroSaidaDTO.setEstado(sugestaoTrajetoPassageiro.getEstado().name());
+			passageiroSaidaDTO.setHorarioPartida(sugestaoTrajetoPassageiro.getIntencaoCarona().getHorarioPartida().getHorarioFormatado());
+			passageiroSaidaDTO.setHorarioChegada(sugestaoTrajetoPassageiro.getIntencaoCarona().getHorarioChegada().getHorarioFormatado());
 			passageiroSaidaDTO.setOrdemCarona(sugestaoTrajetoPassageiro.getOrdemCarona());
 			
 			Endereco enderecoPartida = intencaoCaronaPassageiro.getEnderecoPartida();

@@ -13,10 +13,12 @@ public class SugestaoTrajetoPassageiroSaidaDTO {
 	private String estado;
 	private EnderecoDTO enderecoPartida;
 	private EnderecoDTO enderecoDestino;
+	private String horarioPartida;
+	private String horarioChegada;
 	private double distanciaMotorista;
 	// horario de saida?
 	private int ordemCarona;
-	
+
 	public String getNome() {
 		return nome;
 	}
@@ -88,4 +90,21 @@ public class SugestaoTrajetoPassageiroSaidaDTO {
 	public void setOrdemCarona(int ordemCarona) {
 		this.ordemCarona = ordemCarona;
 	}
+
+	public String getHorarioPartida() {
+		return horarioPartida;
+	}
+
+	public void setHorarioPartida(String horarioPartida) {
+		this.horarioPartida = horarioPartida;
+	}
+
+	public String getHorarioChegada() {
+		return horarioChegada;
+	}
+
+	public void setHorarioChegada(String horarioChegada) {
+		this.horarioChegada = horarioChegada;
+	}
+
 }

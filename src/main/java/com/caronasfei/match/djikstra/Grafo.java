@@ -22,6 +22,7 @@ import com.caronasfei.db.intencao.endereco.Endereco;
 import com.caronasfei.db.sugestao.SugestaoTrajeto;
 import com.caronasfei.db.sugestao.SugestaoTrajetoMotorista;
 import com.caronasfei.db.sugestao.SugestaoTrajetoPassageiro;
+import com.caronasfei.db.sugestao.SugestaoTrajetoPassageiro.SugestaoTrajetoPassageiroEstado;
 import com.caronasfei.match.djikstra.model.FuncaoObjetivo;
 import com.caronasfei.match.djikstra.model.RestricaoTempo;
 import com.caronasfei.util.http.Coordenadas;
@@ -56,14 +57,16 @@ public class Grafo {
 		Date inicio = new Date();
 
 		Double segundosDistancia = this.osrmApi.getTempo(
-				Coordenadas.converte(intencaoMotorista.getEnderecoPartida().getLongitude(), intencaoMotorista.getEnderecoPartida().getLatitude()),
-				Coordenadas.converte(intencaoMotorista.getEnderecoDestino().getLongitude(), intencaoMotorista.getEnderecoDestino().getLatitude()));
-		
+				Coordenadas.converte(intencaoMotorista.getEnderecoPartida().getLongitude(),
+						intencaoMotorista.getEnderecoPartida().getLatitude()),
+				Coordenadas.converte(intencaoMotorista.getEnderecoDestino().getLongitude(),
+						intencaoMotorista.getEnderecoDestino().getLatitude()));
+
 		this.nos = new HashMap<Integer, No>(maxNumeroNos, 1);
 
 		double minutosDistancia = segundosDistancia / 60.0;
 		int detourReferencia = (int) (minutosDistancia + intencaoMotorista.getDetour());
-		
+
 		this.funcaoObjetivo = new FuncaoObjetivo(intencaoMotorista.getNumeroAssentos(), 5 * 60, detourReferencia);
 
 		for (int i = 0; i < maxNumeroNos; i++) {
@@ -81,7 +84,7 @@ public class Grafo {
 					No noDestino = nos.get(j);
 
 					Vertice novoVerticeSaida = new Vertice();
-					novoVerticeSaida.setNoOrigem(noDestino);
+					novoVerticeSaida.setNoDestino(noDestino);
 					novoVerticeSaida.setI(i);
 					novoVerticeSaida.setJ(j);
 
@@ -112,7 +115,7 @@ public class Grafo {
 
 		this.preencheNos(intencoesCarona, destino);
 		this.preencheArestas();
-		
+
 		this.primeiroNo = this.nos.get(0);
 		this.ultimoNo = this.nos.get(this.instanciaNos.size() - 1);
 
@@ -126,41 +129,81 @@ public class Grafo {
 
 	}
 
-	public void fixaNosConfirmados(SugestaoTrajeto sugestaoTrajeto) {
+	public void fixaNosConfirmados(SugestaoTrajeto sugestaoTrajeto, Map<Integer, No> nosVisitados) {
 		// fixa os nós já confirmados
 
 		// procura por motorista primeiro
-		
+
 		SugestaoTrajetoMotorista motorista = sugestaoTrajeto.getMotorista();
 		List<SugestaoTrajetoPassageiro> passageiros = sugestaoTrajeto.getPassageiros();
+		int numeroPassageiros = 0;
+		long custoTransitoAcumulado = 0l;
 
 		No noAnterior = null;
 		for (No no : this.instanciaNos) {
 			if (no.getIntencaoCarona().equals(motorista.getIntencaoCarona())) {
 				no.setFixo(true);
 				no.setSugestaoTrajetoUsuario(motorista);
+				nosVisitados.put(no.getNumber(), no);
 				noAnterior = no;
 				break;
 			}
 		}
 
+		boolean noSugestaoMarker = false;
 		for (SugestaoTrajetoPassageiro passageiro : passageiros) {
-			if (passageiro.isNoFixo()) {
-				for (No no : this.instanciaNos) {
-					if (no.getIntencaoCarona().equals(passageiro.getIntencaoCarona())) {
-						no.setFixo(true);
-						no.setSugestaoTrajetoUsuario(passageiro);
-						
-						Vertice vertice = new Vertice();
-						vertice.setNoOrigem(no);
-						noAnterior.setVerticeIncidente(vertice);
-						noAnterior = no;
-						break;
+			for (No no : this.instanciaNos) {
+				if (no.getIntencaoCarona() != null && no.getIntencaoCarona().equals(passageiro.getIntencaoCarona())) {
+
+					Set<Vertice> verticesDeSaida = noAnterior.getVerticesDeSaida();
+
+					for (Vertice verticeSaida : verticesDeSaida) {
+
+						if (verticeSaida.getNoDestino().equals(no)) {
+
+							no.setFixo(true);
+							no.setSugestaoTrajetoUsuario(passageiro);
+							no.setNoAnterior(noAnterior);
+							no.setCurrentNumberOfPassengers(++numeroPassageiros);
+							noAnterior = no;
+
+							// TODO: neste ponto eu já sei que a instancia é um SugestaoTrajetoPassageiro?
+							// ERROU!! na verdade pode ser o nó destino (FEI por exemplo)
+							if (noAnterior.getSugestaoTrajetoUsuario() instanceof SugestaoTrajetoPassageiro) {
+								
+								SugestaoTrajetoPassageiro sugestaoTrajetoPassageiroAnterior = (SugestaoTrajetoPassageiro) noAnterior
+										.getSugestaoTrajetoUsuario();
+
+								if (sugestaoTrajetoPassageiroAnterior.getEstado() == SugestaoTrajetoPassageiroEstado.SUBSTITUICAO) {
+									noSugestaoMarker = true;
+									no.setFixo(false);
+								}
+								
+								if (!noSugestaoMarker) {
+
+									// TODO: daqui em diante nao tem score nos nós
+
+									custoTransitoAcumulado += verticeSaida.getCustoTransito();
+
+									// TODO só somar o numero de passageiros se o nó candidato for de passageiro
+									// fera.
+									int noCandidatoScore = this.getObjectiveValue(numeroPassageiros,
+											custoTransitoAcumulado);
+
+									no.setScore(noCandidatoScore);
+
+									
+								}
+								
+							}
+
+
+						}
+
 					}
 				}
 			}
 		}
-
 
 	}
 
@@ -168,7 +211,8 @@ public class Grafo {
 
 		Set<Integer> nosMotoristas = new HashSet<Integer>();
 		for (No no : this.instanciaNos) {
-			if (no.getIntencaoCarona() != null && no.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA) {
+			if (no.getIntencaoCarona() != null
+					&& no.getIntencaoCarona().getAcaoCarona() == AcaoCarona.OFERECER_CARONA) {
 				nosMotoristas.add(no.getNumber());
 			}
 		}
@@ -238,14 +282,14 @@ public class Grafo {
 		for (int i = 0; i < intencoesCarona.size(); i++) {
 
 			IntencaoCarona intencaoCarona = intencoesCarona.get(i);
-			
+
 			No nodo = this.nos.get(i);
 			if (primeiroNo) {
 				primeiroNo = false;
-				nodo.setScore(0);		
+				nodo.setScore(0);
 				nodo.setHorarioEstimado(intencaoCarona.getHorarioPartida().getHorario().getTime());
 			} else {
-				nodo.setScore(Integer.MAX_VALUE);				
+				nodo.setScore(Integer.MAX_VALUE);
 				nodo.setHorarioEstimado(0);
 			}
 			nodo.setIntencaoCarona(intencaoCarona);
@@ -263,7 +307,7 @@ public class Grafo {
 
 		// último nó não possui vertices de saída
 		// último nó vai ser a FEI / agr no inicio
-				
+
 		No ultimoNo = this.nos.get(intencoesCarona.size());
 		ultimoNo.setScore(Integer.MAX_VALUE);
 		ultimoNo.setHorarioEstimado(0);
@@ -290,8 +334,8 @@ public class Grafo {
 					break;
 				}
 
-				No noDestino = vertice.getNoOrigem();
-				
+				No noDestino = vertice.getNoDestino();
+
 				Endereco enderecoOrigem = noOrigem.getEndereco();
 				Endereco enderecoDestino = noDestino.getEndereco();
 
@@ -307,7 +351,8 @@ public class Grafo {
 
 		Date fim = new Date();
 		long tempoInicializacao = fim.getTime() - inicio.getTime();
-//		LOGGER.info("tempo de preenchimento das arestas: {} milisegundos", tempoInicializacao);
+		// LOGGER.info("tempo de preenchimento das arestas: {} milisegundos",
+		// tempoInicializacao);
 
 	}
 

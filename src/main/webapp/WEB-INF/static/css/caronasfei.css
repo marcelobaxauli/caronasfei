@@ -171,7 +171,6 @@ button:disabled {
 	padding: 5px;
 	margin-bottom: 0.5rem;
 	overflow: hidden;
-	display: flex;
 }
 
 .box_avaliacao_usuario--foto {
@@ -183,13 +182,17 @@ button:disabled {
 }
 
 .box_avaliacao_usuario--foto_marker {
-	margin: 0 auto;
 	padding: 10px;
-	padding-left: 0px;
-	padding-right: 5px;
+  width: 30%;
 	display: inline;
 	float: left;
-	width: 20%;
+}
+
+.box_avaliacao_usuario_motorista--foto_marker {
+  padding: 10px;
+  display: inline;
+  float: left;
+  width: 30%;
 }
 
 .box_avaliacao_usuario--foto--img {
@@ -208,7 +211,14 @@ button:disabled {
 }
 
 .box_avaliacao_usuario--detalhes_box {
-	width: 50%;
+	width: 70%;
+	float: left;
+	display: flex;
+	align-items: center;
+}
+
+.box_avaliacao_usuario_motorista--detalhes_box {
+	width: 70%;
 	float: left;
 	display: flex;
 	align-items: center;
@@ -218,24 +228,39 @@ button:disabled {
 	font-size: 0.8rem;
 }
 
+.box_avaliacao_usuario--confirmar_botao {
+  float: left;
+  width: 50%;
+}
+
+.box_avaliacao_usuario--cancelar_botao {
+  float: left;
+  width: 50%;
+}
+
+.box_avaliacao_usuario--estado {
+	text-align: center;
+}
+
 .box_avaliacao_usuario--detalhes_marker,
 	.box_avaliacao_usuario--status_marker {
 	font-size: 0.6rem;
 }
 
 .box_avaliacao_usuario--detalhe {
-	padding: 3px 8px;
+	padding: 2px 6px;
 }
 
 .box_avaliacao_usuario--status_box {
-	width: 25%;
-	float: left;
-	display: flex;
-	align-items: center;
+	width: 100%;
+  display: block;
+  margin: 15px auto;
+	margin-bottom: 0px;
 }
 
 .box_avaliacao_usuario--status {
 	margin: 0 auto;
+  overflow: hidden;
 }
 
 .box_avaliacao_usuario--status_marker {

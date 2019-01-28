@@ -213,15 +213,15 @@ public class SugestaoTrajetoAPIController {
 
 	}
 
-	@PostMapping("/sugestao/substituir")
-	public RespostaPadraoDTO substituirPassageiro(SubstituiPassageiroTrajetoDTO substituiPassageiroDTO) {
+	@PostMapping("/motorista/substituirpassageiro")
+	@ResponseBody
+	public RespostaPadraoDTO substituirPassageiro(@RequestBody SubstituiPassageiroTrajetoDTO substituiPassageiroDTO) {
 
 		RespostaPadraoDTO resposta = new RespostaPadraoDTO();
 
 		Usuario usuario = this.sessaoWeb.getUsuario();
-		int idSugestaoTrajeto = substituiPassageiroDTO.getIdSugestaoTrajeto();
-		int idSugestaoTrajetoMotorista = substituiPassageiroDTO.getIdSugestaoTrajetoMotorista();
-		int idSugestaoTrajetoPassageiro = substituiPassageiroDTO.getIdSugestaoTrajetoPassageiro();
+		int idSugestaoTrajetoMotorista = substituiPassageiroDTO.getIdMotorista();
+		int idSugestaoTrajetoPassageiro = substituiPassageiroDTO.getIdPassageiro();
 
 		try {
 			SugestaoTrajetoMotorista sugestaoTrajetoMotorista = this.sugestaoTrajetoServico

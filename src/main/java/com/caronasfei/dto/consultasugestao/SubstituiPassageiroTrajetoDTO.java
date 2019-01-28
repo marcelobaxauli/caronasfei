@@ -2,32 +2,23 @@ package com.caronasfei.dto.consultasugestao;
 
 public class SubstituiPassageiroTrajetoDTO {
 
-	private int idSugestaoTrajeto;
-	private int idSugestaoTrajetoMotorista;
-	private int idSugestaoTrajetoPassageiro;
+	private int idMotorista;
+	private int idPassageiro;
 
-	public int getIdSugestaoTrajeto() {
-		return idSugestaoTrajeto;
+	public int getIdMotorista() {
+		return idMotorista;
 	}
 
-	public void setIdSugestaoTrajeto(int idSugestaoTrajeto) {
-		this.idSugestaoTrajeto = idSugestaoTrajeto;
+	public void setIdMotorista(int idMotorista) {
+		this.idMotorista = idMotorista;
 	}
 
-	public int getIdSugestaoTrajetoMotorista() {
-		return idSugestaoTrajetoMotorista;
+	public int getIdPassageiro() {
+		return idPassageiro;
 	}
 
-	public void setIdSugestaoTrajetoMotorista(int idSugestaoTrajetoMotorista) {
-		this.idSugestaoTrajetoMotorista = idSugestaoTrajetoMotorista;
-	}
-
-	public int getIdSugestaoTrajetoPassageiro() {
-		return idSugestaoTrajetoPassageiro;
-	}
-
-	public void setIdSugestaoTrajetoPassageiro(int idSugestaoTrajetoPassageiro) {
-		this.idSugestaoTrajetoPassageiro = idSugestaoTrajetoPassageiro;
+	public void setIdPassageiro(int idPassageiro) {
+		this.idPassageiro = idPassageiro;
 	}
 
 }

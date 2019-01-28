@@ -2,7 +2,7 @@ package com.caronasfei.match.djikstra;
 
 public class Vertice {
 
-	private No noOrigem;
+	private No noDestino;
 
 	// em milisegundos
 	private long custoTransito;
@@ -10,12 +10,12 @@ public class Vertice {
 	private int i;
 	private int j;
 
-	public No getNoOrigem() {
-		return noOrigem;
+	public No getNoDestino() {
+		return noDestino;
 	}
 
-	public void setNoOrigem(No noOrigem) {
-		this.noOrigem = noOrigem;
+	public void setNoDestino(No noDestino) {
+		this.noDestino = noDestino;
 	}
 
 	public long getCustoTransito() {
@@ -48,7 +48,7 @@ public class Vertice {
 		int result = 1;
 		result = prime * result + i;
 		result = prime * result + j;
-		result = prime * result + ((noOrigem == null) ? 0 : noOrigem.hashCode());
+		result = prime * result + ((noDestino == null) ? 0 : noDestino.hashCode());
 		long temp;
 		temp = Double.doubleToLongBits(custoTransito);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -68,10 +68,10 @@ public class Vertice {
 			return false;
 		if (j != other.j)
 			return false;
-		if (noOrigem == null) {
-			if (other.noOrigem != null)
+		if (noDestino == null) {
+			if (other.noDestino != null)
 				return false;
-		} else if (!noOrigem.equals(other.noOrigem))
+		} else if (!noDestino.equals(other.noDestino))
 			return false;
 		if (Double.doubleToLongBits(custoTransito) != Double.doubleToLongBits(other.custoTransito))
 			return false;

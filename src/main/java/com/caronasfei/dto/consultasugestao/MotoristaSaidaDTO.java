@@ -12,6 +12,7 @@ public class MotoristaSaidaDTO {
 	private String periodo;
 	private String estado;
 	private String horarioPartida;
+	private String horarioChegada;
 	private EnderecoDTO enderecoPartida;
 	private EnderecoDTO enderecoDestino;
 
@@ -78,6 +79,14 @@ public class MotoristaSaidaDTO {
 
 	public void setHorarioPartida(String horarioPartida) {
 		this.horarioPartida = horarioPartida;
+	}
+
+	public String getHorarioChegada() {
+		return horarioChegada;
+	}
+
+	public void setHorarioChegada(String horarioChegada) {
+		this.horarioChegada = horarioChegada;
 	}
 
 }

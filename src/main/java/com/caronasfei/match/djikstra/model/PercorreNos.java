@@ -13,9 +13,9 @@ public class PercorreNos {
 			no.setCaminhoScore(score);
 			Vertice verticeSelecionado = no.getVerticeIncidente();
 
-			if (verticeSelecionado != null && verticeSelecionado.getNoOrigem() != null) {
+			if (verticeSelecionado != null && verticeSelecionado.getNoDestino() != null) {
 
-				PercorreNos.preencheScoreCaminho(verticeSelecionado.getNoOrigem(), score, destino);
+				PercorreNos.preencheScoreCaminho(verticeSelecionado.getNoDestino(), score, destino);
 
 			}
 
@@ -29,7 +29,7 @@ public class PercorreNos {
 		while (no.getVerticeIncidente() != null) {
 			ultimoNo = no;
 			no.setCaminhoScore(null);
-			no = no.getVerticeIncidente().getNoOrigem();
+			no = no.getVerticeIncidente().getNoDestino();
 		}
 
 		ultimoNo.setVerticeIncidente(null);
@@ -47,7 +47,7 @@ public class PercorreNos {
 			}
 
 			if (noAtual.getVerticeIncidente() != null) {
-				noAtual = noAtual.getVerticeIncidente().getNoOrigem();
+				noAtual = noAtual.getVerticeIncidente().getNoDestino();
 			}
 		} while (noAtual.getVerticeIncidente() != null);
 
@@ -71,7 +71,7 @@ public class PercorreNos {
 			}
 
 			if (noAtual.getVerticeIncidente() != null) {
-				noAtual = noAtual.getVerticeIncidente().getNoOrigem();
+				noAtual = noAtual.getVerticeIncidente().getNoDestino();
 			}
 		} while (noAtual.getVerticeIncidente() != null);
 

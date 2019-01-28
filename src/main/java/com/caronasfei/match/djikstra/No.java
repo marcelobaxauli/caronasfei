@@ -182,7 +182,7 @@ public class No<E> {
 				break;
 			}
 
-			No noCandidato = verticeSaida.getNoOrigem();
+			No noCandidato = verticeSaida.getNoDestino();
 
 			long custoTransitoSaida = verticeSaida.getCustoTransito(); // custo esta em milisegundos
 			long horarioEstimadoNoCandidato = (long) (this.horarioEstimado + custoTransitoSaida);
@@ -228,7 +228,7 @@ public class No<E> {
 				vertice.setCustoTransito(verticeSaida.getCustoTransito());
 				vertice.setI(verticeSaida.getI());
 				vertice.setJ(verticeSaida.getJ());
-				vertice.setNoOrigem(this);
+				vertice.setNoDestino(this);
 				
 				noCandidato.setScore(noCandidatoScore);
 				noCandidato.setVerticeIncidente(vertice);
@@ -279,7 +279,7 @@ public class No<E> {
 		nosCarona.add(this);
 		
 		for (Vertice verticeAtual = this.verticeIncidente; verticeAtual != null; ) {
-			No noDestino = verticeAtual.getNoOrigem();
+			No noDestino = verticeAtual.getNoDestino();
 			
 			if (noDestino != null) {
 				nosCarona.add(noDestino);
@@ -298,7 +298,7 @@ public class No<E> {
 		List<No> nosCarona = new ArrayList<No>();
 		
 		for (Vertice verticeAtual = this.verticeIncidente; verticeAtual != null; ) {
-			No noDestino = verticeAtual.getNoOrigem();
+			No noDestino = verticeAtual.getNoDestino();
 			
 			if (noDestino != null) {
 				nosCarona.add(noDestino);
@@ -324,7 +324,7 @@ public class No<E> {
 			
 			custoTransitoAcumulado += verticeIncidenteAtual.getCustoTransito();
 			
-			verticeIncidenteAtual = verticeIncidenteAtual.getNoOrigem().getVerticeIncidente();
+			verticeIncidenteAtual = verticeIncidenteAtual.getNoDestino().getVerticeIncidente();
 			
 		} while (verticeIncidenteAtual != null);
 		

@@ -9,14 +9,14 @@ import com.caronasfei.match.MatchCaronasIda;
 
 @Component
 @EnableScheduling
-public class CronFormacaoTrajeto {
-
+public class CronSubstituicaoTrajeto {
+	
 	@Autowired
 	private MatchCaronasIda matchCaronasIda;
 
 	@Scheduled(fixedRate = 5000)
 	public void executar() {
-		this.matchCaronasIda.formaMatches();
+		this.matchCaronasIda.substituiMatches();
 	}
 
 }

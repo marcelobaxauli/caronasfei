@@ -49,14 +49,14 @@ public class GravaMatchesIda {
 
 		Endereco enderecoDestino = noDestino.getEndereco();
 		
-		No noAtual = noDestino.getVerticeIncidente().getNoOrigem();
+		No noAtual = noDestino.getVerticeIncidente().getNoDestino();
 		while (noAtual.getVerticeIncidente() != null) {
 			if (noAtual.getIntencaoCarona().getAcaoCarona() == AcaoCarona.PEDIR_CARONA) {
 				nosPassageiros.add(0, noAtual);				
 			}
 
 			if (noAtual.getVerticeIncidente() != null) {				
-				noAtual = noAtual.getVerticeIncidente().getNoOrigem();
+				noAtual = noAtual.getVerticeIncidente().getNoDestino();
 			}
 		}
 
