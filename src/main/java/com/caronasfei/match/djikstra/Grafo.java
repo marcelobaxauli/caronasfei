@@ -157,9 +157,9 @@ public class Grafo {
 
 					Set<Vertice> verticesDeSaida = noAnterior.getVerticesDeSaida();
 
-					for (Vertice verticeSaida : verticesDeSaida) {
+					for (Vertice verticeSaidaIncidente : verticesDeSaida) {
 
-						if (verticeSaida.getNoDestino().equals(no)) {
+						if (verticeSaidaIncidente.getNoDestino().equals(no)) {
 
 							no.setFixo(true);
 							no.setSugestaoTrajetoUsuario(passageiro);
@@ -183,7 +183,7 @@ public class Grafo {
 
 									// TODO: daqui em diante nao tem score nos nós
 
-									custoTransitoAcumulado += verticeSaida.getCustoTransito();
+									custoTransitoAcumulado += verticeSaidaIncidente.getCustoTransito();
 
 									// TODO só somar o numero de passageiros se o nó candidato for de passageiro
 									// fera.
